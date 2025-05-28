@@ -1,7 +1,7 @@
-import { Text, View, StyleSheet } from 'react-native';
-import { multiply } from '@hyle-team/react-native-zano';
+import { Zano } from '@hyle-team/react-native-zano';
+import { StyleSheet, Text, View } from 'react-native';
 
-const result = multiply(3, 7);
+const result = Zano.init("", "", "", 1);
 
 export default function App() {
   return (
