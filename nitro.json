@@ -1,16 +1,15 @@
 {
-  "cxxNamespace": ["hyleteam_reactnativezano"],
+  "cxxNamespace": ["zano"],
   "ios": {
     "iosModuleName": "ReactNativeZano"
   },
   "android": {
-    "androidNamespace": ["hyleteam","reactnativezano"],
-    "androidCxxLibName": "hyleteam_reactnativezano"
+    "androidNamespace": ["ReactNativeZano"],
+    "androidCxxLibName": "ReactNativeZano"
   },
   "autolinking": {
     "ReactNativeZano": {
-      "swift": "ReactNativeZano",
-      "kotlin": "ReactNativeZano"
+      "cpp": "ReactNativeZano"
     }
   },
   "ignorePaths": ["node_modules"]

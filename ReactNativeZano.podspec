@@ -13,18 +13,18 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "16.6" }
   s.source       = { :git => "https://github.com/hyle-team/zano_mobile.git", :tag => "#{s.version}" }
 
-  s.source_files = "ios/**/*.{h,m,mm,swift}"
+  s.source_files = ["cpp/*.{hpp,cpp}", "ios/**/*.{h,m,mm,swift}"]
 
-  # s.vendored_frameworks = [
-  #   'libraries/_install_ios/lib/libcommon.a.xcframework',
-  #   'libraries/_install_ios/lib/libcrypto_.a.xcframework',
-  #   'libraries/_install_ios/lib/libcurrency_core.a.xcframework',
-  #   'libraries/_install_ios/lib/libwallet.a.xcframework',
-  #   'libraries/_install_ios/lib/libz.a.xcframework',
-  #   'libraries/_install_ios/lib/thirdparty/libboost.xcframework',
-  #   'libraries/_install_ios/lib/thirdparty/openssl/libcrypto.xcframework',
-  #   'libraries/_install_ios/lib/thirdparty/openssl/libssl.xcframework',
-  # ]
+  s.vendored_frameworks = [
+    'libraries/_install_ios/lib/libcommon.a.xcframework',
+    'libraries/_install_ios/lib/libcrypto_.a.xcframework',
+    'libraries/_install_ios/lib/libcurrency_core.a.xcframework',
+    'libraries/_install_ios/lib/libwallet.a.xcframework',
+    'libraries/_install_ios/lib/libz.a.xcframework',
+    'libraries/_install_ios/lib/thirdparty/libboost.xcframework',
+    'libraries/_install_ios/lib/thirdparty/openssl/libcrypto.xcframework',
+    'libraries/_install_ios/lib/thirdparty/openssl/libssl.xcframework',
+  ]
 
   load 'nitrogen/generated/ios/ReactNativeZano+autolinking.rb'
   add_nitrogen_files(s)
