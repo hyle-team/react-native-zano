@@ -7,9 +7,9 @@ export default function App() {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <Button title="init" onPress={() => setResult(Zano.init_zano("", "", "", 1))} />
+      <Button title="init" onPress={() => setResult(Zano.init("", "", 1))} />
       <ScrollView style={{flex: 1}}>
-        <Text>Result: {JSON.stringify(result, undefined, 2)}</Text>
+        <Text>Result: {result}</Text>
       </ScrollView>
     </SafeAreaView>
   );
