@@ -1,7 +1,7 @@
 {
   "name": "@hyle-team/react-native-zano",
   "version": "0.1.0",
-  "description": "Zano Wallet Library for mobile platforms",
+  "description": "Zano Wallet Library for react-native",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
   "exports": {
@@ -20,9 +20,7 @@
     "nitrogen",
     "*.podspec",
     "react-native.config.js",
-    "libraries/_install_android",
-    "libraries/_libs_android",
-    "libraries/_install_ios",
+    "libraries/_install_android/**/*",
     "!ios/build",
     "!android/build",
     "!android/gradle",
