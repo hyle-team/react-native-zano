@@ -10,7 +10,7 @@ public:
   ReactNativeZano(): HybridObject(TAG) { }
 
 public:
-  std::string init(const std::string& ip, const std::string& port, double log_level) override;
+  std::string init(const std::string& ip, const std::string& port, const std::string& working_dir, double log_level) override;
   std::string reset() override;
   std::string set_log_level(double log_level) override;
   std::string get_version() override;

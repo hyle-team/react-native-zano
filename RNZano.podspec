@@ -3,7 +3,7 @@ require "json"
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 Pod::Spec.new do |s|
-  s.name         = "ReactNativeZano"
+  s.name         = "RNZano"
   s.version      = package["version"]
   s.summary      = package["description"]
   s.homepage     = package["homepage"]
@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
     'libraries/_install_ios/lib/thirdparty/openssl/libssl.xcframework',
   ]
 
-  load 'nitrogen/generated/ios/ReactNativeZano+autolinking.rb'
+  load 'nitrogen/generated/ios/RNZano+autolinking.rb'
   add_nitrogen_files(s)
 
   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.

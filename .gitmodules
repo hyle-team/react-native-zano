@@ -1,3 +1,4 @@
 [submodule "libraries"]
 	path = libraries
 	url = https://github.com/hyle-team/zano_native_lib
+  ignore = dirty

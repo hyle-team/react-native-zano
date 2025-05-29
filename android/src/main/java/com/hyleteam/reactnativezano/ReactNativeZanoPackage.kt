@@ -16,7 +16,7 @@ class ReactNativeZanoPackage : TurboReactPackage() {
 
     companion object {
         init {
-            System.loadLibrary("hyleteam_reactnativezano")
+            System.loadLibrary("RNZano")
         }
     }
 }

@@ -1,7 +1,12 @@
 import type { HybridObject } from 'react-native-nitro-modules';
 
+export interface PlatformUtils extends HybridObject<{ ios: 'swift', android: 'kotlin' }> {
+  get_working_directory(): string;
+  get_downloads_directory(): string;
+}
+
 export interface ReactNativeZano extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
-  init(ip: string, port: string, log_level: number): string;
+  init(ip: string, port: string, working_dir: string, log_level: number): string;
   reset(): string;
   set_log_level(log_level: number): string;
   get_version(): string;

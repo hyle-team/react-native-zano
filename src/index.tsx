@@ -1,5 +1,5 @@
 import { NitroModules } from 'react-native-nitro-modules';
-import type { ReactNativeZano } from './ReactNativeZano.nitro';
+import type { PlatformUtils as IPlatformUtils, ReactNativeZano } from './ReactNativeZano.nitro';
 
-const ReactNativeZanoHybridObject = NitroModules.createHybridObject<ReactNativeZano>('ReactNativeZano');
-export { ReactNativeZanoHybridObject as Zano };
+export const Zano = NitroModules.createHybridObject<ReactNativeZano>('ReactNativeZano');
+export const PlatformUtils = NitroModules.createHybridObject<IPlatformUtils>('PlatformUtils');

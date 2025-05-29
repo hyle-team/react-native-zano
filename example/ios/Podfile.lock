@@ -1679,7 +1679,7 @@ PODS:
     - React-logger (= 0.79.2)
     - React-perflogger (= 0.79.2)
     - React-utils (= 0.79.2)
-  - ReactNativeZano (0.1.0):
+  - RNZano (0.1.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1780,7 +1780,7 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - ReactNativeZano (from `../..`)
+  - RNZano (from `../..`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1929,7 +1929,7 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
-  ReactNativeZano:
+  RNZano:
     :path: "../.."
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
@@ -2005,10 +2005,10 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: d5dcc564f129632276bd3184e60f053fcd574d6b
   ReactCodegen: fda99a79c866370190e162083a35602fdc314e5d
   ReactCommon: 4d0da92a5eb8da86c08e3ec34bd23ab439fb2461
-  ReactNativeZano: d8ff89b1f79f6b10b70dd192b038481e24baeb9a
+  RNZano: f6d1652dce931e8b00fe3d955d6db8c4b068012d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 9f110fc4b7aa538663cba3c14cbb1c335f43c13f
 
-PODFILE CHECKSUM: fcf47658407ca1dfad6d6a0a3ca48b4153ce23e4
+PODFILE CHECKSUM: 5809e6bddcb782d3d0f976858d704789f95721c5
 
 COCOAPODS: 1.15.2

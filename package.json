@@ -21,6 +21,7 @@
     "*.podspec",
     "react-native.config.js",
     "libraries/_install_android",
+    "libraries/_libs_android",
     "libraries/_install_ios",
     "!ios/build",
     "!android/build",

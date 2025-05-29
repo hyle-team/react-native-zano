@@ -1,18 +1,9 @@
 #include "ReactNativeZano.hpp"
 #include "plain_wallet_api.h"
 
-#ifdef __ANDROID__
-  // Android Headers
-#elif __APPLE__
-  #include "ReactNativeZano-Swift.h"
-#endif
-
 namespace margelo::nitro::zano {
 
-std::string ReactNativeZano::init(const std::string& ip, const std::string& port, double log_level) {
-  std::string working_dir = ::ReactNativeZano::getCWDPath();
-  return plain_wallet::init(ip, port, working_dir, log_level);
-}
+std::string ReactNativeZano::init(const std::string& ip, const std::string& port, const std::string& working_dir, double log_level) { return plain_wallet::init(ip, port, working_dir, log_level); }
 std::string ReactNativeZano::reset() { return plain_wallet::reset(); }
 std::string ReactNativeZano::set_log_level(double log_level) { return plain_wallet::set_log_level(static_cast<int>(log_level)); }
 std::string ReactNativeZano::get_version() { return plain_wallet::get_version(); }

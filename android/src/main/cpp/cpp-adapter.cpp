@@ -1,6 +1,6 @@
 #include <jni.h>
-#include "hyleteam_reactnativezanoOnLoad.hpp"
+#include "RNZanoOnLoad.hpp"
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
-  return margelo::nitro::hyleteam_reactnativezano::initialize(vm);
+  return margelo::nitro::zano::initialize(vm);
 }
