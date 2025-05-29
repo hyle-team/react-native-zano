@@ -36,11 +36,6 @@ std::string ReactNativeZano::get_opened_wallets() { return plain_wallet::get_ope
 std::string ReactNativeZano::get_wallet_status(double instance_id) { return plain_wallet::get_wallet_status(static_cast<int64_t>(instance_id)); }
 std::string ReactNativeZano::close_wallet(double instance_id) { return plain_wallet::close_wallet(static_cast<int64_t>(instance_id)); }
 std::string ReactNativeZano::invoke(double instance_id, const std::string& params) { return plain_wallet::invoke(static_cast<int64_t>(instance_id), params); }
-
-//async api
-std::string ReactNativeZano::async_call(const std::string& method_name, double instance_id, const std::string& params) { return plain_wallet::async_call(method_name, static_cast<uint64_t>(instance_id), params); }
-std::string ReactNativeZano::try_pull_result(double job_id) { return plain_wallet::try_pull_result(static_cast<uint64_t>(job_id)); }
-std::string ReactNativeZano::sync_call(const std::string& method_name, double instance_id, const std::string& params) { return plain_wallet::sync_call(method_name, static_cast<uint64_t>(instance_id), params); }
 std::shared_ptr<Promise<std::string>> ReactNativeZano::call(const std::string& method_name, double instance_id, const std::string& params) {
   return Promise<std::string>::async([method_name, instance_id, params]() {
     return plain_wallet::sync_call(method_name, static_cast<uint64_t>(instance_id), params);
@@ -52,25 +47,5 @@ bool ReactNativeZano::is_wallet_exist(const std::string& path) { return plain_wa
 std::string ReactNativeZano::get_wallet_info(double instance_id) { return plain_wallet::get_wallet_info(static_cast<int64_t>(instance_id)); }
 std::string ReactNativeZano::reset_wallet_password(double instance_id, const std::string& password) { return plain_wallet::reset_wallet_password(static_cast<int64_t>(instance_id), password); }
 double ReactNativeZano::get_current_tx_fee(double priority) { return static_cast<double>(plain_wallet::get_current_tx_fee(static_cast<uint64_t>(priority))); }
-
-
-//callback-mode for async calls
-struct plain_wallet_callback {
-public:
-  std::function<void(double, const std::string)> callback;
-  plain_wallet_callback(): callback() {
-    static std::function<void(uint64_t, const std::string)> cb_holder = [this](uint64_t job_id, const std::string& job_response) {
-      this->callback(static_cast<double>(job_id), job_response);
-    };
-    plain_wallet::set_callback([](uint64_t job_id, const std::string& job_response) { cb_holder(job_id, job_response); });
-  }
-  ~plain_wallet_callback() {
-    plain_wallet::set_callback(nullptr);
-  }
-};
-void ReactNativeZano::set_callback(const std::function<void(double job_id, const std::string& job_response)>& callback) {
-  static plain_wallet_callback cb_holder;
-  cb_holder.callback = std::move(callback);
-}
 
 } // namespace margelo::nitro::zano

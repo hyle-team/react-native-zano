@@ -26,11 +26,6 @@ export interface ReactNativeZano extends HybridObject<{ ios: 'c++'; android: 'c+
   get_wallet_status(instance_id: number): string;
   close_wallet(instance_id: number): string;
   invoke(instance_id: number, params: string): string;
-
-  //async api
-  async_call(method_name: string, instance_id: number, params: string): string;
-  try_pull_result(job_id: number): string;
-  sync_call(method_name: string, instance_id: number, params: string): string;
   call(method_name: string, instance_id: number, params: string): Promise<string>;
 
   //cake wallet api extension
@@ -38,7 +33,4 @@ export interface ReactNativeZano extends HybridObject<{ ios: 'c++'; android: 'c+
   get_wallet_info(instance_id: number): string;
   reset_wallet_password(instance_id: number, password: string): string;
   get_current_tx_fee(priority: number): number; // 0 (default), 1 (unimportant), 2 (normal), 3 (elevated), 4 (priority)
-
-  //callback-mode for async calls
-  set_callback(callback: (job_id: number, response: string) => void): void;
 }

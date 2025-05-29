@@ -34,11 +34,6 @@ public:
   std::string get_wallet_status(double instance_id) override;
   std::string close_wallet(double instance_id) override;
   std::string invoke(double instance_id, const std::string& params) override;
-
-  //async api
-  std::string async_call(const std::string& method_name, double instance_id, const std::string& params) override;
-  std::string try_pull_result(double job_id) override;
-  std::string sync_call(const std::string& method_name, double instance_id, const std::string& params) override;
   std::shared_ptr<Promise<std::string>> call(const std::string& method_name, double instance_id, const std::string& params) override;
 
   //cake wallet api extension
@@ -46,9 +41,6 @@ public:
   std::string get_wallet_info(double instance_id) override;
   std::string reset_wallet_password(double instance_id, const std::string& password) override;
   double get_current_tx_fee(double priority) override;
-
-  //callback-mode for async calls
-  void set_callback(const std::function<void(double job_id, const std::string& job_response)>& callback) override;
 };
 
 } // namespace margelo::nitro::zano
