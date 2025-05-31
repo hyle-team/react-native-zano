@@ -1,21 +1,5 @@
 import type { HybridObject } from 'react-native-nitro-modules';
-
-export enum ZanoLogLevel {
-  SILENT = -1,
-  DISABLED = 0,
-  MINIMAL = 1,
-  AVERAGE = 2,
-  DETAILED = 3,
-  VERBOSE = 4,
-}
-
-export enum ZanoPriority {
-  default = 0,
-  unimportant = 1,
-  normal = 2,
-  elevated = 3,
-  urgent = 3,
-}
+import type { ZanoLogLevel, ZanoPriority } from './enums';
 
 export interface ZanoLib extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
   init(ip: string, port: string, working_dir: string, log_level: ZanoLogLevel): string;
@@ -51,4 +35,3 @@ export interface ZanoLib extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
   sync_call_get_seed_phrase_info(instance_id: number, params: string): string;
   sync_call_reset_connection_url(url: string): string;
 }
-export type ZanoLibMethods = Exclude<keyof ZanoLib, keyof HybridObject<any>>;

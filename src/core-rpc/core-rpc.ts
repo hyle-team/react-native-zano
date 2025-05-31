@@ -1,4 +1,3 @@
-import type { HybridObject } from 'react-native-nitro-modules';
 import type {
   alias_rpc_details,
   alias_rpc_details_base,
@@ -24,9 +23,9 @@ import type {
   vote_results,
   WalletReturnErrors,
 } from '../entities';
-import type { JSONRpc, JSONRpcSuccessfulResponse } from '../utils/json-rpc';
+import type { JSONRpcResponse, JSONRpcSuccessfulResponse } from '../utils/json-rpc';
 import type { TypedBase64, UnwrapTypedBase64 } from '../utils/typed-base64';
-import type { __UNPROTECTED__TypedJSON, JSONConstrain } from '../utils/typed-json';
+import type { __UNPROTECTED__TypedJSON, JSONConstrain, TypedJSON } from '../utils/typed-json';
 import type { CoreRpc } from './core-rpc.nitro';
 
 export enum DAEMON_RPC_GET_INFO_FLAG {
@@ -707,128 +706,106 @@ export type COMMAND_VALIDATE_SIGNATURE_RESPONSE = {
   status: API_RETURN_CODE.DISCONNECTED | API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.FAIL | API_RETURN_CODE.OK;
 };
 
-type Method<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = {
-  params: Params;
-  result: Result;
-  errors: Errors;
+type CoreMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = {
+  (
+    params: __UNPROTECTED__TypedJSON<Params>
+  ): Promise<
+    | __UNPROTECTED__TypedJSON<{ response_code: unknown; base64_body: TypedBase64<__UNPROTECTED__TypedJSON<JSONRpcResponse<Result, Errors>>> }>
+    | TypedJSON<JSONRpcSuccessfulResponse<WalletReturnErrors>>
+    | TypedJSON<{ error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON | API_RETURN_CODE.FAIL }>
+  >;
 };
-export interface CoreRpcMethods {
+export interface ICoreRpc extends CoreRpc {
+  base64_encode<Value extends string>(value: NoInfer<Value>): TypedBase64<Value>;
+  base64_decode<Text extends TypedBase64<string>>(text: Text): UnwrapTypedBase64<Text>;
+
   // JSON RPCs
   /** Returns the total number of blocks in the blockchain (the height of the top block plus one). */
-  getblockcount: Method<DAEMON_RPC_GETBLOCKCOUNT_REQUEST, DAEMON_RPC_GETBLOCKCOUNT_RESPONSE>;
+  getblockcount: CoreMethod<DAEMON_RPC_GETBLOCKCOUNT_REQUEST, DAEMON_RPC_GETBLOCKCOUNT_RESPONSE>;
   /** Returns block hash by the given height. */
-  on_getblockhash: Method<DAEMON_RPC_GETBLOCKHASH_REQUEST, DAEMON_RPC_GETBLOCKHASH_RESPONSE>;
+  on_getblockhash: CoreMethod<DAEMON_RPC_GETBLOCKHASH_REQUEST, DAEMON_RPC_GETBLOCKHASH_RESPONSE>;
   /** Generates a block template for mining, intended for both PoW and PoS types of blocks based on the provided parameters. */
-  getblocktemplate: Method<DAEMON_RPC_GETBLOCKTEMPLATE_REQUEST, DAEMON_RPC_GETBLOCKTEMPLATE_RESPONSE>;
+  getblocktemplate: CoreMethod<DAEMON_RPC_GETBLOCKTEMPLATE_REQUEST, DAEMON_RPC_GETBLOCKTEMPLATE_RESPONSE>;
   /** Adds new block to the blockchain. Request should contain one string with hex-encoded block blob. */
-  submitblock: Method<DAEMON_RPC_SUBMITBLOCK_REQUEST, DAEMON_RPC_SUBMITBLOCK_RESPONSE>;
+  submitblock: CoreMethod<DAEMON_RPC_SUBMITBLOCK_REQUEST, DAEMON_RPC_SUBMITBLOCK_RESPONSE>;
   /** Adds new block to the blockchain. */
-  submitblock2: Method<DAEMON_RPC_SUBMITBLOCK2_REQUEST, DAEMON_RPC_SUBMITBLOCK2_RESPONSE>;
+  submitblock2: CoreMethod<DAEMON_RPC_SUBMITBLOCK2_REQUEST, DAEMON_RPC_SUBMITBLOCK2_RESPONSE>;
   /** Returns the block header information of the most recent block. */
-  getlastblockheader: Method<DAEMON_RPC_GET_LAST_BLOCK_HEADER_REQUEST, DAEMON_RPC_GET_LAST_BLOCK_HEADER_RESPONSE>;
+  getlastblockheader: CoreMethod<DAEMON_RPC_GET_LAST_BLOCK_HEADER_REQUEST, DAEMON_RPC_GET_LAST_BLOCK_HEADER_RESPONSE>;
   /** Retrieves the block header information for a given block hash. */
-  getblockheaderbyhash: Method<DAEMON_RPC_GET_BLOCK_HEADER_BY_HASH_REQUEST, DAEMON_RPC_GET_BLOCK_HEADER_BY_HASH_RESPONSE>;
+  getblockheaderbyhash: CoreMethod<DAEMON_RPC_GET_BLOCK_HEADER_BY_HASH_REQUEST, DAEMON_RPC_GET_BLOCK_HEADER_BY_HASH_RESPONSE>;
   /** Retrieves the block header information for a given block height. */
-  getblockheaderbyheight: Method<DAEMON_RPC_GET_BLOCK_HEADER_BY_HEIGHT_REQUEST, DAEMON_RPC_GET_BLOCK_HEADER_BY_HEIGHT_RESPONSE>;
+  getblockheaderbyheight: CoreMethod<DAEMON_RPC_GET_BLOCK_HEADER_BY_HEIGHT_REQUEST, DAEMON_RPC_GET_BLOCK_HEADER_BY_HEIGHT_RESPONSE>;
   /** Retrieves information about a specific address alias. */
-  get_alias_details: Method<DAEMON_RPC_GET_ALIAS_DETAILS_REQUEST, DAEMON_RPC_GET_ALIAS_DETAILS_RESPONSE>;
+  get_alias_details: CoreMethod<DAEMON_RPC_GET_ALIAS_DETAILS_REQUEST, DAEMON_RPC_GET_ALIAS_DETAILS_RESPONSE>;
   /** Retrieves all aliases registered for a given address. */
-  get_alias_by_address: Method<DAEMON_RPC_GET_ALIASES_BY_ADDRESS_REQUEST, DAEMON_RPC_GET_ALIASES_BY_ADDRESS_RESPONSE>;
+  get_alias_by_address: CoreMethod<DAEMON_RPC_GET_ALIASES_BY_ADDRESS_REQUEST, DAEMON_RPC_GET_ALIASES_BY_ADDRESS_RESPONSE>;
   /** Retrieves the cost of registering an alias on the blockchain. */
-  get_alias_reward: Method<DAEMON_RPC_GET_ALIAS_REWARD_REQUEST, DAEMON_RPC_GET_ALIAS_REWARD_RESPONSE>;
+  get_alias_reward: CoreMethod<DAEMON_RPC_GET_ALIAS_REWARD_REQUEST, DAEMON_RPC_GET_ALIAS_REWARD_RESPONSE>;
   /** Give an estimation of block height by the given date. */
-  get_est_height_from_date: Method<DAEMON_RPC_GET_EST_HEIGHT_FROM_DATE_REQUEST, DAEMON_RPC_GET_EST_HEIGHT_FROM_DATE_RESPONSE>;
+  get_est_height_from_date: CoreMethod<DAEMON_RPC_GET_EST_HEIGHT_FROM_DATE_REQUEST, DAEMON_RPC_GET_EST_HEIGHT_FROM_DATE_RESPONSE>;
   /** Retrieves information about outputs in recent blocks that are targeted for the given address with the corresponding secret view key. */
-  find_outs_in_recent_blocks: Method<DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_REQUEST, DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_RESPONSE>;
+  find_outs_in_recent_blocks: CoreMethod<DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_REQUEST, DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_RESPONSE>;
 
   //block explorer api
   /** Retrieves detailed information about a sequence of blocks starting from a specific height. */
-  get_blocks_details: Method<DAEMON_RPC_GET_BLOCKS_DETAILS_REQUEST, DAEMON_RPC_GET_BLOCKS_DETAILS_RESPONSE>;
+  get_blocks_details: CoreMethod<DAEMON_RPC_GET_BLOCKS_DETAILS_REQUEST, DAEMON_RPC_GET_BLOCKS_DETAILS_RESPONSE>;
   /** Retrieves detailed information about a specific transaction. */
-  get_tx_details: Method<DAEMON_RPC_GET_TX_DETAILS_REQUEST, DAEMON_RPC_GET_TX_DETAILS_RESPONSE>;
+  get_tx_details: CoreMethod<DAEMON_RPC_GET_TX_DETAILS_REQUEST, DAEMON_RPC_GET_TX_DETAILS_RESPONSE>;
   /** Searches for a given ID across various entity types such as blocks, transactions, key images, multisig outputs, and alternative blocks, useful when the entity type is unknown or unspecified. */
-  search_by_id: Method<DAEMON_RPC_SERARCH_BY_ID_REQUEST, DAEMON_RPC_SERARCH_BY_ID_RESPONSE>;
+  search_by_id: CoreMethod<DAEMON_RPC_SERARCH_BY_ID_REQUEST, DAEMON_RPC_SERARCH_BY_ID_RESPONSE>;
   /** Retrieves various information about the blockchain node. The user must specify their needs via a 'flags' field in the request by combining necessary flags using binary OR. Some values are always calculated and provided, others only if the corresponding flag is specified. */
-  getinfo: Method<DAEMON_RPC_GET_INFO_REQUEST, DAEMON_RPC_GET_INFO_RESPONSE>;
+  getinfo: CoreMethod<DAEMON_RPC_GET_INFO_REQUEST, DAEMON_RPC_GET_INFO_RESPONSE>;
   /** Returns transaction ID and local output index for a given output amount and its global index. */
-  get_out_info: Method<DAEMON_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES_BY_AMOUNT_REQUEST, DAEMON_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES_BY_AMOUNT_RESPONSE>;
+  get_out_info: CoreMethod<DAEMON_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES_BY_AMOUNT_REQUEST, DAEMON_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES_BY_AMOUNT_RESPONSE>;
   /** Retrieve basic information about a multisig output using its unique identifier (hash). */
-  get_multisig_info: Method<DAEMON_RPC_GET_MULTISIG_INFO_REQUEST, DAEMON_RPC_GET_MULTISIG_INFO_RESPONSE>;
+  get_multisig_info: CoreMethod<DAEMON_RPC_GET_MULTISIG_INFO_REQUEST, DAEMON_RPC_GET_MULTISIG_INFO_RESPONSE>;
   /** Retrieves all registered aliases along with associated information. */
-  get_all_alias_details: Method<DAEMON_RPC_GET_ALL_ALIASES_REQUEST, DAEMON_RPC_GET_ALL_ALIASES_RESPONSE>;
+  get_all_alias_details: CoreMethod<DAEMON_RPC_GET_ALL_ALIASES_REQUEST, DAEMON_RPC_GET_ALL_ALIASES_RESPONSE>;
   /** Retrieves a specified portion of all registered aliases, allowing pagination through large sets of aliases. */
-  get_aliases: Method<DAEMON_RPC_GET_ALIASES_REQUEST, DAEMON_RPC_GET_ALIASES_RESPONSE>;
+  get_aliases: CoreMethod<DAEMON_RPC_GET_ALIASES_REQUEST, DAEMON_RPC_GET_ALIASES_RESPONSE>;
   /** Retrieves detailed information about specific transactions in the transaction pool, identified by their IDs. */
-  get_pool_txs_details: Method<DAEMON_RPC_GET_POOL_TXS_DETAILS_REQUEST, DAEMON_RPC_GET_POOL_TXS_DETAILS_RESPONSE>;
+  get_pool_txs_details: CoreMethod<DAEMON_RPC_GET_POOL_TXS_DETAILS_REQUEST, DAEMON_RPC_GET_POOL_TXS_DETAILS_RESPONSE>;
   /** Retrieves brief details about specific transactions in the transaction pool, identified by their IDs. */
-  get_pool_txs_brief_details: Method<DAEMON_RPC_GET_POOL_TXS_BRIEF_DETAILS_REQUEST, DAEMON_RPC_GET_POOL_TXS_BRIEF_DETAILS_RESPONSE>;
+  get_pool_txs_brief_details: CoreMethod<DAEMON_RPC_GET_POOL_TXS_BRIEF_DETAILS_REQUEST, DAEMON_RPC_GET_POOL_TXS_BRIEF_DETAILS_RESPONSE>;
   /** Retrieves a list of all transaction IDs currently in the transaction pool. */
-  get_all_pool_tx_list: Method<DAEMON_RPC_GET_ALL_POOL_TX_LIST_REQUEST, DAEMON_RPC_GET_ALL_POOL_TX_LIST_RESPONSE>;
+  get_all_pool_tx_list: CoreMethod<DAEMON_RPC_GET_ALL_POOL_TX_LIST_REQUEST, DAEMON_RPC_GET_ALL_POOL_TX_LIST_RESPONSE>;
   /** Obtain basic information about the transaction pool. */
-  get_pool_info: Method<DAEMON_RPC_GET_POOL_INFO_REQUEST, DAEMON_RPC_GET_POOL_INFO_RESPONSE>;
+  get_pool_info: CoreMethod<DAEMON_RPC_GET_POOL_INFO_REQUEST, DAEMON_RPC_GET_POOL_INFO_RESPONSE>;
   /** Retrieve random decoy outputs for specified amounts (legacy format). */
-  getrandom_outs: Method<DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_REQUEST, DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_RESPONSE>;
+  getrandom_outs: CoreMethod<DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_REQUEST, DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_RESPONSE>;
   /** Retrieve random decoy outputs for specified amounts, to be used for mixing in transactions. */
-  getrandom_outs1: Method<DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_REQUEST, DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_RESPONSE>;
+  getrandom_outs1: CoreMethod<DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_REQUEST, DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_RESPONSE>;
   /** Version 3 of the command to retrieve random decoy outputs for specified amounts, focusing on either pre-zarcanum or post-zarcanum zones based on the amount value. */
-  getrandom_outs3: Method<DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS3_REQUEST, DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS3_RESPONSE>;
+  getrandom_outs3: CoreMethod<DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS3_REQUEST, DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS3_RESPONSE>;
   /** Get votes' results from the given block range. */
-  get_votes: Method<DAEMON_RPC_GET_VOTES_REQUEST, DAEMON_RPC_GET_VOTES_RESPONSE>;
+  get_votes: CoreMethod<DAEMON_RPC_GET_VOTES_REQUEST, DAEMON_RPC_GET_VOTES_RESPONSE>;
 
   //assets api
   /** Obtain information for the given asset by its ID. */
-  get_asset_info: Method<DAEMON_RPC_GET_ASSET_INFO_REQUEST, DAEMON_RPC_GET_ASSET_INFO_RESPONSE>;
+  get_asset_info: CoreMethod<DAEMON_RPC_GET_ASSET_INFO_REQUEST, DAEMON_RPC_GET_ASSET_INFO_RESPONSE>;
   /** Return list of assets registered in Zano blockchain */
-  get_assets_list: Method<DAEMON_RPC_GET_ASSETS_LIST_REQUEST, DAEMON_RPC_GET_ASSETS_LIST_RESPONSE>;
+  get_assets_list: CoreMethod<DAEMON_RPC_GET_ASSETS_LIST_REQUEST, DAEMON_RPC_GET_ASSETS_LIST_RESPONSE>;
   /** Decrypts transaction private information. Should be used only with your own local daemon for security reasons. */
-  decrypt_tx_details: Method<DAEMON_RPC_DECRYPT_TX_DETAILS_REQUEST, DAEMON_RPC_DECRYPT_TX_DETAILS_RESPONSE>;
+  decrypt_tx_details: CoreMethod<DAEMON_RPC_DECRYPT_TX_DETAILS_REQUEST, DAEMON_RPC_DECRYPT_TX_DETAILS_RESPONSE>;
 
   /** Retrieves detailed information about a specific main block identified by its hash. */
-  get_main_block_details: Method<DAEMON_RPC_GET_BLOCK_DETAILS_REQUEST, DAEMON_RPC_GET_BLOCK_DETAILS_RESPONSE>;
+  get_main_block_details: CoreMethod<DAEMON_RPC_GET_BLOCK_DETAILS_REQUEST, DAEMON_RPC_GET_BLOCK_DETAILS_RESPONSE>;
   /** Retrieves detailed information about a specific alternative block identified by its hash. */
-  get_alt_block_details: Method<DAEMON_RPC_GET_BLOCK_DETAILS_REQUEST, DAEMON_RPC_GET_BLOCK_DETAILS_RESPONSE>;
+  get_alt_block_details: CoreMethod<DAEMON_RPC_GET_BLOCK_DETAILS_REQUEST, DAEMON_RPC_GET_BLOCK_DETAILS_RESPONSE>;
   /** Retrieves details of alternative blocks in the blockchain, allowing for pagination through large datasets. */
-  get_alt_blocks_details: Method<DAEMON_RPC_GET_ALT_BLOCKS_DETAILS_REQUEST, DAEMON_RPC_GET_ALT_BLOCKS_DETAILS_RESPONSE>;
+  get_alt_blocks_details: CoreMethod<DAEMON_RPC_GET_ALT_BLOCKS_DETAILS_REQUEST, DAEMON_RPC_GET_ALT_BLOCKS_DETAILS_RESPONSE>;
   /** Clears transaction pool. */
-  reset_transaction_pool: Method<DAEMON_RPC_RESET_TX_POOL_REQUEST, DAEMON_RPC_RESET_TX_POOL_RESPONSE>;
+  reset_transaction_pool: CoreMethod<DAEMON_RPC_RESET_TX_POOL_REQUEST, DAEMON_RPC_RESET_TX_POOL_RESPONSE>;
   /** Removes specified transactions from the transaction pool, typically to clear out transactions that are no longer valid or needed. */
-  remove_tx_from_pool: Method<DAEMON_RPC_REMOVE_TX_FROM_POOL_REQUEST, DAEMON_RPC_REMOVE_TX_FROM_POOL_RESPONSE>;
+  remove_tx_from_pool: CoreMethod<DAEMON_RPC_REMOVE_TX_FROM_POOL_REQUEST, DAEMON_RPC_REMOVE_TX_FROM_POOL_RESPONSE>;
   /** Retrieves the current core transaction expiration median. */
-  get_current_core_tx_expiration_median: Method<
+  get_current_core_tx_expiration_median: CoreMethod<
     DAEMON_RPC_GET_CURRENT_CORE_TX_EXPIRATION_MEDIAN_REQUEST,
     DAEMON_RPC_GET_CURRENT_CORE_TX_EXPIRATION_MEDIAN_RESPONSE
   >;
   /** Fetch from daemon offers listed in the marketplace with given filters */
-  marketplace_global_get_offers_ex: Method<DAEMON_RPC_GET_OFFERS_EX_REQUEST, DAEMON_RPC_GET_OFFERS_EX_RESPONSE>;
+  marketplace_global_get_offers_ex: CoreMethod<DAEMON_RPC_GET_OFFERS_EX_REQUEST, DAEMON_RPC_GET_OFFERS_EX_RESPONSE>;
   /** Validates a Schnorr signature for arbitrary data. The public key for verification is provided directly or retrieved using an associated alias. */
-  validate_signature: Method<COMMAND_VALIDATE_SIGNATURE_REQUEST, COMMAND_VALIDATE_SIGNATURE_RESPONSE>;
+  validate_signature: CoreMethod<COMMAND_VALIDATE_SIGNATURE_REQUEST, COMMAND_VALIDATE_SIGNATURE_RESPONSE>;
 }
-type CoreRpcMethodNames = Exclude<keyof CoreRpc, keyof HybridObject | 'base64_encode' | 'base64_decode'>;
-export type ICoreRpc = HybridObject<{ ios: 'c++'; android: 'c++' }> & {
-  base64_encode<Value extends string>(value: NoInfer<Value>): TypedBase64<Value>;
-  base64_decode<Text extends TypedBase64<string>>(text: Text): UnwrapTypedBase64<Text>;
-} & {
-  [Name in CoreRpcMethodNames]: (params: __UNPROTECTED__TypedJSON<CoreRpcMethods[Name]['params']>) => Promise<
-    __UNPROTECTED__TypedJSON<
-      | {
-          response_code: unknown;
-          base64_body: TypedBase64<
-            __UNPROTECTED__TypedJSON<
-              | (JSONRpc & {
-                  id: string;
-                  result: CoreRpcMethods[Name]['result'];
-                  error: null;
-                })
-              | (JSONRpc & {
-                  id: string;
-                  result: null;
-                  error: CoreRpcMethods[Name]['errors'];
-                })
-            >
-          >;
-        }
-      | JSONRpcSuccessfulResponse<WalletReturnErrors>
-      | { error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON | API_RETURN_CODE.FAIL }
-    >
-  >;
-};

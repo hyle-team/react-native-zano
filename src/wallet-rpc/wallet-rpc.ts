@@ -1,4 +1,3 @@
-import type { HybridObject } from 'react-native-nitro-modules';
 import type { DAEMON_RPC_GET_OFFERS_EX_REQUEST, DAEMON_RPC_GET_OFFERS_EX_RESPONSE } from '../core-rpc/core-rpc';
 import type {
   alias_rpc_details,
@@ -24,7 +23,7 @@ import type {
   WalletErrorCode,
   WalletReturnErrors,
 } from '../entities';
-import type { JSONRpc, JSONRpcFailedResponse } from '../utils/json-rpc';
+import type { JSONRpcResponse } from '../utils/json-rpc';
 import type { __UNPROTECTED__TypedJSON, JSONConstrain } from '../utils/typed-json';
 import type { WalletRpc } from './wallet-rpc.nitro';
 
@@ -782,24 +781,40 @@ export type INVOKE_RPC_PROXY_TO_DAEMON_RESPONSE = {
   response_code: number;
 };
 
-type Method<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = {
-  params: Params;
-  result: Result;
-  errors: Errors;
-};
-export type WalletRpcMethods = {
+type WalletMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = (
+  instance_id: number,
+  params: Params | (string & {})
+) =>
+  | __UNPROTECTED__TypedJSON<
+      JSONRpcResponse<
+        Result | WalletReturnErrors,
+        | Errors
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR>
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR, `WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR${string}`>
+        | WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR`>
+        | WalletErrorCode<API_RETURN_CODE.UNINITIALIZED, `${API_RETURN_CODE.INTERNAL_ERROR} ${string}` | API_RETURN_CODE.INTERNAL_ERROR>
+      >
+    >
+  | API_RETURN_CODE.WALLET_WRONG_ID;
+export interface IWalletRpc extends WalletRpc {
   /** Return the balances across all whitelisted assets of the wallet */
-  getbalance: Method<INVOKE_RPC_GET_BALANCE_REQUEST, INVOKE_RPC_GET_BALANCE_RESPONSE>;
+  getbalance: WalletMethod<INVOKE_RPC_GET_BALANCE_REQUEST, INVOKE_RPC_GET_BALANCE_RESPONSE>;
   /** Obtains wallet's public address */
-  getaddress: Method<INVOKE_RPC_GET_ADDRESS_REQUEST, INVOKE_RPC_GET_ADDRESS_RESPONSE>;
+  getaddress: WalletMethod<INVOKE_RPC_GET_ADDRESS_REQUEST, INVOKE_RPC_GET_ADDRESS_RESPONSE>;
   /** Returns wallet helpful wallet information */
-  get_wallet_info: Method<INVOKE_RPC_GET_WALLET_INFO_REQUEST, INVOKE_RPC_GET_WALLET_INFO_RESPONSE>;
+  get_wallet_info: WalletMethod<INVOKE_RPC_GET_WALLET_INFO_REQUEST, INVOKE_RPC_GET_WALLET_INFO_RESPONSE>;
   /** Returns wallet history of transactions */
-  get_recent_txs_and_info: Method<INVOKE_RPC_GET_RECENT_TXS_AND_INFO_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO_RESPONSE>;
+  get_recent_txs_and_info: WalletMethod<INVOKE_RPC_GET_RECENT_TXS_AND_INFO_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO_RESPONSE>;
   /** Returns wallet history of transactions V2 (post-zarcanum version) */
-  get_recent_txs_and_info2: Method<INVOKE_RPC_GET_RECENT_TXS_AND_INFO2_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO2_RESPONSE>;
+  get_recent_txs_and_info2: WalletMethod<INVOKE_RPC_GET_RECENT_TXS_AND_INFO2_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO2_RESPONSE>;
   /** Make new payment transaction from the wallet */
-  transfer: Method<
+  transfer: WalletMethod<
     INVOKE_RPC_TRANSFER_REQUEST,
     INVOKE_RPC_TRANSFER_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `Given fee is too low: ${number}, minimum is: ${number}`>
@@ -810,34 +825,34 @@ export type WalletRpcMethods = {
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `payment id ${string} is invalid and can't be set`>
   >;
   /** Store wallet's data to file */
-  store: Method<INVOKE_RPC_STORE_REQUEST, INVOKE_RPC_STORE_RESPONSE>;
+  store: WalletMethod<INVOKE_RPC_STORE_REQUEST, INVOKE_RPC_STORE_RESPONSE>;
   /** Gets list of incoming transfers by a given payment ID */
-  get_payments: Method<
+  get_payments: WalletMethod<
     INVOKE_RPC_GET_PAYMENTS_REQUEST,
     INVOKE_RPC_GET_PAYMENTS_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
   >;
   /** Gets list of incoming transfers by a given multiple payment_ids */
-  get_bulk_payments: Method<
+  get_bulk_payments: WalletMethod<
     INVOKE_RPC_GET_BULK_PAYMENTS_REQUEST,
     INVOKE_RPC_GET_BULK_PAYMENTS_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
   >;
   /** Generate integrated address */
-  make_integrated_address: Method<
+  make_integrated_address: WalletMethod<
     INVOKE_RPC_MAKE_INTEGRATED_ADDRESS_REQUEST,
     INVOKE_RPC_MAKE_INTEGRATED_ADDRESS_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `given payment id is too long: '${string}'`>
   >;
   /** Decode integrated address */
-  split_integrated_address: Method<
+  split_integrated_address: WalletMethod<
     INVOKE_RPC_SPLIT_INTEGRATED_ADDRESS_REQUEST,
     INVOKE_RPC_SPLIT_INTEGRATED_ADDRESS_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, `invalid integrated address given: '${string}'`>
   >;
   /** Tries to transfer all coins with amount below the given limit to the given address */
-  sweep_below: Method<
+  sweep_below: WalletMethod<
     INVOKE_RPC_SWEEP_BELOW_REQUEST,
     INVOKE_RPC_SWEEP_BELOW_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `Invalid payment id: ${string}`>
@@ -849,50 +864,50 @@ export type WalletRpcMethods = {
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `Given fee is too low: ${string}, minimum is: ${string}`>
   >;
   /** Return information about wallet's pre-zarcanum era outputs */
-  get_bare_outs_stats: Method<
+  get_bare_outs_stats: WalletMethod<
     INVOKE_RPC_GET_BARE_OUTS_STATS_REQUEST,
     INVOKE_RPC_GET_BARE_OUTS_STATS_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `operation cannot be performed in watch-only wallet`>
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `get_bare_unspent_outputs_stats failed`>
   >;
   /** Execute transactions needed to convert all bare(pre-zarcanum) outputs to post-zarcanum outputs */
-  sweep_bare_outs: Method<
+  sweep_bare_outs: WalletMethod<
     INVOKE_RPC_SWEEP_BARE_OUTS_REQUEST,
     INVOKE_RPC_SWEEP_BARE_OUTS_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `operation cannot be performed in watch-only wallet`>
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `get_bare_unspent_outputs_stats failed`>
   >;
   /** Sign transaction with the wallet's keys */
-  sign_transfer: Method<
+  sign_transfer: WalletMethod<
     INVOKE_RPC_SIGN_TRANSFER_REQUEST,
     INVOKE_RPC_SIGN_TRANSFER_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `tx_unsigned_hex is invalid`>
   >;
   /** Relay signed transaction over the network */
-  submit_transfer: Method<
+  submit_transfer: WalletMethod<
     INVOKE_RPC_SUBMIT_TRANSFER_REQUEST,
     INVOKE_RPC_SUBMIT_TRANSFER_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `tx_unsigned_hex is invalid`>
   >;
   /** Search for transactions in the wallet by few parameters (legacy version) */
-  search_for_transactions: Method<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_RESPONSE>;
+  search_for_transactions: WalletMethod<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_RESPONSE>;
   /** Search for transactions in the wallet by few parameters */
-  search_for_transactions2: Method<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_RESPONSE>;
+  search_for_transactions2: WalletMethod<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_RESPONSE>;
   /** Return wallet seed, which could be password-protected or open */
-  get_restore_info: Method<INVOKE_RPC_GET_WALLET_RESTORE_INFO_REQUEST, INVOKE_RPC_GET_WALLET_RESTORE_INFO_RESPONSE>;
+  get_restore_info: WalletMethod<INVOKE_RPC_GET_WALLET_RESTORE_INFO_REQUEST, INVOKE_RPC_GET_WALLET_RESTORE_INFO_RESPONSE>;
   /** This call is used to validate seed phrase and to fetch additional information about it */
-  get_seed_phrase_info: Method<INVOKE_RPC_GET_SEED_PHRASE_INFO_REQUEST, INVOKE_RPC_GET_SEED_PHRASE_INFO_RESPONSE>;
+  get_seed_phrase_info: WalletMethod<INVOKE_RPC_GET_SEED_PHRASE_INFO_REQUEST, INVOKE_RPC_GET_SEED_PHRASE_INFO_RESPONSE>;
   /** Returns wallet statistic on mining */
-  get_mining_history: Method<INVOKE_RPC_GET_MINING_HISTORY_REQUEST, INVOKE_RPC_GET_MINING_HISTORY_RESPONSE>;
+  get_mining_history: WalletMethod<INVOKE_RPC_GET_MINING_HISTORY_REQUEST, INVOKE_RPC_GET_MINING_HISTORY_RESPONSE>;
   /** Register an alias for the address */
-  register_alias: Method<
+  register_alias: WalletMethod<
     INVOKE_RPC_REGISTER_ALIAS_REQUEST,
     INVOKE_RPC_REGISTER_ALIAS_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - Wrong alias name'>
   >;
   /** Update an alias details/transfer alias ownership */
-  update_alias: Method<
+  update_alias: WalletMethod<
     INVOKE_RPC_UPDATE_ALIAS_REQUEST,
     INVOKE_RPC_UPDATE_ALIAS_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
@@ -909,21 +924,21 @@ export type WalletRpcMethods = {
 
   //marketplace API
   /** Fetch wallet's offers listed in the marketplace with given filters */
-  marketplace_get_offers_ex: Method<INVOKE_RPC_MARKETPLACE_GET_MY_OFFERS_REQUEST, INVOKE_RPC_MARKETPLACE_GET_MY_OFFERS_RESPONSE>;
+  marketplace_get_offers_ex: WalletMethod<INVOKE_RPC_MARKETPLACE_GET_MY_OFFERS_REQUEST, INVOKE_RPC_MARKETPLACE_GET_MY_OFFERS_RESPONSE>;
   /** Creates new offer and publish it on the blockchain */
-  marketplace_push_offer: Method<
+  marketplace_push_offer: WalletMethod<
     INVOKE_RPC_MARKETPLACE_PUSH_OFFER_REQUEST,
     INVOKE_RPC_MARKETPLACE_PUSH_OFFER_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
   >;
   /** Updates existing offer that this wallet created, and publish updated version on the blockchain */
-  marketplace_push_update_offer: Method<
+  marketplace_push_update_offer: WalletMethod<
     INVOKE_RPC_MARKETPLACE_PUSH_UPDATE_OFFER_REQUEST,
     INVOKE_RPC_MARKETPLACE_PUSH_UPDATE_OFFER_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
   >;
   /** Cancel existing offer that this wallet created */
-  marketplace_cancel_offer: Method<
+  marketplace_cancel_offer: WalletMethod<
     INVOKE_RPC_MARKETPLACE_CANCEL_OFFER_REQUEST,
     INVOKE_RPC_MARKETPLACE_CANCEL_OFFER_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
@@ -937,7 +952,7 @@ export type WalletRpcMethods = {
 
   //IONIC_SWAPS API
   /** Generates ionic swap proposal according to details provided in request */
-  ionic_swap_generate_proposal: Method<
+  ionic_swap_generate_proposal: WalletMethod<
     INVOKE_RPC_IONIC_SWAP_GENERATE_PROPOSAL_REQUEST,
     INVOKE_RPC_IONIC_SWAP_GENERATE_PROPOSAL_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
@@ -945,14 +960,14 @@ export type WalletRpcMethods = {
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - Error creating proposal'>
   >;
   /** Reads hex-encoded ionic swap proposal info, generated by other user and addressed to this wallet */
-  ionic_swap_get_proposal_info: Method<
+  ionic_swap_get_proposal_info: WalletMethod<
     INVOKE_RPC_IONIC_SWAP_GET_PROPOSAL_INFO_REQUEST,
     INVOKE_RPC_IONIC_SWAP_GET_PROPOSAL_INFO_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - failed to parse template from hex'>
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - get_ionic_swap_proposal_info'>
   >;
   /** This essential command actually execute proposal that was sent by counter party */
-  ionic_swap_accept_proposal: Method<
+  ionic_swap_accept_proposal: WalletMethod<
     INVOKE_RPC_IONIC_SWAP_ACCEPT_PROPOSAL_REQUEST,
     INVOKE_RPC_IONIC_SWAP_ACCEPT_PROPOSAL_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - failed to parse template from hex'>
@@ -961,26 +976,26 @@ export type WalletRpcMethods = {
 
   // Assets API
   /** Get whitelisted assets for this wallet */
-  assets_whitelist_get: Method<INVOKE_RPC_ASSETS_WHITELIST_GET_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_GET_RESPONSE>;
+  assets_whitelist_get: WalletMethod<INVOKE_RPC_ASSETS_WHITELIST_GET_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_GET_RESPONSE>;
   /** Add given asset id to local whitelist */
-  assets_whitelist_add: Method<INVOKE_RPC_ASSETS_WHITELIST_ADD_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_ADD_RESPONSE>;
+  assets_whitelist_add: WalletMethod<INVOKE_RPC_ASSETS_WHITELIST_ADD_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_ADD_RESPONSE>;
   /** Remove given asset id from local whitelist */
-  assets_whitelist_remove: Method<INVOKE_RPC_ASSETS_WHITELIST_REMOVE_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_REMOVE_RESPONSE>;
+  assets_whitelist_remove: WalletMethod<INVOKE_RPC_ASSETS_WHITELIST_REMOVE_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_REMOVE_RESPONSE>;
 
   /** Deploy new asset in the system */
-  deploy_asset: Method<
+  deploy_asset: WalletMethod<
     INVOKE_RPC_ASSETS_DEPLOY_REQUEST,
     INVOKE_RPC_ASSETS_DEPLOY_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'asset ticker or full_name is invalid'>
   >;
   /** Emit new coins of the asset, that is controlled by this wallet */
-  emit_asset: Method<INVOKE_RPC_ASSETS_EMIT_REQUEST, INVOKE_RPC_ASSETS_EMIT_RESPONSE>;
+  emit_asset: WalletMethod<INVOKE_RPC_ASSETS_EMIT_REQUEST, INVOKE_RPC_ASSETS_EMIT_RESPONSE>;
   /** Update asset descriptor */
-  update_asset: Method<INVOKE_RPC_ASSETS_UPDATE_REQUEST, INVOKE_RPC_ASSETS_UPDATE_RESPONSE>;
+  update_asset: WalletMethod<INVOKE_RPC_ASSETS_UPDATE_REQUEST, INVOKE_RPC_ASSETS_UPDATE_RESPONSE>;
   /** Burn some owned amount of the coins for the given asset */
-  burn_asset: Method<INVOKE_RPC_ASSETS_BURN_REQUEST, INVOKE_RPC_ASSETS_BURN_RESPONSE>;
+  burn_asset: WalletMethod<INVOKE_RPC_ASSETS_BURN_REQUEST, INVOKE_RPC_ASSETS_BURN_RESPONSE>;
   /** Inserts externally made asset ownership signature into the given transaction and broadcasts it */
-  send_ext_signed_asset_tx: Method<
+  send_ext_signed_asset_tx: WalletMethod<
     INVOKE_RPC_ASSET_SEND_EXT_SIGNED_TX_REQUEST,
     INVOKE_RPC_ASSET_SEND_EXT_SIGNED_TX_RESPONSE,
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, "finalized_tx couldn't be deserialized">
@@ -988,19 +1003,19 @@ export type WalletRpcMethods = {
     | WalletErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `expected_tx_id mismatch, real tx id is ${string}`>
   >;
   /** Attach asset descripto to this wallet instance, if asset descripto attached then ADO operations to this asset can be performed using API of this wallet. */
-  attach_asset_descriptor: Method<INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_REQUEST, INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_RESPONSE>;
+  attach_asset_descriptor: WalletMethod<INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_REQUEST, INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_RESPONSE>;
   /** Transfer asset ownership to new public key. */
-  transfer_asset_ownership: Method<INVOKE_RPC_TRANSFER_ASSET_OWNERSHIP_REQUEST, INVOKE_RPC_TRANSFER_ASSET_OWNERSHIP_RESPONSE>;
+  transfer_asset_ownership: WalletMethod<INVOKE_RPC_TRANSFER_ASSET_OWNERSHIP_REQUEST, INVOKE_RPC_TRANSFER_ASSET_OWNERSHIP_RESPONSE>;
 
   //MULTIWALLET APIs
   /** Get loaded wallets list, useful for multi-wallet API */
-  mw_get_wallets: Method<
+  mw_get_wallets: WalletMethod<
     INVOKE_RPC_MW_GET_WALLETS_REQUEST,
     INVOKE_RPC_MW_GET_WALLETS_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>
   >;
   /** Select current active wallet */
-  mw_select_wallet: Method<
+  mw_select_wallet: WalletMethod<
     INVOKE_RPC_MW_SELECT_WALLET_REQUEST,
     INVOKE_RPC_MW_SELECT_WALLET_RESPONSE,
     WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>
@@ -1008,11 +1023,11 @@ export type WalletRpcMethods = {
 
   //basic crypto operations
   /** Trivially sign base64 encoded data message using wallet spend key */
-  sign_message: Method<INVOKE_RPC_SIGN_MESSAGE_REQUEST, INVOKE_RPC_SIGN_MESSAGE_RESPONSE>;
+  sign_message: WalletMethod<INVOKE_RPC_SIGN_MESSAGE_REQUEST, INVOKE_RPC_SIGN_MESSAGE_RESPONSE>;
   /** Trivially encrypt base64 encoded data message with chacha using wallet spend key */
-  encrypt_data: Method<INVOKE_RPC_ENCRYPT_DATA_REQUEST, INVOKE_RPC_ENCRYPT_DATA_RESPONSE>;
+  encrypt_data: WalletMethod<INVOKE_RPC_ENCRYPT_DATA_REQUEST, INVOKE_RPC_ENCRYPT_DATA_RESPONSE>;
   /** Trivially decrypt base64 encoded data message with chacha using wallet spend key */
-  decrypt_data: Method<INVOKE_RPC_DECRYPT_DATA_REQUEST, INVOKE_RPC_DECRYPT_DATA_RESPONSE>;
+  decrypt_data: WalletMethod<INVOKE_RPC_DECRYPT_DATA_REQUEST, INVOKE_RPC_DECRYPT_DATA_RESPONSE>;
 
   //utility call
   // /**
@@ -1020,37 +1035,4 @@ export type WalletRpcMethods = {
   //  * @deprecated use sync_call#proxy_to_daemon
   //  */
   // proxy_to_daemon: Method<INVOKE_RPC_PROXY_TO_DAEMON_REQUEST, INVOKE_RPC_PROXY_TO_DAEMON_RESPONSE>;
-};
-
-type WalletRpcMethodNames = Exclude<keyof WalletRpc, keyof HybridObject>;
-export type IWalletRpc = HybridObject & {
-  [Name in WalletRpcMethodNames]: (
-    instance_id: number,
-    params: WalletRpcMethods[Name]['params']
-  ) =>
-    | __UNPROTECTED__TypedJSON<
-        | (JSONRpc & {
-            id: string;
-            result: WalletRpcMethods[Name]['result'] | WalletReturnErrors;
-            error: null;
-          })
-        | (JSONRpc & {
-            id: string;
-            result: null;
-            error: WalletRpcMethods[Name]['errors'];
-          })
-        | JSONRpcFailedResponse<
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR>
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR, `WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR${string}`>
-            | WalletErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR`>
-            | WalletErrorCode<API_RETURN_CODE.UNINITIALIZED, `${API_RETURN_CODE.INTERNAL_ERROR} ${string}` | API_RETURN_CODE.INTERNAL_ERROR>
-          >
-      >
-    | API_RETURN_CODE.WALLET_WRONG_ID;
-};
+}

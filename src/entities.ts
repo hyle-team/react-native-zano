@@ -1,4 +1,4 @@
-import type { ZanoLogLevel } from './zano-lib/zano-lib.nitro';
+import type { ZanoLogLevel } from './zano-lib/enums';
 
 export type asset_descriptor_base = {
   /** Maximum possible supply for a given asset, cannot be changed after deployment. */
@@ -949,11 +949,20 @@ export type data_for_external_asset_signing_tx = {
   finalized_tx: string;
 };
 
-export type set_log_level_response = {};
+export type wallet_info_extra = {
+  view_private_key: string;
+  view_public_key: string;
+  spend_private_key: string;
+  spend_public_key: string;
+  seed: string;
+};
+
+export type wallet_extended_info = {
+  wi: wallet_info;
+  wi_extended: wallet_info_extra;
+};
 
 export type get_wallet_files_response = { items: string[] };
-
-export type get_address_info_response = { valid: boolean; auditable: boolean; payment_id: boolean; wrap: boolean };
 
 export type WalletReturnCode<Code extends string = API_RETURN_CODE> = { return_code: Code };
 export type WalletErrorCode<Code = API_RETURN_CODE, Message extends string = string> = { code: Code; message: Message };

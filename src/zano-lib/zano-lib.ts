@@ -1,12 +1,10 @@
-import type { HybridObject } from 'react-native-nitro-modules';
 import type {
   API_RETURN_CODE,
   app_connectivity_status,
-  get_address_info_response,
   get_wallet_files_response,
   open_wallet_response,
   seed_phrase_info,
-  set_log_level_response,
+  wallet_extended_info,
   wallet_sync_status_info,
   WalletErrorCode,
   WalletReturnCode,
@@ -14,111 +12,112 @@ import type {
 } from '../entities';
 import type { JSONRpcFailedResponse, JSONRpcResponse, JSONRpcSuccessfulResponse } from '../utils/json-rpc';
 import type { JSONConstrain, JSONValue, TypedJSON } from '../utils/typed-json';
-import type { ZanoLibMethods, ZanoLib as ZanoLibRaw } from './zano-lib.nitro';
+import type { ZanoLogLevel, ZanoPriority } from './enums';
+import type { ZanoLib } from './zano-lib.nitro';
 
 export enum GENERAL_INTERNAL_ERROR {
   INSTANCE = 'GENERAL_INTERNAL_ERROR: WALLET INSTNACE NOT FOUND',
   INIT = 'Failed to intialize library',
 }
 
-type Params<Name extends ZanoLibMethods> = Parameters<ZanoLibRaw[Name]>;
-export interface IZanoLib<AppConfig extends JSONConstrain<AppConfig> = JSONValue> extends HybridObject {
-  init(
-    ...params: Params<'init'>
-  ): Promise<
-    | TypedJSON<
-        JSONRpcResponse<WalletReturnCode<API_RETURN_CODE.ALREADY_EXISTS | API_RETURN_CODE.OK>, WalletErrorCode<API_RETURN_CODE.INTERNAL_ERROR>>
-      >
-    | GENERAL_INTERNAL_ERROR.INIT
-  >;
-  reset(...params: Params<'reset'>): TypedJSON<JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.OK> | WalletReturnErrors>>;
-  set_log_level(...params: Params<'set_log_level'>): TypedJSON<set_log_level_response>;
-  sync_call_reset_connection_url(
-    url: string
-  ): TypedJSON<{ error_code: API_RETURN_CODE.OK }> | TypedJSON<JSONRpcSuccessfulResponse<WalletReturnErrors>>;
-  get_version(...params: Params<'get_version'>): `${number}.${number}.${number}.${number}[${string}]`;
-
-  get_address_info(...params: Params<'get_address_info'>): TypedJSON<get_address_info_response>;
-  get_connectivity_status(
-    ...params: Params<'get_connectivity_status'>
-  ): TypedJSON<JSONRpcSuccessfulResponse<app_connectivity_status | WalletReturnErrors>>;
-  get_current_tx_fee(...params: Params<'get_current_tx_fee'>): number;
-
-  get_appconfig(
-    ...params: Params<'get_appconfig'>
-  ): Promise<
-    TypedJSON<
-      AppConfig | JSONRpcFailedResponse<WalletErrorCode<API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.INVALID_FILE | API_RETURN_CODE.WRONG_PASSWORD>>
+export type zano_lib_init_response =
+  | TypedJSON<JSONRpcResponse<WalletReturnCode<API_RETURN_CODE.ALREADY_EXISTS | API_RETURN_CODE.OK>, WalletErrorCode<API_RETURN_CODE.INTERNAL_ERROR>>>
+  | GENERAL_INTERNAL_ERROR.INIT;
+export type zano_lib_reset_response = TypedJSON<JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.OK> | WalletReturnErrors>>;
+export type zano_lib_set_log_level_response = TypedJSON<{}>;
+export type zano_lib_reset_connection_url_response =
+  | TypedJSON<{ error_code: API_RETURN_CODE.OK }>
+  | TypedJSON<JSONRpcSuccessfulResponse<WalletReturnErrors>>;
+export type zano_lib_get_address_info_response = TypedJSON<{ valid: boolean; auditable: boolean; payment_id: boolean; wrap: boolean }>;
+export type zano_lib_get_connectivity_status_response = TypedJSON<JSONRpcSuccessfulResponse<app_connectivity_status | WalletReturnErrors>>;
+export type zano_lib_get_appconfig_response<AppConfig extends JSONConstrain<AppConfig>> = TypedJSON<
+  AppConfig | JSONRpcFailedResponse<WalletErrorCode<API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.INVALID_FILE | API_RETURN_CODE.WRONG_PASSWORD>>
+>;
+export type zano_lib_set_appconfig_response = TypedJSON<
+  JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.OK>> | JSONRpcFailedResponse<WalletErrorCode<API_RETURN_CODE.FAIL>>
+>;
+export type zano_lib_truncate_log_response = TypedJSON<JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.OK>>>;
+export type zano_lib_get_export_private_info_response = TypedJSON<
+  JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.FAIL | API_RETURN_CODE.OK>>
+>;
+export type zano_lib_get_wallet_files_response = TypedJSON<get_wallet_files_response>;
+export type zano_lib_get_opened_wallets_response = TypedJSON<JSONRpcSuccessfulResponse<open_wallet_response[] | WalletReturnErrors>>;
+export type zano_lib_delete_wallet_response = TypedJSON<JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.OK>>>;
+export type zano_lib_open_response = TypedJSON<
+  JSONRpcResponse<
+    WalletReturnCode<API_RETURN_CODE.OK | API_RETURN_CODE.FILE_RESTORED> | WalletReturnErrors,
+    WalletErrorCode<
+      | API_RETURN_CODE.ALREADY_EXISTS
+      | API_RETURN_CODE.WALLET_WATCH_ONLY_NOT_SUPPORTED
+      | API_RETURN_CODE.FILE_NOT_FOUND
+      | API_RETURN_CODE.INVALID_FILE
+      | API_RETURN_CODE.WRONG_PASSWORD
+      | `${API_RETURN_CODE.INTERNAL_ERROR}, DESCRIPTION: ${string}`
     >
-  >;
-  set_appconfig(
-    ...params: Params<'set_appconfig'>
-  ): Promise<
-    TypedJSON<JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.OK>> | JSONRpcFailedResponse<WalletErrorCode<API_RETURN_CODE.FAIL>>>
-  >;
+  >
+>;
+export type zano_lib_restore_response = TypedJSON<
+  JSONRpcResponse<
+    open_wallet_response | WalletReturnErrors,
+    WalletErrorCode<API_RETURN_CODE.ALREADY_EXISTS | API_RETURN_CODE.WRONG_SEED | `${API_RETURN_CODE.FAIL}:${string}`>
+  >
+>;
+export type zano_lib_generate_response = TypedJSON<
+  JSONRpcResponse<
+    open_wallet_response | WalletReturnErrors,
+    WalletErrorCode<API_RETURN_CODE.ALREADY_EXISTS | API_RETURN_CODE.WRONG_SEED | `${API_RETURN_CODE.FAIL}:${string}`>
+  >
+>;
+export type zano_lib_get_wallet_info_response = TypedJSON<JSONRpcSuccessfulResponse<wallet_extended_info | WalletReturnErrors>>;
+export type zano_lib_get_wallet_status_response =
+  | TypedJSON<JSONRpcSuccessfulResponse<wallet_sync_status_info | WalletReturnErrors>>
+  | API_RETURN_CODE.WALLET_WRONG_ID;
+export type zano_lib_get_seed_phrase_info_params = TypedJSON<{ seed_phrase: string; seed_password: string }>;
+export type zano_lib_get_seed_phrase_info_response = TypedJSON<
+  { error_code: 'Wrong parameter' } | { error_code: API_RETURN_CODE.OK; response_data: seed_phrase_info }
+>;
+export type zano_lib_reset_wallet_password_response =
+  | API_RETURN_CODE.OK
+  | API_RETURN_CODE.FAIL
+  | TypedJSON<JSONRpcSuccessfulResponse<WalletReturnErrors>>
+  | API_RETURN_CODE.WALLET_WRONG_ID;
+export type zano_lib_close_wallet_response = TypedJSON<
+  JSONRpcSuccessfulResponse<
+    | { response: API_RETURN_CODE.WALLET_WRONG_ID | `${API_RETURN_CODE.FAIL}:${string}` | API_RETURN_CODE.OK | API_RETURN_CODE.INTERNAL_ERROR }
+    | WalletReturnErrors
+  >
+>;
 
-  get_logs_buffer(...params: Params<'get_logs_buffer'>): Promise<string>;
-  truncate_log(...params: Params<'truncate_log'>): Promise<TypedJSON<JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.OK>>>>;
-  get_export_private_info(): Promise<TypedJSON<JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.FAIL | API_RETURN_CODE.OK>>>>;
-  generate_random_key(...params: Params<'generate_random_key'>): Promise<string>;
+export interface IZanoLib<AppConfig extends JSONConstrain<AppConfig> = JSONValue> extends ZanoLib {
+  init(ip: string, port: string, working_dir: string, log_level: ZanoLogLevel): zano_lib_init_response;
+  reset(): zano_lib_reset_response;
+  set_log_level(log_level: ZanoLogLevel): zano_lib_set_log_level_response;
+  reset_connection_url(url: string): zano_lib_reset_connection_url_response;
+  get_version(): `${number}.${number}.${number}.${number}[${string}]`;
 
-  get_wallet_files(...params: Params<'get_wallet_files'>): Promise<TypedJSON<get_wallet_files_response>>;
-  get_opened_wallets(...params: Params<'get_opened_wallets'>): TypedJSON<JSONRpcSuccessfulResponse<open_wallet_response[] | WalletReturnErrors>>;
-  is_wallet_exist(...params: Params<'is_wallet_exist'>): boolean;
-  delete_wallet(...params: Params<'delete_wallet'>): Promise<TypedJSON<JSONRpcSuccessfulResponse<WalletReturnCode<API_RETURN_CODE.OK>>>>;
-  open(
-    ...params: Params<'open'>
-  ): Promise<
-    TypedJSON<
-      JSONRpcResponse<
-        WalletReturnCode<API_RETURN_CODE.OK | API_RETURN_CODE.FILE_RESTORED> | WalletReturnErrors,
-        WalletErrorCode<
-          | API_RETURN_CODE.ALREADY_EXISTS
-          | API_RETURN_CODE.WALLET_WATCH_ONLY_NOT_SUPPORTED
-          | API_RETURN_CODE.FILE_NOT_FOUND
-          | API_RETURN_CODE.INVALID_FILE
-          | API_RETURN_CODE.WRONG_PASSWORD
-          | `${API_RETURN_CODE.INTERNAL_ERROR}, DESCRIPTION: ${string}`
-        >
-      >
-    >
-  >;
-  restore(
-    ...params: Params<'restore'>
-  ): Promise<
-    TypedJSON<
-      JSONRpcResponse<
-        open_wallet_response | WalletReturnErrors,
-        WalletErrorCode<API_RETURN_CODE.ALREADY_EXISTS | API_RETURN_CODE.WRONG_SEED | `${API_RETURN_CODE.FAIL}:${string}`>
-      >
-    >
-  >;
-  generate(
-    ...params: Params<'generate'>
-  ): Promise<
-    TypedJSON<
-      JSONRpcResponse<
-        open_wallet_response | WalletReturnErrors,
-        WalletErrorCode<API_RETURN_CODE.ALREADY_EXISTS | API_RETURN_CODE.WRONG_SEED | `${API_RETURN_CODE.FAIL}:${string}`>
-      >
-    >
-  >;
+  get_address_info(addr: string): zano_lib_get_address_info_response;
+  get_connectivity_status(): zano_lib_get_connectivity_status_response;
+  get_current_tx_fee(priority: ZanoPriority): number;
 
-  get_wallet_info(...params: Params<'get_wallet_info'>): string;
-  get_wallet_status(
-    ...params: Params<'get_wallet_status'>
-  ): TypedJSON<JSONRpcSuccessfulResponse<wallet_sync_status_info | WalletReturnErrors>> | API_RETURN_CODE.WALLET_WRONG_ID;
-  sync_call_get_seed_phrase_info(
-    instance_id: number,
-    params: TypedJSON<{ seed_phrase: string; seed_password: string }>
-  ): TypedJSON<{ error_code: 'Wrong parameter' } | { error_code: API_RETURN_CODE.OK; response_data: seed_phrase_info }>;
-  reset_wallet_password(...params: Params<'reset_wallet_password'>): string;
-  close_wallet(
-    ...params: Params<'close_wallet'>
-  ): TypedJSON<
-    JSONRpcSuccessfulResponse<
-      | { response: API_RETURN_CODE.WALLET_WRONG_ID | `${API_RETURN_CODE.FAIL}:${string}` | API_RETURN_CODE.OK | API_RETURN_CODE.INTERNAL_ERROR }
-      | WalletReturnErrors
-    >
-  >;
+  get_appconfig(encryption_key: string): zano_lib_get_appconfig_response<AppConfig>;
+  set_appconfig(conf_str: string, encryption_key: string): zano_lib_set_appconfig_response;
+
+  get_logs_buffer(): string;
+  truncate_log(): zano_lib_truncate_log_response;
+  get_export_private_info(): zano_lib_get_export_private_info_response;
+  generate_random_key(length: number): string;
+
+  get_wallet_files(): zano_lib_get_wallet_files_response;
+  get_opened_wallets(): zano_lib_get_opened_wallets_response;
+  is_wallet_exist(path: string): boolean;
+  delete_wallet(file_name: string): zano_lib_delete_wallet_response;
+  open(path: string, password: string): zano_lib_open_response;
+  restore(seed: string, path: string, password: string, seed_password: string): zano_lib_restore_response;
+  generate(path: string, password: string): zano_lib_generate_response;
+
+  get_wallet_info(instance_id: number): zano_lib_get_wallet_info_response;
+  get_wallet_status(instance_id: number): zano_lib_get_wallet_status_response;
+  get_seed_phrase_info(instance_id: number, params: zano_lib_get_seed_phrase_info_params): zano_lib_get_seed_phrase_info_response;
+  reset_wallet_password(instance_id: number, password: string): zano_lib_reset_wallet_password_response;
+  close_wallet(instance_id: number): zano_lib_close_wallet_response;
 }
