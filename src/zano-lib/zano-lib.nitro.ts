@@ -1,14 +1,26 @@
 import type { HybridObject } from 'react-native-nitro-modules';
 
-export interface PlatformUtils extends HybridObject<{ ios: 'swift', android: 'kotlin' }> {
-  get_working_directory(): string;
-  get_downloads_directory(): string;
+export enum ZanoLogLevel {
+  SILENT = -1,
+  DISABLED = 0,
+  MINIMAL = 1,
+  AVERAGE = 2,
+  DETAILED = 3,
+  VERBOSE = 4,
 }
 
-export interface ReactNativeZano extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
-  init(ip: string, port: string, working_dir: string, log_level: number): string;
+export enum ZanoPriority {
+  default = 0,
+  unimportant = 1,
+  normal = 2,
+  elevated = 3,
+  urgent = 3,
+}
+
+export interface ZanoLib extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
+  init(ip: string, port: string, working_dir: string, log_level: ZanoLogLevel): string;
   reset(): string;
-  set_log_level(log_level: number): string;
+  set_log_level(log_level: ZanoLogLevel): string;
   get_version(): string;
   get_wallet_files(): string;
   get_export_private_info(target_dir: string): string;
@@ -25,17 +37,18 @@ export interface ReactNativeZano extends HybridObject<{ ios: 'c++'; android: 'c+
   open(path: string, password: string): string;
   restore(seed: string, path: string, password: string, seed_password: string): string;
   generate(path: string, password: string): string;
-  get_opened_wallets(): string
-
+  get_opened_wallets(): string;
 
   get_wallet_status(instance_id: number): string;
   close_wallet(instance_id: number): string;
-  invoke(instance_id: number, params: string): string;
-  call(method_name: string, instance_id: number, params: string): Promise<string>;
 
-  //cake wallet api extension
-  is_wallet_exist(path: string): boolean;
   get_wallet_info(instance_id: number): string;
+  is_wallet_exist(path: string): boolean;
   reset_wallet_password(instance_id: number, password: string): string;
-  get_current_tx_fee(priority: number): number; // 0 (default), 1 (unimportant), 2 (normal), 3 (elevated), 4 (priority)
+
+  get_current_tx_fee(priority: ZanoPriority): number;
+
+  sync_call_get_seed_phrase_info(instance_id: number, params: string): string;
+  sync_call_reset_connection_url(url: string): string;
 }
+export type ZanoLibMethods = Exclude<keyof ZanoLib, keyof HybridObject<any>>;

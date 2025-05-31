@@ -1,21 +1,25 @@
-import { PlatformUtils, Zano } from '@hyle-team/react-native-zano';
+import { PlatformUtils, ZanoLib } from '@hyle-team/react-native-zano';
 import { useState } from 'react';
 import { Button, SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 
 export default function App() {
   const [result, setResult] = useState('');
+  const [time, setTime] = useState(0);
 
   return (
     <SafeAreaView style={styles.container}>
-      <Button title="init" onPress={() => setResult(Zano.init('', '', PlatformUtils.get_working_directory(), 1))} />
       <Button
-        title="call test"
+        title="init"
         onPress={async () => {
-          const [a, b] = await Promise.all([Zano.call('', 0, ''), Zano.call('', 0, '')]);
-          setResult(JSON.stringify({ a, b }, undefined, 2));
+          let time = performance.now();
+          const result = await ZanoLib.init('', '', PlatformUtils.get_working_directory(), 1);
+          time = performance.now() - time;
+          setTime(time);
+          setResult(result);
         }}
       />
       <ScrollView style={styles.result}>
+        <Text>Time: {time}</Text>
         <Text>Result: {result}</Text>
       </ScrollView>
     </SafeAreaView>

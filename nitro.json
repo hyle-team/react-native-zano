@@ -4,12 +4,18 @@
     "iosModuleName": "RNZano"
   },
   "android": {
-    "androidNamespace": ["hyleteam","reactnativezano"],
+    "androidNamespace": ["hyleteam", "reactnativezano"],
     "androidCxxLibName": "RNZano"
   },
   "autolinking": {
-    "ReactNativeZano": {
-      "cpp": "ReactNativeZano"
+    "ZanoLib": {
+      "cpp": "ZanoLib"
+    },
+    "WalletRpc": {
+      "cpp": "WalletRpc"
+    },
+    "CoreRpc": {
+      "cpp": "CoreRpc"
     },
     "PlatformUtils": {
       "swift": "PlatformUtils",
