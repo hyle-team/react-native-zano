@@ -10,7 +10,7 @@ add_library(
     ${PACKAGE_NAME}
     SHARED
     src/main/cpp/cpp-adapter.cpp
-    ../cpp/ZanoLib.cpp
+    ../cpp/PlainWallet.cpp
     ../cpp/WalletRpc.cpp
     ../cpp/CoreRpc.cpp
 )
