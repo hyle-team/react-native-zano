@@ -41,7 +41,7 @@ namespace margelo::nitro::zano {
   DEFINE_PROXY_METHOD(std::string, get_appconfig, (const std::string &, encryption_key, encryption_key),)
   DEFINE_PROXY_METHOD(std::string, set_appconfig, (const std::string &, conf_str, conf_str), (const std::string &, encryption_key, encryption_key),)
   DEFINE_PROXY_METHOD(std::string, generate_random_key, (double, length, length),)
-  DEFINE_PROXY_METHOD(std::string, get_logs_buffer,)
+  DEFINE_PROXY_ASYNC_METHOD(std::string, get_logs_buffer,)
   DEFINE_PROXY_METHOD(std::string, truncate_log,)
   DEFINE_PROXY_METHOD(std::string, get_connectivity_status,)
 
@@ -59,11 +59,11 @@ namespace margelo::nitro::zano {
   DEFINE_PROXY_METHOD(std::string, reset_wallet_password, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)), (const std::string &, password, password),)
   DEFINE_PROXY_METHOD(double, get_current_tx_fee, (ZanoPriority, priority, static_cast<uint64_t>(priority)),)
 
-  std::string ZanoLib::sync_call_get_seed_phrase_info(double instance_id, const std::string &params) {
+  std::string ZanoLib::get_seed_phrase_info(double instance_id, const std::string &params) {
     return plain_wallet::sync_call("get_seed_phrase_info", static_cast<uint64_t>(instance_id), params);
   }
 
-  std::string ZanoLib::sync_call_reset_connection_url(const std::string &url) {
+  std::string ZanoLib::reset_connection_url(const std::string &url) {
     return plain_wallet::sync_call("reset_connection_url", 0, url);
   }
 

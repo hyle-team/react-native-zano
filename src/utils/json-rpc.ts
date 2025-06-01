@@ -21,11 +21,13 @@ export type JSONRpcSuccessfulResponse<Result extends JSONConstrain<Result> = JSO
   error: null;
 };
 
-export type JSONRpcFailedResponse<Error extends JSONConstrain<Error> = JSONValue> = JSONRpc & {
-  id: string;
-  result: null;
-  error: Error;
-};
+export type JSONRpcFailedResponse<Error extends JSONConstrain<Error> = JSONValue> = Error extends any
+  ? JSONRpc & {
+      id: string;
+      result: null;
+      error: Error;
+    }
+  : never;
 
 export type JSONRpcResponse<Result extends JSONConstrain<Result> = JSONValue, Error extends JSONConstrain<Error> = JSONValue> =
   | JSONRpcSuccessfulResponse<Result>

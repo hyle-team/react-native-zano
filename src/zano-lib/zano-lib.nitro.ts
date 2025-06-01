@@ -14,7 +14,7 @@ export interface ZanoLib extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
   get_appconfig(encryption_key: string): string;
   set_appconfig(conf_str: string, encryption_key: string): string;
   generate_random_key(lenght: number): string;
-  get_logs_buffer(): string;
+  get_logs_buffer(): Promise<string>;
   truncate_log(): string;
   get_connectivity_status(): string;
 
@@ -32,6 +32,6 @@ export interface ZanoLib extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
 
   get_current_tx_fee(priority: ZanoPriority): number;
 
-  sync_call_get_seed_phrase_info(instance_id: number, params: string): string;
-  sync_call_reset_connection_url(url: string): string;
+  get_seed_phrase_info(instance_id: number, params: string): string;
+  reset_connection_url(url: string): string;
 }

@@ -14,3 +14,8 @@ export enum ZanoPriority {
   elevated = 3,
   urgent = 3,
 }
+
+export enum GENERAL_INTERNAL_ERROR {
+  INSTANCE = 'GENERAL_INTERNAL_ERROR: WALLET INSTNACE NOT FOUND',
+  INIT = 'Failed to intialize library',
+}

@@ -1,3 +1,4 @@
+import type { JSONRpcSuccessfulResponse } from './utils/json-rpc';
 import type { ZanoLogLevel } from './zano-lib/enums';
 
 export type asset_descriptor_base = {
@@ -333,7 +334,6 @@ export enum WALLET_RPC_ERROR_CODE {
   WRONG_ARGUMENT = -6,
   NOT_ENOUGH_MONEY = -7,
   WRONG_MIXINS_FOR_AUDITABLE_WALLET = -8,
-
   INVALID_REQUEST = -32600,
   INVALID_PARAMS = -32602,
   PARSE_ERROR = -32700,
@@ -962,10 +962,9 @@ export type wallet_extended_info = {
   wi_extended: wallet_info_extra;
 };
 
-export type get_wallet_files_response = { items: string[] };
-
-export type WalletReturnCode<Code extends string = API_RETURN_CODE> = { return_code: Code };
-export type WalletErrorCode<Code = API_RETURN_CODE, Message extends string = string> = { code: Code; message: Message };
-export type WalletReturnErrors = WalletReturnCode<
-  API_RETURN_CODE.UNINITIALIZED | `${API_RETURN_CODE.INTERNAL_ERROR} ${string}` | API_RETURN_CODE.INTERNAL_ERROR
->;
+export type ReturnCode<Code extends string = API_RETURN_CODE> = Code extends string ? { return_code: Code } : never;
+export type ErrorCode<Code = API_RETURN_CODE, Message extends string = string> = { code: Code; message: Message };
+export type GeneralReturnErrors =
+  | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.UNINITIALIZED>>
+  | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.INTERNAL_ERROR>>
+  | JSONRpcSuccessfulResponse<ReturnCode<`${API_RETURN_CODE.INTERNAL_ERROR} ${string}`>>;

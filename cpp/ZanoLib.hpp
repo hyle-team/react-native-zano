@@ -23,7 +23,7 @@ public:
   std::string get_appconfig(const std::string &encryption_key) override;
   std::string set_appconfig(const std::string &conf_str, const std::string &encryption_key) override;
   std::string generate_random_key(double lenght) override;
-  std::string get_logs_buffer() override;
+  std::shared_ptr<Promise<std::string>> get_logs_buffer() override;
   std::string truncate_log() override;
   std::string get_connectivity_status() override;
 
@@ -40,8 +40,8 @@ public:
   std::string reset_wallet_password(double instance_id, const std::string &password) override;
   double get_current_tx_fee(ZanoPriority priority) override;
 
-  std::string sync_call_get_seed_phrase_info(double instance_id, const std::string &params) override;
-  std::string sync_call_reset_connection_url(const std::string &url) override;
+  std::string get_seed_phrase_info(double instance_id, const std::string &params) override;
+  std::string reset_connection_url(const std::string &url) override;
 };
 
 } // namespace margelo::nitro::zano

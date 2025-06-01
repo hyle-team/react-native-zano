@@ -6,9 +6,9 @@ export type JSONConstrain<T> = {
 declare const json: unique symbol;
 export type TypedJSON<Value extends JSONConstrain<Value>> = string & { [json]: Value };
 export type __UNPROTECTED__TypedJSON<Value> = string & { [json]: Value };
-export type UnwrapTypedJSON<JSON extends TypedJSON<any>> = JSON extends TypedJSON<infer Value extends JSONConstrain<Value>> ? Value : JSONValue;
+export type UnwrapTypedJSON<JSON> = JSON extends TypedJSON<infer Value extends JSONConstrain<Value>> ? Value : never;
 
 export const TypedJSON: {
-  parse<Text extends TypedJSON<JSONValue>>(text: Text): UnwrapTypedJSON<Text>;
+  parse<Text>(text: Text): UnwrapTypedJSON<Text>;
   stringify<Value extends JSONConstrain<Value>>(value: NoInfer<Value>): TypedJSON<Value>;
-} = JSON.parse as never;
+} = JSON as never;

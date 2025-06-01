@@ -11,6 +11,7 @@ import type {
   core_offers_filter,
   daemon_network_state,
   epee_hexemizer,
+  GeneralReturnErrors,
   maintainers_info_external,
   offer_details_ex,
   outs_index_stat,
@@ -21,9 +22,8 @@ import type {
   tx_rpc_brief_info,
   tx_rpc_extended_info,
   vote_results,
-  WalletReturnErrors,
 } from '../entities';
-import type { JSONRpcResponse, JSONRpcSuccessfulResponse } from '../utils/json-rpc';
+import type { JSONRpcResponse } from '../utils/json-rpc';
 import type { TypedBase64, UnwrapTypedBase64 } from '../utils/typed-base64';
 import type { __UNPROTECTED__TypedJSON, JSONConstrain, TypedJSON } from '../utils/typed-json';
 import type { CoreRpc } from './core-rpc.nitro';
@@ -711,7 +711,7 @@ type CoreMethod<Params extends JSONConstrain<Params>, Result extends JSONConstra
     params: __UNPROTECTED__TypedJSON<Params>
   ): Promise<
     | __UNPROTECTED__TypedJSON<{ response_code: unknown; base64_body: TypedBase64<__UNPROTECTED__TypedJSON<JSONRpcResponse<Result, Errors>>> }>
-    | TypedJSON<JSONRpcSuccessfulResponse<WalletReturnErrors>>
+    | TypedJSON<GeneralReturnErrors>
     | TypedJSON<{ error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON | API_RETURN_CODE.FAIL }>
   >;
 };
