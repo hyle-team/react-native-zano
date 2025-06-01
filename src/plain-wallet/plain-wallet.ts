@@ -12,7 +12,7 @@ import type {
 import type { JSONRpcFailedResponse, JSONRpcSuccessfulResponse } from '../utils/json-rpc';
 import type { JSONConstrain, JSONValue, TypedJSON } from '../utils/typed-json';
 import type { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './enums';
-import type { ZanoLib } from './zano-lib.nitro';
+import type { PlainWallet } from './plain-wallet.nitro';
 
 export type zano_lib_init_response =
   | TypedJSON<
@@ -85,11 +85,11 @@ export type zano_lib_close_wallet_response = TypedJSON<
     }>
 >;
 
-export interface IZanoLib<AppConfig extends JSONConstrain<AppConfig> = JSONValue> extends ZanoLib {
-  init(ip: string, port: string, working_dir: string, log_level: ZanoLogLevel): zano_lib_init_response;
+export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONValue> extends PlainWallet {
+  init(address: string, working_dir: string, log_level: ZanoLogLevel): zano_lib_init_response;
   reset(): zano_lib_reset_response;
   set_log_level(log_level: ZanoLogLevel): zano_lib_set_log_level_response;
-  reset_connection_url(url: string): zano_lib_reset_connection_url_response;
+  reset_connection_url(address: string): zano_lib_reset_connection_url_response;
   get_version(): `${number}.${number}.${number}.${number}[${string}]`;
 
   get_address_info(addr: string): zano_lib_get_address_info_response;

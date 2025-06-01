@@ -6,7 +6,7 @@ export default function App() {
   const [result, setResult] = useState('');
   const [time, setTime] = useState(0);
 
-  const api = useMemo(() => new ZanoApi({ ip: '', port: '' }), []);
+  const api = useMemo(() => new ZanoApi('https://node.zano.org:443'), []);
   useEffect(() => () => api.dispose(), [api]);
 
   return (

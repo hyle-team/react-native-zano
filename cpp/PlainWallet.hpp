@@ -1,17 +1,17 @@
 #pragma once
 
-#include "HybridZanoLibSpec.hpp"
+#include "HybridPlainWalletSpec.hpp"
 #include <jsi/jsi.h>
 
 namespace margelo::nitro::zano {
 
-class ZanoLib : public HybridZanoLibSpec
+class PlainWallet : public HybridPlainWalletSpec
 {
 public:
-  ZanoLib() : HybridObject(TAG) {}
+  PlainWallet() : HybridObject(TAG) {}
 
 public:
-  std::string init(const std::string &ip, const std::string &port, const std::string &working_dir, ZanoLogLevel log_level) override;
+  std::string init(const std::string &address, const std::string &working_dir, ZanoLogLevel log_level) override;
   std::string reset() override;
   std::string set_log_level(ZanoLogLevel log_level) override;
   std::string get_version() override;
@@ -41,7 +41,7 @@ public:
   double get_current_tx_fee(ZanoPriority priority) override;
 
   std::string get_seed_phrase_info(double instance_id, const std::string &params) override;
-  std::string reset_connection_url(const std::string &url) override;
+  std::string reset_connection_url(const std::string &address) override;
 };
 
 } // namespace margelo::nitro::zano

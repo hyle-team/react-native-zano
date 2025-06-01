@@ -14,47 +14,41 @@ import {
   type ReturnCodeErrors,
   type WalletCodeErrors,
 } from './errors';
+import { PlainWallet } from './plain-wallet';
+import { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './plain-wallet/enums';
 import { PlatformUtils } from './platform';
 import { TypedJSON, type JSONConstrain, type UnwrapTypedJSON } from './utils/typed-json';
 import type { DeepReadonly } from './utils/types';
 import { WalletRpc } from './wallet-rpc';
 import type { IWalletRpc } from './wallet-rpc/wallet-rpc';
-import { ZanoLib } from './zano-lib';
-import { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './zano-lib/enums';
-
-export type ZanoApiOptions = {
-  ip: string;
-  port: string;
-  log_level?: ZanoLogLevel;
-};
 
 export interface ZanoApi {}
 export class ZanoApi {
   readonly init_result: API_RETURN_CODE.OK | API_RETURN_CODE.ALREADY_EXISTS;
 
-  constructor({ ip, port, log_level = ZanoLogLevel.DISABLED }: ZanoApiOptions) {
+  constructor(address: string = 'https://node.zano.org:443', log_level = ZanoLogLevel.DISABLED) {
     this.#log_level = log_level;
-    this.#remote_node = [ip, port];
 
     {
-      const response = ZanoLib.init(ip, port, PlatformUtils.get_working_directory(), log_level);
+      this.#remote_node = address;
+      const response = PlainWallet.init(address, PlatformUtils.get_working_directory(), log_level);
       if (response === GENERAL_INTERNAL_ERROR.INIT) throw new ZanoInitializeError();
       const json = TypedJSON.parse(response);
       if (json.error) throw new ZanoInternalError(json.error.message);
       this.init_result = json.result.return_code;
     }
 
-    TypedJSON.parse(ZanoLib.get_wallet_files()).items?.forEach((wallet_name) =>
+    TypedJSON.parse(PlainWallet.get_wallet_files()).items?.forEach((wallet_name) =>
       this.#wallet_files.set(wallet_name, new ZanoWalletFile(this, wallet_name))
     );
   }
   dispose() {
-    const response = TypedJSON.parse(ZanoLib.reset());
+    const response = TypedJSON.parse(PlainWallet.reset());
     assertReturnErrors(response);
   }
 
   get lib_version() {
-    return ZanoLib.get_version();
+    return PlainWallet.get_version();
   }
 
   #log_level: ZanoLogLevel;
@@ -62,43 +56,43 @@ export class ZanoApi {
     return this.#log_level;
   }
   set log_level(next: ZanoLogLevel) {
-    ZanoLib.set_log_level(next);
+    PlainWallet.set_log_level(next);
   }
 
-  #remote_node: readonly [string, string];
+  #remote_node: string;
   get remote_node() {
     return this.#remote_node;
   }
-  set remote_node([ip, port]: readonly [string, string]) {
-    this.#remote_node = [ip, port];
-    ZanoLib.reset_connection_url(`${ip}:${port}`);
+  set remote_node(address: string) {
+    this.#remote_node = address;
+    PlainWallet.reset_connection_url(address);
   }
 
   get_address_info(addr: string) {
-    return TypedJSON.parse(ZanoLib.get_address_info(addr));
+    return TypedJSON.parse(PlainWallet.get_address_info(addr));
   }
   get_connectivity_status() {
-    const response = TypedJSON.parse(ZanoLib.get_connectivity_status());
+    const response = TypedJSON.parse(PlainWallet.get_connectivity_status());
     assertReturnErrors(response);
     return response.result;
   }
   get_current_tx_fee(priority: ZanoPriority) {
-    return ZanoLib.get_current_tx_fee(priority);
+    return PlainWallet.get_current_tx_fee(priority);
   }
 
   get_logs_buffer() {
-    return ZanoLib.get_logs_buffer();
+    return PlainWallet.get_logs_buffer();
   }
   truncate_log() {
-    const response = TypedJSON.parse(ZanoLib.truncate_log());
+    const response = TypedJSON.parse(PlainWallet.truncate_log());
     assertErrorCode(response);
   }
   export_private_info() {
-    const response = TypedJSON.parse(ZanoLib.get_export_private_info());
+    const response = TypedJSON.parse(PlainWallet.get_export_private_info());
     assertReturnErrors(response);
   }
   generate_random_key(length = 20) {
-    return ZanoLib.generate_random_key(length);
+    return PlainWallet.generate_random_key(length);
   }
 
   #wallet_files = new Map<string, ZanoWalletFile>();
@@ -107,13 +101,13 @@ export class ZanoApi {
   }
   delete_wallet_file(wallet_name: string) {
     if (this.#wallet_files.delete(wallet_name)) {
-      const response = TypedJSON.parse(ZanoLib.delete_wallet(wallet_name));
+      const response = TypedJSON.parse(PlainWallet.delete_wallet(wallet_name));
       assertErrorCode(response);
     }
   }
 
   get_opened_wallets(): ZanoWallet[] {
-    const response = TypedJSON.parse(ZanoLib.get_opened_wallets());
+    const response = TypedJSON.parse(PlainWallet.get_opened_wallets());
     assertReturnErrors(response);
     return response.result.map((response) => {
       let file = this.#wallet_files.get(response.name);
@@ -126,7 +120,7 @@ export class ZanoApi {
   }
   restore_wallet(wallet_name: string, wallet_password: string, seed: string, seed_password: string) {
     if (this.#wallet_files.has(wallet_name)) throw new ZanoAlreadyExistsError('wallet file already exists');
-    const response = TypedJSON.parse(ZanoLib.restore(seed, wallet_name, wallet_password, seed_password));
+    const response = TypedJSON.parse(PlainWallet.restore(seed, wallet_name, wallet_password, seed_password));
     assertErrorCode(response);
     assertReturnErrors(response);
     const file = new ZanoWalletFile(this, wallet_name, response.result);
@@ -135,7 +129,7 @@ export class ZanoApi {
   }
   generate_wallet(wallet_name: string, password: string) {
     if (this.#wallet_files.has(wallet_name)) throw new ZanoAlreadyExistsError('wallet file already exists');
-    const response = TypedJSON.parse(ZanoLib.generate(wallet_name, password));
+    const response = TypedJSON.parse(PlainWallet.generate(wallet_name, password));
     assertErrorCode(response);
     assertReturnErrors(response);
     const file = new ZanoWalletFile(this, wallet_name, response.result);
@@ -159,7 +153,7 @@ export class ZanoWalletFile {
 
   open(password: string) {
     if (this.#wallet) return;
-    const response = TypedJSON.parse(ZanoLib.open(this.wallet_name, password));
+    const response = TypedJSON.parse(PlainWallet.open(this.wallet_name, password));
     assertErrorCode(response);
     assertReturnErrors(response);
     this.#wallet = new ZanoWallet(this, { ...response.result, name: this.wallet_name, pass: password });
@@ -201,7 +195,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   }
 
   update_wallet_info() {
-    const response = TypedJSON.parse(ZanoLib.get_wallet_info(this.wallet_id));
+    const response = TypedJSON.parse(PlainWallet.get_wallet_info(this.wallet_id));
     assertReturnErrors(response);
     const { wi, wi_extended } = response.result;
     Object.defineProperty(this, 'wi', { value: wi, writable: false, enumerable: true, configurable: true });
@@ -210,13 +204,13 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   }
 
   get_status() {
-    const response = TypedJSON.parse(ZanoLib.get_wallet_status(this.wallet_id));
+    const response = TypedJSON.parse(PlainWallet.get_wallet_status(this.wallet_id));
     assertReturnErrors(response);
     return response.result;
   }
 
   reset_file_password(password: string) {
-    const response = ZanoLib.reset_wallet_password(this.wallet_id, password);
+    const response = PlainWallet.reset_wallet_password(this.wallet_id, password);
     if (response !== API_RETURN_CODE.OK) {
       if (response === API_RETURN_CODE.FAIL) throw new ZanoFailedError();
       if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw new ZanoWrongWalletIdError();
@@ -226,7 +220,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   }
 
   close() {
-    const response = TypedJSON.parse(ZanoLib.close_wallet(this.wallet_id));
+    const response = TypedJSON.parse(PlainWallet.close_wallet(this.wallet_id));
     assertReturnErrors(response);
     const code = response.result.response;
     if (code !== API_RETURN_CODE.OK) {
@@ -262,7 +256,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
     initial: DeepReadonly<AppConfig>,
     encryption_key?: string
   ) {
-    this.#encryption_key = encryption_key ?? ZanoLib.generate_random_key(20);
+    this.#encryption_key = encryption_key ?? PlainWallet.generate_random_key(20);
     this.#app_config = initial;
     try {
       this.#update_app_config();
@@ -277,7 +271,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
   #encryption_key: string;
   #app_config!: DeepReadonly<AppConfig>;
   #update_app_config() {
-    const response = TypedJSON.parse(ZanoLib.get_appconfig(this.#encryption_key));
+    const response = TypedJSON.parse(PlainWallet.get_appconfig(this.#encryption_key));
     if (
       typeof response === 'object' &&
       response !== null &&
@@ -295,7 +289,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
     return this.#app_config;
   }
   set(next: DeepReadonly<AppConfig>) {
-    const response = TypedJSON.parse(ZanoLib.set_appconfig(TypedJSON.stringify(next), this.#encryption_key));
+    const response = TypedJSON.parse(PlainWallet.set_appconfig(TypedJSON.stringify(next), this.#encryption_key));
     if (response.error) throw new ZanoFailedError(response.error.message);
     this.#app_config = next;
   }

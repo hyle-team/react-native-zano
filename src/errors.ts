@@ -1,7 +1,7 @@
 import { API_RETURN_CODE, WALLET_RPC_ERROR_CODE, type ErrorCode, type ReturnCode } from './entities';
+import { GENERAL_INTERNAL_ERROR } from './plain-wallet/enums';
 import { createErrorClass } from './utils/errors';
 import type { JSONRpcFailedResponse, JSONRpcSuccessfulResponse } from './utils/json-rpc';
-import { GENERAL_INTERNAL_ERROR } from './zano-lib/enums';
 
 export class ZanoGeneralError extends createErrorClass('ZanoGeneralError') {}
 export class ZanoInitializeError extends createErrorClass('ZanoInitializeError', GENERAL_INTERNAL_ERROR.INIT) {}

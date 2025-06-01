@@ -1,5 +1,5 @@
+import type { ZanoLogLevel } from './plain-wallet/enums';
 import type { JSONRpcSuccessfulResponse } from './utils/json-rpc';
-import type { ZanoLogLevel } from './zano-lib/enums';
 
 export type asset_descriptor_base = {
   /** Maximum possible supply for a given asset, cannot be changed after deployment. */

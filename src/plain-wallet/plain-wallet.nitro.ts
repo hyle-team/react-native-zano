@@ -1,8 +1,8 @@
 import type { HybridObject } from 'react-native-nitro-modules';
 import type { ZanoLogLevel, ZanoPriority } from './enums';
 
-export interface ZanoLib extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
-  init(ip: string, port: string, working_dir: string, log_level: ZanoLogLevel): string;
+export interface PlainWallet extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
+  init(address: string, working_dir: string, log_level: ZanoLogLevel): string;
   reset(): string;
   set_log_level(log_level: ZanoLogLevel): string;
   get_version(): string;
@@ -33,5 +33,5 @@ export interface ZanoLib extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
   get_current_tx_fee(priority: ZanoPriority): number;
 
   get_seed_phrase_info(instance_id: number, params: string): string;
-  reset_connection_url(url: string): string;
+  reset_connection_url(address: string): string;
 }

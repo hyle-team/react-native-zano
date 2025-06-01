@@ -8,8 +8,8 @@
     "androidCxxLibName": "RNZano"
   },
   "autolinking": {
-    "ZanoLib": {
-      "cpp": "ZanoLib"
+    "PlainWallet": {
+      "cpp": "PlainWallet"
     },
     "WalletRpc": {
       "cpp": "WalletRpc"

@@ -1,4 +1,4 @@
-#include "ZanoLib.hpp"
+#include "PlainWallet.hpp"
 #include "plain_wallet_api.h"
 
 // ...existing code...
@@ -18,10 +18,10 @@
 #define PRINT_PARAM_IMPL(type, name, ...) type name
 #define PRINT_PARAM(param) PRINT_PARAM_IMPL param
 
-#define DEFINE_PROXY_METHOD(result, name, ...) result ZanoLib::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) { \
+#define DEFINE_PROXY_METHOD(result, name, ...) result PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) { \
   return plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__)); \
 }
-#define DEFINE_PROXY_ASYNC_METHOD(result, name, ...) std::shared_ptr<Promise<result>> ZanoLib::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) { \
+#define DEFINE_PROXY_ASYNC_METHOD(result, name, ...) std::shared_ptr<Promise<result>> PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) { \
   return Promise<result>::async([&]() { \
     return plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__)); \
   }); \
@@ -29,7 +29,7 @@
 
 namespace margelo::nitro::zano {
 
-  DEFINE_PROXY_METHOD(std::string, init, (const std::string &, ip, ip), (const std::string &,port, port), (const std::string &,working_dir,working_dir), (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
+  DEFINE_PROXY_METHOD(std::string, init, (const std::string &, address, address), (const std::string &, working_dir, working_dir), (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
   DEFINE_PROXY_METHOD(std::string, reset,)
   DEFINE_PROXY_METHOD(std::string, set_log_level, (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
   DEFINE_PROXY_METHOD(std::string, get_version,)
@@ -59,12 +59,12 @@ namespace margelo::nitro::zano {
   DEFINE_PROXY_METHOD(std::string, reset_wallet_password, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)), (const std::string &, password, password),)
   DEFINE_PROXY_METHOD(double, get_current_tx_fee, (ZanoPriority, priority, static_cast<uint64_t>(priority)),)
 
-  std::string ZanoLib::get_seed_phrase_info(double instance_id, const std::string &params) {
+  std::string PlainWallet::get_seed_phrase_info(double instance_id, const std::string &params) {
     return plain_wallet::sync_call("get_seed_phrase_info", static_cast<uint64_t>(instance_id), params);
   }
 
-  std::string ZanoLib::reset_connection_url(const std::string &url) {
-    return plain_wallet::sync_call("reset_connection_url", 0, url);
+  std::string PlainWallet::reset_connection_url(const std::string &address) {
+    return plain_wallet::sync_call("reset_connection_url", 0, address);
   }
 
 } // namespace margelo::nitro::zano
