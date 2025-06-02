@@ -39,7 +39,7 @@ export type zano_lib_get_export_private_info_response = TypedJSON<
   JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.FAIL>> | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>>
 >;
 export type zano_lib_get_wallet_files_response = TypedJSON<{ items?: string[] }>;
-export type zano_lib_get_opened_wallets_response = TypedJSON<JSONRpcSuccessfulResponse<open_wallet_response[]> | GeneralReturnErrors>;
+export type zano_lib_get_opened_wallets_response = TypedJSON<JSONRpcSuccessfulResponse<undefined | open_wallet_response[]> | GeneralReturnErrors>;
 export type zano_lib_delete_wallet_response = TypedJSON<JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>>>;
 export type zano_lib_open_response = TypedJSON<
   | GeneralReturnErrors
@@ -86,7 +86,7 @@ export type zano_lib_close_wallet_response = TypedJSON<
 >;
 
 export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONValue> extends PlainWallet {
-  init(address: string, working_dir: string, log_level: ZanoLogLevel): zano_lib_init_response;
+  init(address: string, working_dir: string, log_level: ZanoLogLevel): Promise<zano_lib_init_response>;
   reset(): zano_lib_reset_response;
   set_log_level(log_level: ZanoLogLevel): zano_lib_set_log_level_response;
   reset_connection_url(address: string): zano_lib_reset_connection_url_response;
@@ -108,7 +108,7 @@ export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONV
   get_opened_wallets(): zano_lib_get_opened_wallets_response;
   is_wallet_exist(path: string): boolean;
   delete_wallet(file_name: string): zano_lib_delete_wallet_response;
-  open(path: string, password: string): zano_lib_open_response;
+  open(path: string, password: string): Promise<zano_lib_open_response>;
   restore(seed: string, path: string, password: string, seed_password: string): zano_lib_restore_response;
   generate(path: string, password: string): zano_lib_generate_response;
 

@@ -29,7 +29,7 @@
 
 namespace margelo::nitro::zano {
 
-  DEFINE_PROXY_METHOD(std::string, init, (const std::string &, address, address), (const std::string &, working_dir, working_dir), (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
+  DEFINE_PROXY_ASYNC_METHOD(std::string, init, (const std::string &, address, address), (const std::string &, working_dir, working_dir), (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
   DEFINE_PROXY_METHOD(std::string, reset,)
   DEFINE_PROXY_METHOD(std::string, set_log_level, (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
   DEFINE_PROXY_METHOD(std::string, get_version,)
@@ -45,7 +45,7 @@ namespace margelo::nitro::zano {
   DEFINE_PROXY_METHOD(std::string, truncate_log,)
   DEFINE_PROXY_METHOD(std::string, get_connectivity_status,)
 
-  DEFINE_PROXY_METHOD(std::string, open, (const std::string &, path, path), (const std::string &, password, password),)
+  DEFINE_PROXY_ASYNC_METHOD(std::string, open, (const std::string &, path, path), (const std::string &, password, password),)
   DEFINE_PROXY_METHOD(std::string, restore, (const std::string &, seed, seed), (const std::string &, path, path), (const std::string &, password, password), (const std::string &, seed_password, seed_password),)
   DEFINE_PROXY_METHOD(std::string, generate, (const std::string &, path, path), (const std::string &, password, password),)
   DEFINE_PROXY_METHOD(std::string, get_opened_wallets,)
