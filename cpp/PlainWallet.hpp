@@ -28,9 +28,9 @@ public:
   std::string get_connectivity_status() override;
 
   std::shared_ptr<Promise<std::string>> open(const std::string &path, const std::string &password) override;
-  std::string restore(const std::string &seed, const std::string &path, const std::string &password, const std::string &seed_password) override;
-  std::string generate(const std::string &path, const std::string &password) override;
-  std::string get_opened_wallets() override;
+  std::shared_ptr<Promise<std::string>> restore(const std::string &seed, const std::string &path, const std::string &password, const std::string &seed_password) override;
+  std::shared_ptr<Promise<std::string>> generate(const std::string &path, const std::string &password) override;
+  std::shared_ptr<Promise<std::string>> get_opened_wallets() override;
 
   std::string get_wallet_status(double instance_id) override;
   std::string close_wallet(double instance_id) override;
