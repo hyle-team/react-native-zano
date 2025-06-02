@@ -28,20 +28,35 @@ export class ZanoApi {
   constructor(address: string = 'https://node.zano.org:443', log_level = ZanoLogLevel.DISABLED) {
     this.#log_level = log_level;
     this.#remote_node = address;
-
-    TypedJSON.parse(PlainWallet.get_wallet_files()).items?.forEach((wallet_name) =>
-      this.#wallet_files.set(wallet_name, new ZanoWalletFile(this, wallet_name))
-    );
   }
 
   #init_result: undefined | API_RETURN_CODE.OK | API_RETURN_CODE.ALREADY_EXISTS;
   async initialize() {
     if (this.#init_result) throw new ZanoAlreadyExistsError();
-    const response = await PlainWallet.init(this.#remote_node, PlatformUtils.get_working_directory(), this.#log_level);
-    if (response === GENERAL_INTERNAL_ERROR.INIT) throw new ZanoInitializeError();
-    const json = TypedJSON.parse(response);
-    if (json.error) throw new ZanoInternalError(json.error.message);
-    this.#init_result = json.result.return_code;
+    {
+      const response = await PlainWallet.init(this.#remote_node, PlatformUtils.get_working_directory(), this.#log_level);
+      if (response === GENERAL_INTERNAL_ERROR.INIT) throw new ZanoInitializeError();
+      const json = TypedJSON.parse(response);
+      if (json.error) throw new ZanoInternalError(json.error.message);
+      this.#init_result = json.result.return_code;
+    }
+
+    TypedJSON.parse(PlainWallet.get_wallet_files()).items?.forEach((wallet_name) =>
+      this.#wallet_files.set(wallet_name, new ZanoWalletFile(this, wallet_name))
+    );
+
+    {
+      const response = TypedJSON.parse(await PlainWallet.get_opened_wallets());
+      assertReturnErrors(response);
+      response.result?.forEach((response) => {
+        let file = this.#wallet_files.get(response.name);
+        if (file === undefined) {
+          this.#wallet_files.set(response.name, new ZanoWalletFile(this, response.name, response));
+        } else {
+          file.handleOpened(response);
+        }
+      });
+    }
   }
   dispose() {
     if (!this.#init_result) throw new ZanoUninitializedError();
@@ -108,21 +123,6 @@ export class ZanoApi {
     }
   }
 
-  async get_opened_wallets(): Promise<ZanoWallet[]> {
-    const response = TypedJSON.parse(await PlainWallet.get_opened_wallets());
-    assertReturnErrors(response);
-    if (!response.result) return [];
-    return response.result.map((response) => {
-      let file = this.#wallet_files.get(response.name);
-      if (file === undefined) {
-        file = new ZanoWalletFile(this, response.name, response);
-        this.#wallet_files.set(response.name, file);
-      } else if (!file.wallet) {
-        file.handleOpened(response);
-      }
-      return file.wallet!;
-    });
-  }
   async restore_wallet(wallet_name: string, wallet_password: string, seed: string, seed_password: string) {
     if (this.#wallet_files.has(wallet_name)) throw new ZanoAlreadyExistsError('wallet file already exists');
     const response = TypedJSON.parse(await PlainWallet.restore(seed, wallet_name, wallet_password, seed_password));
