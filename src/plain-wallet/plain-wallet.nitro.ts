@@ -24,7 +24,7 @@ export interface PlainWallet extends HybridObject<{ ios: 'c++'; android: 'c++' }
   get_opened_wallets(): Promise<string>;
 
   get_wallet_status(instance_id: number): string;
-  close_wallet(instance_id: number): string;
+  close_wallet(instance_id: number): Promise<string>;
 
   get_wallet_info(instance_id: number): string;
   is_wallet_exist(path: string): boolean;

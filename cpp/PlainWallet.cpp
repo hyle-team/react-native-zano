@@ -51,7 +51,7 @@ namespace margelo::nitro::zano {
   DEFINE_PROXY_ASYNC_METHOD(std::string, get_opened_wallets,)
 
   DEFINE_PROXY_METHOD(std::string, get_wallet_status, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)),)
-  DEFINE_PROXY_METHOD(std::string, close_wallet, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)),)
+  DEFINE_PROXY_ASYNC_METHOD(std::string, close_wallet, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)),)
 
   // cake wallet api extension
   DEFINE_PROXY_METHOD(bool, is_wallet_exist, (const std::string &, path, path),)

@@ -33,7 +33,7 @@ public:
   std::shared_ptr<Promise<std::string>> get_opened_wallets() override;
 
   std::string get_wallet_status(double instance_id) override;
-  std::string close_wallet(double instance_id) override;
+  std::shared_ptr<Promise<std::string>> close_wallet(double instance_id) override;
 
   bool is_wallet_exist(const std::string &path) override;
   std::string get_wallet_info(double instance_id) override;

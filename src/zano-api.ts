@@ -52,7 +52,6 @@ export class ZanoApi {
     {
       const [host, port] = this.#remote_node;
       const response = await PlainWallet.init(host, port, PlatformUtils.get_working_directory(), this.#log_level);
-      console.log('GG', response);
       if (response === GENERAL_INTERNAL_ERROR.INIT) throw new ZanoInitializeError();
       const json = TypedJSON.parse(response);
       if (json.error) throw new ZanoInternalError(json.error.message);
@@ -246,10 +245,10 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     Object.defineProperty(this, 'pass', { value: password, writable: false, enumerable: true, configurable: true });
   }
 
-  close() {
-    const response = TypedJSON.parse(PlainWallet.close_wallet(this.wallet_id));
+  async close() {
+    const response = TypedJSON.parse(await PlainWallet.close_wallet(this.wallet_id));
     assertReturnErrors(response);
-    const code = response.result.response;
+    const code = response.response;
     if (code !== API_RETURN_CODE.OK) {
       if (code === API_RETURN_CODE.WALLET_WRONG_ID) throw new ZanoWrongWalletIdError();
       if (code === API_RETURN_CODE.INTERNAL_ERROR) throw new ZanoInternalError();
