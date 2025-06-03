@@ -1,9 +1,14 @@
 import type { HybridObject } from 'react-native-nitro-modules';
-import { API_RETURN_CODE, type open_wallet_response, type wallet_info_extra } from './entities';
 import {
   assertErrorCode,
   assertReturnErrors,
   assertWalletRpcError,
+  type ErrorCodeErrors,
+  type ReturnCodeErrors,
+  type WalletCodeErrors,
+} from './asserts';
+import { API_RETURN_CODE, type open_wallet_response, type wallet_info_extra } from './entities';
+import {
   ZanoAlreadyExistsError,
   ZanoFailedError,
   ZanoGeneralError,
@@ -12,9 +17,6 @@ import {
   ZanoNotFoundError,
   ZanoUninitializedError,
   ZanoWrongWalletIdError,
-  type ErrorCodeErrors,
-  type ReturnCodeErrors,
-  type WalletCodeErrors,
 } from './errors';
 import { PlainWallet } from './plain-wallet';
 import { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './plain-wallet/enums';
@@ -70,7 +72,7 @@ export class ZanoApi {
         if (file === undefined) {
           this.#wallet_files.set(response.name, new ZanoWalletFile(this, response.name, response));
         } else {
-          file.handleOpened(response);
+          wallets.set(file, new ZanoWallet(file, response));
         }
       });
     }
@@ -160,39 +162,30 @@ export class ZanoApi {
   }
 }
 
+const wallets = new WeakMap<ZanoWalletFile, ZanoWallet | null>();
 export class ZanoWalletFile {
   constructor(
     readonly api: ZanoApi,
     readonly wallet_name: string,
     response?: open_wallet_response
   ) {
-    this.#wallet = response ? new ZanoWallet(this, response) : null;
+    wallets.set(this, response ? new ZanoWallet(this, response) : null);
   }
-  #wallet: ZanoWallet | null = null;
   get wallet() {
-    return this.#wallet;
+    return wallets.get(this);
   }
 
-  handleOpened(response: open_wallet_response) {
-    if (this.#wallet) return;
-    this.#wallet = new ZanoWallet(this, response);
-  }
   async open(password: string) {
-    if (this.#wallet) return;
+    if (this.wallet) return;
     const response = TypedJSON.parse(await PlainWallet.open(this.wallet_name, password));
     assertErrorCode(response);
     assertReturnErrors(response);
-    this.#wallet = new ZanoWallet(this, { ...response.result, name: this.wallet_name, pass: password });
-    return this.#wallet;
+    const wallet = new ZanoWallet(this, { ...response.result, name: this.wallet_name, pass: password });
+    wallets.set(this, wallet);
+    return wallet;
   }
 }
 
-type WalletRpcWrappers = {
-  [Name in Exclude<keyof IWalletRpc, keyof HybridObject>]: (
-    params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
-  ) => Exclude<UnwrapTypedJSON<ReturnType<IWalletRpc[Name]>>, ReturnCodeErrors | ErrorCodeErrors | WalletCodeErrors>;
-};
-export interface ZanoWallet extends WalletRpcWrappers {}
 export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   readonly wallet_id: DeepReadonly<open_wallet_response>['wallet_id'];
   readonly recent_history: DeepReadonly<open_wallet_response>['recent_history'];
@@ -257,6 +250,12 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     (this.file.api.wallet_files as Map<string, ZanoWalletFile>).delete(this.name);
   }
 }
+type WalletRpcWrappers = {
+  [Name in Exclude<keyof IWalletRpc, keyof HybridObject>]: (
+    params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
+  ) => Exclude<UnwrapTypedJSON<ReturnType<IWalletRpc[Name]>>, ReturnCodeErrors | ErrorCodeErrors | WalletCodeErrors>['result'];
+};
+export interface ZanoWallet extends WalletRpcWrappers {}
 Object.keys(Object.getPrototypeOf(WalletRpc))
   .filter((name) => name !== '__type')
   .forEach((name) => {
@@ -264,6 +263,7 @@ Object.keys(Object.getPrototypeOf(WalletRpc))
       this: ZanoWallet,
       params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
     ) {
+      console.log('GG', this, this.wallet_id);
       const response = WalletRpc[name as Name](this.wallet_id, TypedJSON.stringify(params as never));
       if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw new ZanoWrongWalletIdError();
       const json = TypedJSON.parse(response);
