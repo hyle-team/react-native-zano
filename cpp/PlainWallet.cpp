@@ -22,14 +22,14 @@
   return plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__)); \
 }
 #define DEFINE_PROXY_ASYNC_METHOD(result, name, ...) std::shared_ptr<Promise<result>> PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) { \
-  return Promise<result>::async([&]() { \
+  return Promise<result>::async([=]() { \
     return plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__)); \
   }); \
 }
 
 namespace margelo::nitro::zano {
 
-  DEFINE_PROXY_ASYNC_METHOD(std::string, init, (const std::string &, address, address), (const std::string &, working_dir, working_dir), (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
+  DEFINE_PROXY_ASYNC_METHOD(std::string, init, (const std::string &, host, host), (const std::string &, port, port), (const std::string &, working_dir, working_dir), (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
   DEFINE_PROXY_METHOD(std::string, reset,)
   DEFINE_PROXY_METHOD(std::string, set_log_level, (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
   DEFINE_PROXY_METHOD(std::string, get_version,)

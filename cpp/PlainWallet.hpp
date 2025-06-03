@@ -11,7 +11,7 @@ public:
   PlainWallet() : HybridObject(TAG) {}
 
 public:
-  std::shared_ptr<Promise<std::string>> init(const std::string &address, const std::string &working_dir, ZanoLogLevel log_level) override;
+  std::shared_ptr<Promise<std::string>> init(const std::string &host, const std::string &port, const std::string &working_dir, ZanoLogLevel log_level) override;
   std::string reset() override;
   std::string set_log_level(ZanoLogLevel log_level) override;
   std::string get_version() override;

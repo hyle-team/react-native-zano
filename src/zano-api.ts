@@ -6,6 +6,7 @@ import {
   assertWalletRpcError,
   ZanoAlreadyExistsError,
   ZanoFailedError,
+  ZanoGeneralError,
   ZanoInitializeError,
   ZanoInternalError,
   ZanoNotFoundError,
@@ -25,16 +26,33 @@ import type { IWalletRpc } from './wallet-rpc/wallet-rpc';
 
 export interface ZanoApi {}
 export class ZanoApi {
-  constructor(address: string = 'https://node.zano.org:443', log_level = ZanoLogLevel.DISABLED) {
+  constructor(address: string | [host: string, port: string] = 'https://node.zano.org:443', log_level = ZanoLogLevel.DISABLED) {
     this.#log_level = log_level;
-    this.#remote_node = address;
+
+    if (Array.isArray(address)) {
+      this.#remote_node = address;
+    } else if (address.startsWith('http:')) {
+      const [host, port] = address.substring('http:'.length).split(':');
+      if (!host) throw new ZanoGeneralError('invalid address passed');
+      this.#remote_node = [`http:${host}`, port || '80'];
+    } else if (address.startsWith('https:')) {
+      const [host, port] = address.substring('https:'.length).split(':');
+      if (!host) throw new ZanoGeneralError('invalid address passed');
+      this.#remote_node = [`https:${host}`, port || '443'];
+    } else {
+      const [host, port] = address.split(':');
+      if (!host || !port) throw new ZanoGeneralError('invalid address passed');
+      this.#remote_node = [host, port];
+    }
   }
 
   #init_result: undefined | API_RETURN_CODE.OK | API_RETURN_CODE.ALREADY_EXISTS;
   async initialize() {
     if (this.#init_result) throw new ZanoAlreadyExistsError();
     {
-      const response = await PlainWallet.init(this.#remote_node, PlatformUtils.get_working_directory(), this.#log_level);
+      const [host, port] = this.#remote_node;
+      const response = await PlainWallet.init(host, port, PlatformUtils.get_working_directory(), this.#log_level);
+      console.log('GG', response);
       if (response === GENERAL_INTERNAL_ERROR.INIT) throw new ZanoInitializeError();
       const json = TypedJSON.parse(response);
       if (json.error) throw new ZanoInternalError(json.error.message);
@@ -76,14 +94,14 @@ export class ZanoApi {
     PlainWallet.set_log_level(next);
   }
 
-  #remote_node: string;
+  #remote_node: [host: string, port: string];
   get remote_node() {
     return this.#remote_node;
   }
-  set remote_node(address: string) {
-    this.#remote_node = address;
-    PlainWallet.reset_connection_url(address);
-  }
+  // set remote_node(address: string) {
+  //   this.#remote_node = address;
+  //   PlainWallet.reset_connection_url(address);
+  // }
 
   get_address_info(addr: string) {
     return TypedJSON.parse(PlainWallet.get_address_info(addr));

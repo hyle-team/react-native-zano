@@ -86,7 +86,7 @@ export type zano_lib_close_wallet_response = TypedJSON<
 >;
 
 export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONValue> extends PlainWallet {
-  init(address: string, working_dir: string, log_level: ZanoLogLevel): Promise<zano_lib_init_response>;
+  init(host: string, port: string, working_dir: string, log_level: ZanoLogLevel): Promise<zano_lib_init_response>;
   reset(): zano_lib_reset_response;
   set_log_level(log_level: ZanoLogLevel): zano_lib_set_log_level_response;
   reset_connection_url(address: string): zano_lib_reset_connection_url_response;

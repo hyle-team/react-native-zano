@@ -8,7 +8,7 @@ namespace epee::string_encoding {
 }
 
 #define DEFINE_METHOD(method) std::shared_ptr<Promise<std::string>> CoreRpc::method(const std::string &params) { \
-    return Promise<std::string>::async([&]() { \
+    return Promise<std::string>::async([=]() { \
       std::stringstream request, json; \
       request << "{ \"jsonrpc\": \"2.0\", \"id\": " << next_id() << ", \"method\": \"" << #method << "\", \"params\": \"" << params << "\" }"; \
       json << "{ \"uri\": \"/json_rpc\", \"base64_body\": " << this->base64_encode(request.str()) << " }"; \

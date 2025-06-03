@@ -2,7 +2,7 @@ import type { HybridObject } from 'react-native-nitro-modules';
 import type { ZanoLogLevel, ZanoPriority } from './enums';
 
 export interface PlainWallet extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
-  init(address: string, working_dir: string, log_level: ZanoLogLevel): Promise<string>;
+  init(host: string, port: string, working_dir: string, log_level: ZanoLogLevel): Promise<string>;
   reset(): string;
   set_log_level(log_level: ZanoLogLevel): string;
   get_version(): string;
