@@ -176,7 +176,7 @@ export class ZanoWalletFile {
   }
 
   async open(password: string) {
-    if (this.wallet) return;
+    if (this.wallet) return this.wallet;
     const response = TypedJSON.parse(await PlainWallet.open(this.wallet_name, password));
     assertErrorCode(response);
     assertReturnErrors(response);
@@ -248,6 +248,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
       if (code.startsWith(`${API_RETURN_CODE.FAIL}:`)) throw new ZanoFailedError(code.substring(`${API_RETURN_CODE.FAIL}:`.length));
     }
     (this.file.api.wallet_files as Map<string, ZanoWalletFile>).delete(this.name);
+    wallets.set(this.file, null);
   }
 }
 type WalletRpcWrappers = {
@@ -263,7 +264,6 @@ Object.keys(Object.getPrototypeOf(WalletRpc))
       this: ZanoWallet,
       params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
     ) {
-      console.log('GG', this, this.wallet_id);
       const response = WalletRpc[name as Name](this.wallet_id, TypedJSON.stringify(params as never));
       if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw new ZanoWrongWalletIdError();
       const json = TypedJSON.parse(response);
