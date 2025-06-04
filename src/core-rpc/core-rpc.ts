@@ -712,7 +712,8 @@ type CoreMethod<Params extends JSONConstrain<Params>, Result extends JSONConstra
   ): Promise<
     | __UNPROTECTED__TypedJSON<{ response_code: unknown; base64_body: TypedBase64<__UNPROTECTED__TypedJSON<JSONRpcResponse<Result, Errors>>> }>
     | TypedJSON<GeneralReturnErrors>
-    | TypedJSON<{ error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON | API_RETURN_CODE.FAIL }>
+    | TypedJSON<{ error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON }>
+    | TypedJSON<{ error_code: API_RETURN_CODE.FAIL }>
   >;
 };
 export interface ICoreRpc extends CoreRpc {

@@ -1,6 +1,7 @@
 import { API_RETURN_CODE, WALLET_RPC_ERROR_CODE, type ErrorCode, type ReturnCode } from './entities';
 import {
   ZanoAlreadyExistsError,
+  ZanoCoreBadArgumentError,
   ZanoFailedError,
   ZanoInternalError,
   ZanoInvalidFileError,
@@ -117,4 +118,13 @@ export function assertWalletRpcError<R extends object>(response: R): asserts res
   if (code === WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT) throw new ZanoWalletRpcWrongArgumentError(message);
   if (code === WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY) throw new ZanoWalletRpcNotEnoughMoneyError(message);
   if (code === WALLET_RPC_ERROR_CODE.WRONG_MIXINS_FOR_AUDITABLE_WALLET) throw new ZanoWalletRpcWrongMixinsForAuditableWalletError(message);
+}
+
+export type CoreCodeErrors = { error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON } | { error_code: API_RETURN_CODE.FAIL };
+export function assertCoreRpcError<R extends object>(response: R): asserts response is Exclude<R, CoreCodeErrors> {
+  if (!('error_code' in response)) return;
+  const { error_code } = response;
+  if (typeof error_code !== 'string') return;
+  if (error_code === API_RETURN_CODE.BAD_ARG_INVALID_JSON) throw new ZanoCoreBadArgumentError();
+  if (error_code === API_RETURN_CODE.FAIL) throw new ZanoFailedError();
 }

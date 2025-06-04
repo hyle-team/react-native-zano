@@ -17,6 +17,7 @@ export class ZanoWatchOnlyWalletNotSupported extends createErrorClass(
 ) {}
 export class ZanoWrongSeedError extends createErrorClass('ZanoWrongSeedError', API_RETURN_CODE.WRONG_SEED) {}
 export class ZanoWrongWalletIdError extends createErrorClass('ZanoWrongWalletIdError', API_RETURN_CODE.WALLET_WRONG_ID) {}
+
 export class ZanoWalletRpcUnknownError extends createErrorClass('ZanoWalletRpcUnknownError') {}
 export class ZanoWalletRpcWrongAddressError extends createErrorClass('ZanoWalletRpcWrongAddressError') {}
 export class ZanoWalletRpcDaemonIsBusyError extends createErrorClass('ZanoWalletRpcDaemonIsBusyError') {}
@@ -25,3 +26,5 @@ export class ZanoWalletRpcWrongPaymentIdError extends createErrorClass('ZanoWall
 export class ZanoWalletRpcWrongArgumentError extends createErrorClass('ZanoWalletRpcWrongArgumentError') {}
 export class ZanoWalletRpcNotEnoughMoneyError extends createErrorClass('ZanoWalletRpcNotEnoughMoneyError') {}
 export class ZanoWalletRpcWrongMixinsForAuditableWalletError extends createErrorClass('ZanoWalletRpcWrongMixinsForAuditableWalletError') {}
+
+export class ZanoCoreBadArgumentError extends createErrorClass('ZanoCoreBadArgumentError', API_RETURN_CODE.BAD_ARG_INVALID_JSON) {}

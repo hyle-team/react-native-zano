@@ -1,12 +1,16 @@
 import type { HybridObject } from 'react-native-nitro-modules';
 import {
+  assertCoreRpcError,
   assertErrorCode,
   assertReturnErrors,
   assertWalletRpcError,
+  type CoreCodeErrors,
   type ErrorCodeErrors,
   type ReturnCodeErrors,
   type WalletCodeErrors,
 } from './asserts';
+import { CoreRpc } from './core-rpc';
+import type { ICoreRpc } from './core-rpc/core-rpc';
 import { API_RETURN_CODE, type open_wallet_response, type wallet_info_extra } from './entities';
 import {
   ZanoAlreadyExistsError,
@@ -21,6 +25,7 @@ import {
 import { PlainWallet } from './plain-wallet';
 import { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './plain-wallet/enums';
 import { PlatformUtils } from './platform';
+import type { UnwrapTypedBase64 } from './utils/typed-base64';
 import { TypedJSON, type JSONConstrain, type UnwrapTypedJSON } from './utils/typed-json';
 import type { DeepReadonly } from './utils/types';
 import { WalletRpc } from './wallet-rpc';
@@ -160,6 +165,35 @@ export class ZanoApi {
     this.#wallet_files.set(wallet_name, file);
     return file.wallet!;
   }
+
+  readonly daemon = (Object.keys(Object.getPrototypeOf(CoreRpc)) as Array<Exclude<keyof ICoreRpc, keyof HybridObject> | '__type'>).reduce(
+    (methods, name) => {
+      if (name === '__type') return methods;
+      if (name === 'base64_encode' || name === 'base64_decode') return methods;
+      methods[name] = (async (params: UnwrapTypedJSON<Parameters<ICoreRpc[typeof name]>[0]>) => {
+        const response = TypedJSON.parse(await CoreRpc[name](TypedJSON.stringify(params) as never));
+        assertReturnErrors(response);
+        assertCoreRpcError(response);
+        const body = TypedJSON.parse(CoreRpc.base64_decode(response.base64_body));
+        assertErrorCode(body);
+        if (body.error) throw body.error;
+        return body.result;
+      }) as never;
+      return methods;
+    },
+    {} as {
+      [Name in Exclude<keyof ICoreRpc, keyof HybridObject | 'base64_encode' | 'base64_decode'>]: (
+        params: UnwrapTypedJSON<Parameters<ICoreRpc[Name]>[0]>
+      ) => Promise<
+        Exclude<
+          UnwrapTypedJSON<
+            UnwrapTypedBase64<Exclude<UnwrapTypedJSON<Awaited<ReturnType<ICoreRpc[Name]>>>, ReturnCodeErrors | CoreCodeErrors>['base64_body']>
+          >,
+          { result: null }
+        >['result']
+      >;
+    }
+  );
 }
 
 const wallets = new WeakMap<ZanoWalletFile, ZanoWallet | null>();
