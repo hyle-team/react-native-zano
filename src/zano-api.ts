@@ -259,7 +259,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   get_status() {
     const response = TypedJSON.parse(PlainWallet.get_wallet_status(this.wallet_id));
     assertReturnErrors(response);
-    return response.result;
+    return response;
   }
 
   reset_file_password(password: string) {

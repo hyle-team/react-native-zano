@@ -1,3 +1,4 @@
+export * from './asserts';
 export * from './core-rpc';
 export * from './entities';
 export * from './errors';

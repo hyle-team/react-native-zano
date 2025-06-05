@@ -22,3 +22,5 @@ if (__DEV__) {
   });
 }
 export { PlainWallet };
+
+export * from './enums';

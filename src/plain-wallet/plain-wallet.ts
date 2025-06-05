@@ -67,7 +67,8 @@ export type zano_lib_generate_response = TypedJSON<
 >;
 export type zano_lib_get_wallet_info_response = TypedJSON<JSONRpcSuccessfulResponse<wallet_extended_info> | GeneralReturnErrors>;
 export type zano_lib_get_wallet_status_response =
-  | TypedJSON<GeneralReturnErrors | JSONRpcSuccessfulResponse<wallet_sync_status_info>>
+  | TypedJSON<GeneralReturnErrors>
+  | TypedJSON<wallet_sync_status_info>
   | API_RETURN_CODE.WALLET_WRONG_ID;
 export type zano_lib_get_seed_phrase_info_params = TypedJSON<{ seed_phrase: string; seed_password: string }>;
 export type zano_lib_get_seed_phrase_info_response = TypedJSON<
