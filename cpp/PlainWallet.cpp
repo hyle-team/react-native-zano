@@ -59,8 +59,8 @@ namespace margelo::nitro::zano {
   DEFINE_PROXY_METHOD(std::string, reset_wallet_password, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)), (const std::string &, password, password),)
   DEFINE_PROXY_METHOD(double, get_current_tx_fee, (ZanoPriority, priority, static_cast<uint64_t>(priority)),)
 
-  std::string PlainWallet::get_seed_phrase_info(double instance_id, const std::string &params) {
-    return plain_wallet::sync_call("get_seed_phrase_info", static_cast<uint64_t>(instance_id), params);
+  std::string PlainWallet::get_seed_phrase_info(const std::string &params) {
+    return plain_wallet::sync_call("get_seed_phrase_info", 0, params);
   }
 
   std::string PlainWallet::reset_connection_url(const std::string &address) {

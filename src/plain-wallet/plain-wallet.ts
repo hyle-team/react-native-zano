@@ -113,7 +113,7 @@ export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONV
 
   get_wallet_info(instance_id: number): zano_lib_get_wallet_info_response;
   get_wallet_status(instance_id: number): zano_lib_get_wallet_status_response;
-  get_seed_phrase_info(instance_id: number, params: zano_lib_get_seed_phrase_info_params): zano_lib_get_seed_phrase_info_response;
+  get_seed_phrase_info(params: zano_lib_get_seed_phrase_info_params): zano_lib_get_seed_phrase_info_response;
   reset_wallet_password(instance_id: number, password: string): zano_lib_reset_wallet_password_response;
   close_wallet(instance_id: number): Promise<zano_lib_close_wallet_response>;
 }

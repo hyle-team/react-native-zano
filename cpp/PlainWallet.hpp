@@ -40,7 +40,7 @@ public:
   std::string reset_wallet_password(double instance_id, const std::string &password) override;
   double get_current_tx_fee(ZanoPriority priority) override;
 
-  std::string get_seed_phrase_info(double instance_id, const std::string &params) override;
+  std::string get_seed_phrase_info(const std::string &params) override;
   std::string reset_connection_url(const std::string &address) override;
 };
 

@@ -20,6 +20,7 @@ import {
   ZanoInternalError,
   ZanoNotFoundError,
   ZanoUninitializedError,
+  ZanoWalletRpcWrongArgumentError,
   ZanoWrongWalletIdError,
 } from './errors';
 import { PlainWallet } from './plain-wallet';
@@ -111,6 +112,11 @@ export class ZanoApi {
 
   get_address_info(addr: string) {
     return TypedJSON.parse(PlainWallet.get_address_info(addr));
+  }
+  get_seed_phrase_info(seed_phrase: string, seed_password: string) {
+    const response = TypedJSON.parse(PlainWallet.get_seed_phrase_info(TypedJSON.stringify({ seed_phrase, seed_password })));
+    if (response.error_code === 'Wrong parameter') throw new ZanoWalletRpcWrongArgumentError('Wrong parameter');
+    return response.response_data;
   }
   get_connectivity_status() {
     const response = TypedJSON.parse(PlainWallet.get_connectivity_status());

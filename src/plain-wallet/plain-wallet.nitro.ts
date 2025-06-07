@@ -32,6 +32,6 @@ export interface PlainWallet extends HybridObject<{ ios: 'c++'; android: 'c++' }
 
   get_current_tx_fee(priority: ZanoPriority): number;
 
-  get_seed_phrase_info(instance_id: number, params: string): string;
+  get_seed_phrase_info(params: string): string;
   reset_connection_url(address: string): string;
 }
