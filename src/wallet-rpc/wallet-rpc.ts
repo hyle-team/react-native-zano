@@ -781,28 +781,35 @@ export type INVOKE_RPC_PROXY_TO_DAEMON_RESPONSE = {
   response_code: number;
 };
 
+type WalletMethodErrors =
+  | __UNPROTECTED__TypedJSON<GeneralReturnErrors>
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>>>
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>>>
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>>>
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>>>
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>>>
+  | __UNPROTECTED__TypedJSON<
+      JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>>
+    >
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR>>>
+  | __UNPROTECTED__TypedJSON<
+      JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR, `WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR${string}`>>
+    >
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR`>>>
+  | __UNPROTECTED__TypedJSON<
+      JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.UNINITIALIZED, `${API_RETURN_CODE.INTERNAL_ERROR} ${string}` | API_RETURN_CODE.INTERNAL_ERROR>>
+    >
+  | API_RETURN_CODE.WALLET_WRONG_ID;
 type WalletMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = (
   instance_id: number,
   params: TypedJSON<Params>
-) =>
-  | __UNPROTECTED__TypedJSON<
-      | GeneralReturnErrors
-      | JSONRpcSuccessfulResponse<Result>
-      | JSONRpcFailedResponse<Errors>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR>>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR, `WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR${string}`>>
-      | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR`>>
-      | JSONRpcFailedResponse<
-          ErrorCode<API_RETURN_CODE.UNINITIALIZED, `${API_RETURN_CODE.INTERNAL_ERROR} ${string}` | API_RETURN_CODE.INTERNAL_ERROR>
-        >
-    >
-  | API_RETURN_CODE.WALLET_WRONG_ID;
+) => __UNPROTECTED__TypedJSON<JSONRpcSuccessfulResponse<Result>> | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<Errors>> | WalletMethodErrors;
+type WalletAsyncMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = (
+  instance_id: number,
+  params: TypedJSON<Params>
+) => Promise<
+  __UNPROTECTED__TypedJSON<JSONRpcSuccessfulResponse<Result>> | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<Errors>> | WalletMethodErrors
+>;
 export interface IWalletRpc extends WalletRpc {
   /** Return the balances across all whitelisted assets of the wallet */
   getbalance: WalletMethod<INVOKE_RPC_GET_BALANCE_REQUEST, INVOKE_RPC_GET_BALANCE_RESPONSE>;
@@ -826,7 +833,7 @@ export interface IWalletRpc extends WalletRpc {
     | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `payment id ${string} is invalid and can't be set`>
   >;
   /** Store wallet's data to file */
-  store: WalletMethod<INVOKE_RPC_STORE_REQUEST, INVOKE_RPC_STORE_RESPONSE>;
+  store: WalletAsyncMethod<INVOKE_RPC_STORE_REQUEST, INVOKE_RPC_STORE_RESPONSE>;
   /** Gets list of incoming transfers by a given payment ID */
   get_payments: WalletMethod<
     INVOKE_RPC_GET_PAYMENTS_REQUEST,

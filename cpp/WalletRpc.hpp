@@ -24,7 +24,7 @@ public:
   DECLARE_METHOD(get_recent_txs_and_info);
   DECLARE_METHOD(get_recent_txs_and_info2);
   DECLARE_METHOD(transfer);
-  DECLARE_METHOD(store);
+  DECLARE_ASYNC_METHOD(store);
   DECLARE_METHOD(get_payments);
   DECLARE_METHOD(get_bulk_payments);
   DECLARE_METHOD(make_integrated_address);

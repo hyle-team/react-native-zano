@@ -7,7 +7,7 @@ export interface WalletRpc extends HybridObject<{ ios: 'c++'; android: 'c++' }> 
   get_recent_txs_and_info(instance_id: number, params: string): string;
   get_recent_txs_and_info2(instance_id: number, params: string): string;
   transfer(instance_id: number, params: string): string;
-  store(instance_id: number, params: string): string;
+  store(instance_id: number, params: string): Promise<string>;
   get_payments(instance_id: number, params: string): string;
   get_bulk_payments(instance_id: number, params: string): string;
   make_integrated_address(instance_id: number, params: string): string;

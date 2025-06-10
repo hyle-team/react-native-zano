@@ -291,10 +291,11 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     wallets.set(this.file, null);
   }
 }
+type ExtractResponse<T> = Exclude<UnwrapTypedJSON<T>, ReturnCodeErrors | ErrorCodeErrors | WalletCodeErrors>['result'];
 type WalletRpcWrappers = {
   [Name in Exclude<keyof IWalletRpc, keyof HybridObject>]: (
     params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
-  ) => Exclude<UnwrapTypedJSON<ReturnType<IWalletRpc[Name]>>, ReturnCodeErrors | ErrorCodeErrors | WalletCodeErrors>['result'];
+  ) => ExtractResponse<Awaited<ReturnType<IWalletRpc[Name]>>>;
 };
 export interface ZanoWallet extends WalletRpcWrappers {}
 Object.keys(Object.getPrototypeOf(WalletRpc))
