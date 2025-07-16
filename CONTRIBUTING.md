@@ -24,6 +24,7 @@ This project uses Nitro Modules. If you're not familiar with how Nitro works, ma
 You need to run [Nitrogen](https://nitro.margelo.com/docs/nitrogen) to generate the boilerplate code required for this project. The example app will not build without this step.
 
 Run **Nitrogen** in following cases:
+
 - When you make changes to any `*.nitro.ts` files.
 - When running the project for the first time (since the generated files are not committed to the repository).
 

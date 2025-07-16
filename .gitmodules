@@ -1,4 +1,4 @@
 [submodule "libraries"]
 	path = libraries
-	url = https://github.com/hyle-team/zano_native_lib
-  ignore = dirty
+	url = git@github.com:hyle-team/zano_native_lib.git
+	ignore = dirty
