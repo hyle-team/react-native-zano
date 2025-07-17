@@ -1,4 +1,4 @@
-package com.hyleteam.reactnativezano
+package com.margelo.nitro.hyleteam.reactnativezano
 
 import com.facebook.react.TurboReactPackage
 import com.facebook.react.bridge.NativeModule
