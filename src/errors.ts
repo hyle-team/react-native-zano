@@ -2,6 +2,8 @@ import { API_RETURN_CODE } from './entities';
 import { GENERAL_INTERNAL_ERROR } from './plain-wallet/enums';
 import { createErrorClass } from './utils/errors';
 
+export class ZanoBindingError extends createErrorClass('ZanoBindingError') {}
+
 export class ZanoGeneralError extends createErrorClass('ZanoGeneralError') {}
 export class ZanoInitializeError extends createErrorClass('ZanoInitializeError', GENERAL_INTERNAL_ERROR.INIT) {}
 export class ZanoInternalError extends createErrorClass('ZanoInternalError', API_RETURN_CODE.INTERNAL_ERROR) {}
