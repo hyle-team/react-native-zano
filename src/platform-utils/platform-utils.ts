@@ -1,5 +1,5 @@
 import { ZanoBindingError } from '../errors';
-import type { PlatformUtils as IPlatformUtils } from './utils.nitro';
+import type { PlatformUtils as IPlatformUtils } from './platform-utils.nitro';
 
 export const PlatformUtils = new Proxy(
   {},

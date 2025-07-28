@@ -10,7 +10,7 @@ import {
   type WalletCodeErrors,
 } from './asserts';
 import { CoreRpc } from './core-rpc';
-import type { ICoreRpc } from './core-rpc/core-rpc';
+import type { ICoreRpc } from './core-rpc/core-rpc.type';
 import { API_RETURN_CODE, type open_wallet_response, type wallet_info_extra } from './entities';
 import {
   ZanoAlreadyExistsError,
@@ -25,12 +25,12 @@ import {
 } from './errors';
 import { PlainWallet } from './plain-wallet';
 import { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './plain-wallet/enums';
-import { PlatformUtils } from './platform';
+import { PlatformUtils } from './platform-utils';
 import type { UnwrapTypedBase64 } from './utils/typed-base64';
 import { TypedJSON, type JSONConstrain, type UnwrapTypedJSON } from './utils/typed-json';
 import type { DeepReadonly } from './utils/types';
 import { WalletRpc } from './wallet-rpc';
-import type { IWalletRpc } from './wallet-rpc/wallet-rpc';
+import type { IWalletRpc } from './wallet-rpc/wallet-rpc.type';
 
 export interface ZanoApi {}
 export class ZanoApi {
@@ -73,12 +73,12 @@ export class ZanoApi {
     {
       const response = TypedJSON.parse(await PlainWallet.get_opened_wallets());
       assertReturnErrors(response);
-      response.result?.forEach((response) => {
-        let file = this.#wallet_files.get(response.name);
+      response.result?.forEach((file_response) => {
+        let file = this.#wallet_files.get(file_response.name);
         if (file === undefined) {
-          this.#wallet_files.set(response.name, new ZanoWalletFile(this, response.name, response));
+          this.#wallet_files.set(file_response.name, new ZanoWalletFile(this, file_response.name, file_response));
         } else {
-          wallets.set(file, new ZanoWallet(file, response));
+          wallets.set(file, new ZanoWallet(file, file_response));
         }
       });
     }
