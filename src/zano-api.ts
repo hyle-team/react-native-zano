@@ -9,8 +9,8 @@ import {
   type ReturnCodeErrors,
   type WalletCodeErrors,
 } from './asserts';
+import type { ICoreRpc } from './core-rpc';
 import { CoreRpc } from './core-rpc';
-import type { ICoreRpc } from './core-rpc/core-rpc.type';
 import { API_RETURN_CODE, type open_wallet_response, type wallet_info_extra } from './entities';
 import {
   ZanoAlreadyExistsError,
@@ -29,8 +29,8 @@ import { PlatformUtils } from './platform-utils';
 import type { UnwrapTypedBase64 } from './utils/typed-base64';
 import { TypedJSON, type JSONConstrain, type UnwrapTypedJSON } from './utils/typed-json';
 import type { DeepReadonly } from './utils/types';
+import type { IWalletRpc } from './wallet-rpc';
 import { WalletRpc } from './wallet-rpc';
-import type { IWalletRpc } from './wallet-rpc/wallet-rpc.type';
 
 export interface ZanoApi {}
 export class ZanoApi {

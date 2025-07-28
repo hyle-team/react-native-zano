@@ -1,4 +1,4 @@
-import type { DAEMON_RPC_GET_OFFERS_EX_REQUEST, DAEMON_RPC_GET_OFFERS_EX_RESPONSE } from '../core-rpc/core-rpc.type';
+import type { DAEMON_RPC_GET_OFFERS_EX_REQUEST, DAEMON_RPC_GET_OFFERS_EX_RESPONSE } from '../core-rpc';
 import type {
   alias_rpc_details,
   API_RETURN_CODE,
