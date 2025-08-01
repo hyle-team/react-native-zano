@@ -5,4 +5,4 @@ export * from './errors';
 export * from './plain-wallet';
 export * from './platform-utils';
 export * from './wallet-rpc';
-export * from './zano-api';
+export * from './zano';
