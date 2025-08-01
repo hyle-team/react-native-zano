@@ -4,9 +4,10 @@ import type { IPlainWallet } from './plain-wallet.type';
 export const PlainWallet = new Proxy(
   {},
   {
-    get(_, name) {
-      if ('ZanoPlainWallet' in globalThis) return globalThis['ZanoPlainWallet' as never][name];
-      throw new ZanoBindingError('Failed to find web based bindings for rn-zano');
+    get(target, name) {
+      if (name in target && target[name as never]) return target[name as never];
+      if (!('ZanoPlainWallet' in globalThis)) throw new ZanoBindingError('Failed to find web based bindings for rn-zano ZanoPlainWallet');
+      return globalThis['ZanoPlainWallet' as never][name];
     },
   }
 ) as IPlainWallet;

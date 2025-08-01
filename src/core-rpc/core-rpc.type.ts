@@ -718,7 +718,7 @@ type CoreMethod<Params extends JSONConstrain<Params>, Result extends JSONConstra
 };
 export interface ICoreRpc extends CoreRpc {
   base64_encode<Value extends string>(value: NoInfer<Value>): TypedBase64<Value>;
-  base64_decode<Text extends TypedBase64<string>>(text: Text): UnwrapTypedBase64<Text>;
+  base64_decode<Text extends TypedBase64<string>>(value: Text): UnwrapTypedBase64<Text>;
 
   // JSON RPCs
   /** Returns the total number of blocks in the blockchain (the height of the top block plus one). */
