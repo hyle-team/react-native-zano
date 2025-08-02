@@ -15,8 +15,8 @@ public:
   std::string reset() override;
   std::string set_log_level(ZanoLogLevel log_level) override;
   std::string get_version() override;
-  std::string get_wallet_files() override;
-  std::string get_export_private_info(const std::string &target_dir) override;
+  std::shared_ptr<Promise<std::string>> get_wallet_files() override;
+  std::shared_ptr<Promise<std::string>> get_export_private_info(const std::string &target_dir) override;
   std::string delete_wallet(const std::string &file_name) override;
   std::string get_address_info(const std::string &addr) override;
 

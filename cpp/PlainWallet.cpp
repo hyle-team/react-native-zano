@@ -33,8 +33,8 @@ namespace margelo::nitro::zano {
   DEFINE_PROXY_METHOD(std::string, reset,)
   DEFINE_PROXY_METHOD(std::string, set_log_level, (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
   DEFINE_PROXY_METHOD(std::string, get_version,)
-  DEFINE_PROXY_METHOD(std::string, get_wallet_files,)
-  DEFINE_PROXY_METHOD(std::string, get_export_private_info, (const std::string &, target_dir, target_dir),)
+  DEFINE_PROXY_ASYNC_METHOD(std::string, get_wallet_files,)
+  DEFINE_PROXY_ASYNC_METHOD(std::string, get_export_private_info, (const std::string &, target_dir, target_dir),)
   DEFINE_PROXY_METHOD(std::string, delete_wallet, (const std::string &, file_name, file_name),)
   DEFINE_PROXY_METHOD(std::string, get_address_info, (const std::string &, addr, addr),)
 

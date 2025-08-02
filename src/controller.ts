@@ -32,8 +32,7 @@ import type { DeepReadonly } from './utils/types';
 import type { IWalletRpc } from './wallet-rpc';
 import { WalletRpc } from './wallet-rpc';
 
-export interface Zano {}
-export class Zano {
+export class ZanoController {
   constructor(address: string | [host: string, port: string] = 'https://node.zano.org:443', log_level = ZanoLogLevel.DISABLED) {
     this.#log_level = log_level;
 
@@ -66,7 +65,7 @@ export class Zano {
       this.#init_result = json.result.return_code;
     }
 
-    TypedJSON.parse(PlainWallet.get_wallet_files()).items?.forEach((wallet_name) =>
+    TypedJSON.parse(await PlainWallet.get_wallet_files()).items?.forEach((wallet_name) =>
       this.#wallet_files.set(wallet_name, new ZanoWalletFile(this, wallet_name))
     );
 
@@ -91,6 +90,9 @@ export class Zano {
 
   get lib_version() {
     return PlainWallet.get_version();
+  }
+  get working_directory() {
+    return PlatformUtils.get_working_directory();
   }
 
   #log_level: ZanoLogLevel;
@@ -205,7 +207,7 @@ export class Zano {
 const wallets = new WeakMap<ZanoWalletFile, ZanoWallet | null>();
 export class ZanoWalletFile {
   constructor(
-    readonly api: Zano,
+    readonly api: ZanoController,
     readonly wallet_name: string,
     response?: open_wallet_response
   ) {
@@ -319,7 +321,7 @@ Object.keys(Object.getPrototypeOf(WalletRpc))
 
 export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
   constructor(
-    readonly api: Zano,
+    readonly api: ZanoController,
     initial: DeepReadonly<AppConfig>,
     encryption_key?: string
   ) {

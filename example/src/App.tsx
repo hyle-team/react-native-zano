@@ -1,4 +1,4 @@
-import { Zano } from '@hyle-team/react-native-zano';
+import { ZanoController } from '@hyle-team/react-native-zano';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 
@@ -6,7 +6,7 @@ export default function App() {
   const [result, setResult] = useState('');
   const [time, setTime] = useState(0);
 
-  const api = useMemo(() => new Zano('https://node.zano.org:443'), []);
+  const api = useMemo(() => new ZanoController('https://node.zano.org:443'), []);
   useEffect(() => () => api.dispose(), [api]);
 
   return (

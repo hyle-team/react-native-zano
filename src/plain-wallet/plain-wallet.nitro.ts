@@ -6,8 +6,8 @@ export interface PlainWallet extends HybridObject<{ ios: 'c++'; android: 'c++' }
   reset(): string;
   set_log_level(log_level: ZanoLogLevel): string;
   get_version(): string;
-  get_wallet_files(): string;
-  get_export_private_info(target_dir: string): string;
+  get_wallet_files(): Promise<string>;
+  get_export_private_info(target_dir: string): Promise<string>;
   delete_wallet(file_name: string): string;
   get_address_info(addr: string): string;
 

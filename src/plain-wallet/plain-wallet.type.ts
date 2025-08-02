@@ -100,10 +100,10 @@ export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONV
 
   get_logs_buffer(): Promise<string>;
   truncate_log(): zano_lib_truncate_log_response;
-  get_export_private_info(): zano_lib_get_export_private_info_response;
+  get_export_private_info(): Promise<zano_lib_get_export_private_info_response>;
   generate_random_key(length: number): string;
 
-  get_wallet_files(): zano_lib_get_wallet_files_response;
+  get_wallet_files(): Promise<zano_lib_get_wallet_files_response>;
   get_opened_wallets(): Promise<zano_lib_get_opened_wallets_response>;
   is_wallet_exist(path: string): boolean;
   delete_wallet(file_name: string): zano_lib_delete_wallet_response;
