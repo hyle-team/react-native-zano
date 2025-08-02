@@ -99,7 +99,7 @@ export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONV
   set_appconfig(conf_str: string, encryption_key: string): zano_lib_set_appconfig_response;
 
   get_logs_buffer(): Promise<string>;
-  truncate_log(): zano_lib_truncate_log_response;
+  truncate_log(): Promise<zano_lib_truncate_log_response>;
   get_export_private_info(): Promise<zano_lib_get_export_private_info_response>;
   generate_random_key(length: number): string;
 

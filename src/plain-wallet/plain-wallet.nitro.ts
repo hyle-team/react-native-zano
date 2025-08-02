@@ -15,7 +15,7 @@ export interface PlainWallet extends HybridObject<{ ios: 'c++'; android: 'c++' }
   set_appconfig(conf_str: string, encryption_key: string): string;
   generate_random_key(lenght: number): string;
   get_logs_buffer(): Promise<string>;
-  truncate_log(): string;
+  truncate_log(): Promise<string>;
   get_connectivity_status(): string;
 
   open(path: string, password: string): Promise<string>;

@@ -24,7 +24,7 @@ public:
   std::string set_appconfig(const std::string &conf_str, const std::string &encryption_key) override;
   std::string generate_random_key(double lenght) override;
   std::shared_ptr<Promise<std::string>> get_logs_buffer() override;
-  std::string truncate_log() override;
+  std::shared_ptr<Promise<std::string>> truncate_log() override;
   std::string get_connectivity_status() override;
 
   std::shared_ptr<Promise<std::string>> open(const std::string &path, const std::string &password) override;

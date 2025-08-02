@@ -42,7 +42,7 @@ namespace margelo::nitro::zano {
   DEFINE_PROXY_METHOD(std::string, set_appconfig, (const std::string &, conf_str, conf_str), (const std::string &, encryption_key, encryption_key),)
   DEFINE_PROXY_METHOD(std::string, generate_random_key, (double, length, length),)
   DEFINE_PROXY_ASYNC_METHOD(std::string, get_logs_buffer,)
-  DEFINE_PROXY_METHOD(std::string, truncate_log,)
+  DEFINE_PROXY_ASYNC_METHOD(std::string, truncate_log,)
   DEFINE_PROXY_METHOD(std::string, get_connectivity_status,)
 
   DEFINE_PROXY_ASYNC_METHOD(std::string, open, (const std::string &, path, path), (const std::string &, password, password),)

@@ -132,8 +132,8 @@ export class ZanoController {
   get_logs_buffer() {
     return PlainWallet.get_logs_buffer();
   }
-  truncate_log() {
-    const response = TypedJSON.parse(PlainWallet.truncate_log());
+  async truncate_log() {
+    const response = TypedJSON.parse(await PlainWallet.truncate_log());
     assertErrorCode(response);
   }
   export_private_info() {
