@@ -151,11 +151,13 @@ export class ZanoController {
   get wallet_files(): ReadonlyMap<string, ZanoWalletFile> {
     return this.#wallet_files;
   }
-  delete_wallet_file(name: string) {
-    if (this.#wallet_files.delete(name)) {
-      const response = TypedJSON.parse(PlainWallet.delete_wallet(name));
-      assertErrorCode(response);
-    }
+  async delete_wallet_file(name: string) {
+    const file = this.#wallet_files.get(name);
+    if (!file) return;
+    await file.wallet?.close();
+    const response = TypedJSON.parse(PlainWallet.delete_wallet(name));
+    assertErrorCode(response);
+    this.#wallet_files.delete(name);
   }
 
   async restore_wallet(name: string, wallet_password: string, seed: string, seed_password: string) {
@@ -292,31 +294,37 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
       if (code === API_RETURN_CODE.INTERNAL_ERROR) throw new ZanoInternalError();
       if (code.startsWith(`${API_RETURN_CODE.FAIL}:`)) throw new ZanoFailedError(code.substring(`${API_RETURN_CODE.FAIL}:`.length));
     }
-    (this.file.api.wallet_files as Map<string, ZanoWalletFile>).delete(this.name);
     wallets.set(this.file, null);
   }
 }
-type ExtractResponse<T> = Exclude<UnwrapTypedJSON<T>, ReturnCodeErrors | ErrorCodeErrors | WalletCodeErrors>['result'];
+type _ExtractResponse<T> = Exclude<UnwrapTypedJSON<T>, ReturnCodeErrors | ErrorCodeErrors | WalletCodeErrors>['result'];
+type ExtractResponse<T> = T extends Promise<infer V> ? Promise<_ExtractResponse<V>> : _ExtractResponse<T>;
 type WalletRpcWrappers = {
   [Name in Exclude<keyof IWalletRpc, keyof HybridObject>]: (
     params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
-  ) => ExtractResponse<Awaited<ReturnType<IWalletRpc[Name]>>>;
+  ) => ExtractResponse<ReturnType<IWalletRpc[Name]>>;
 };
 export interface ZanoWallet extends WalletRpcWrappers {}
 Object.keys(Object.getPrototypeOf(WalletRpc))
   .filter((name) => name !== '__type')
   .forEach((name) => {
-    const method = function <Name extends Exclude<keyof IWalletRpc, keyof HybridObject>>(
-      this: ZanoWallet,
-      params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
-    ) {
-      const response = WalletRpc[name as Name](this.wallet_id, TypedJSON.stringify(params as never));
+    const handleResponse = (response: Awaited<ReturnType<(typeof WalletRpc)[Exclude<keyof IWalletRpc, keyof HybridObject>]>>) => {
       if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw new ZanoWrongWalletIdError();
       const json = TypedJSON.parse(response);
       assertErrorCode(json);
       assertReturnErrors(json);
       assertWalletRpcError(json);
       return json.result;
+    };
+    const method = function <Name extends Exclude<keyof IWalletRpc, keyof HybridObject>>(
+      this: ZanoWallet,
+      params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
+    ) {
+      const result = WalletRpc[name as Name](this.wallet_id, TypedJSON.stringify(params as never));
+      if (result instanceof Promise) {
+        return result.then(handleResponse);
+      }
+      return handleResponse(result);
     };
     Object.defineProperty(method, 'name', { value: name, writable: false, enumerable: false, configurable: true });
     ZanoWallet.prototype[name as never] = method as never;
