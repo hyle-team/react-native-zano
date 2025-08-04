@@ -65,9 +65,9 @@ export class ZanoController {
       this.#init_result = json.result.return_code;
     }
 
-    TypedJSON.parse(await PlainWallet.get_wallet_files()).items?.forEach((wallet_name) =>
-      this.#wallet_files.set(wallet_name, new ZanoWalletFile(this, wallet_name))
-    );
+    TypedJSON.parse(await PlainWallet.get_wallet_files()).items?.forEach((name) => {
+      this.#wallet_files.set(name, new ZanoWalletFile(this, name));
+    });
 
     {
       const response = TypedJSON.parse(await PlainWallet.get_opened_wallets());
@@ -93,6 +93,9 @@ export class ZanoController {
   }
   get working_directory() {
     return PlatformUtils.get_working_directory();
+  }
+  get downloads_directory() {
+    return PlatformUtils.get_downloads_directory();
   }
 
   #log_level: ZanoLogLevel;
@@ -136,8 +139,8 @@ export class ZanoController {
     const response = TypedJSON.parse(await PlainWallet.truncate_log());
     assertErrorCode(response);
   }
-  export_private_info() {
-    const response = TypedJSON.parse(PlainWallet.get_export_private_info());
+  async export_private_info(target_dir: string) {
+    const response = TypedJSON.parse(await PlainWallet.get_export_private_info(target_dir));
     assertReturnErrors(response);
   }
   generate_random_key(length = 20) {
@@ -148,29 +151,29 @@ export class ZanoController {
   get wallet_files(): ReadonlyMap<string, ZanoWalletFile> {
     return this.#wallet_files;
   }
-  delete_wallet_file(wallet_name: string) {
-    if (this.#wallet_files.delete(wallet_name)) {
-      const response = TypedJSON.parse(PlainWallet.delete_wallet(wallet_name));
+  delete_wallet_file(name: string) {
+    if (this.#wallet_files.delete(name)) {
+      const response = TypedJSON.parse(PlainWallet.delete_wallet(name));
       assertErrorCode(response);
     }
   }
 
-  async restore_wallet(wallet_name: string, wallet_password: string, seed: string, seed_password: string) {
-    if (this.#wallet_files.has(wallet_name)) throw new ZanoAlreadyExistsError('wallet file already exists');
-    const response = TypedJSON.parse(await PlainWallet.restore(seed, wallet_name, wallet_password, seed_password));
+  async restore_wallet(name: string, wallet_password: string, seed: string, seed_password: string) {
+    if (this.#wallet_files.has(name)) throw new ZanoAlreadyExistsError('wallet file already exists');
+    const response = TypedJSON.parse(await PlainWallet.restore(seed, name, wallet_password, seed_password));
     assertErrorCode(response);
     assertReturnErrors(response);
-    const file = new ZanoWalletFile(this, wallet_name, response.result);
-    this.#wallet_files.set(wallet_name, file);
+    const file = new ZanoWalletFile(this, name, response.result);
+    this.#wallet_files.set(name, file);
     return file.wallet!;
   }
-  async generate_wallet(wallet_name: string, password: string) {
-    if (this.#wallet_files.has(wallet_name)) throw new ZanoAlreadyExistsError('wallet file already exists');
-    const response = TypedJSON.parse(await PlainWallet.generate(wallet_name, password));
+  async generate_wallet(name: string, password: string) {
+    if (this.#wallet_files.has(name)) throw new ZanoAlreadyExistsError('wallet file already exists');
+    const response = TypedJSON.parse(await PlainWallet.generate(name, password));
     assertErrorCode(response);
     assertReturnErrors(response);
-    const file = new ZanoWalletFile(this, wallet_name, response.result);
-    this.#wallet_files.set(wallet_name, file);
+    const file = new ZanoWalletFile(this, name, response.result);
+    this.#wallet_files.set(name, file);
     return file.wallet!;
   }
 
@@ -208,7 +211,7 @@ const wallets = new WeakMap<ZanoWalletFile, ZanoWallet | null>();
 export class ZanoWalletFile {
   constructor(
     readonly api: ZanoController,
-    readonly wallet_name: string,
+    readonly name: string,
     response?: open_wallet_response
   ) {
     wallets.set(this, response ? new ZanoWallet(this, response) : null);
@@ -219,10 +222,10 @@ export class ZanoWalletFile {
 
   async open(password: string) {
     if (this.wallet) return this.wallet;
-    const response = TypedJSON.parse(await PlainWallet.open(this.wallet_name, password));
+    const response = TypedJSON.parse(await PlainWallet.open(this.name, password));
     assertErrorCode(response);
     assertReturnErrors(response);
-    const wallet = new ZanoWallet(this, { ...response.result, name: this.wallet_name, pass: password });
+    const wallet = new ZanoWallet(this, { ...response.result, name: this.name, pass: password });
     wallets.set(this, wallet);
     return wallet;
   }
