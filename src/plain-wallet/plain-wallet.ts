@@ -1,13 +1,26 @@
-import { ZanoBindingError } from '../errors';
+import { NitroModules, type HybridObject } from 'react-native-nitro-modules';
 import type { IPlainWallet } from './plain-wallet.type';
 
-export const PlainWallet = new Proxy(
-  {},
-  {
-    get(target, name) {
-      if (name in target && target[name as never]) return target[name as never];
-      if (!('ZanoPlainWallet' in globalThis)) throw new ZanoBindingError('Failed to find web based bindings for rn-zano ZanoPlainWallet');
-      return globalThis['ZanoPlainWallet' as never][name];
+let PlainWallet = NitroModules.createHybridObject<IPlainWallet>('PlainWallet');
+if (__DEV__) {
+  const methods = {} as Omit<IPlainWallet, keyof HybridObject>;
+  PlainWallet = new Proxy(PlainWallet, {
+    get(target, prop) {
+      if (prop in methods) return methods[prop as never];
+      const name = prop as keyof typeof methods;
+      // @ts-expect-error
+      methods[name] = (...params: any[]) => {
+        let duration = performance.now();
+        // @ts-expect-error
+        const result = target[name](...params);
+        duration = performance.now() - duration;
+        console.log(`[ZANO][PlainWallet] ${name} call duration:`, duration);
+        return result;
+      };
+      return Reflect.get(methods, name, PlainWallet);
     },
-  }
-) as IPlainWallet;
+  });
+}
+export { PlainWallet };
+
+export * from './enums';

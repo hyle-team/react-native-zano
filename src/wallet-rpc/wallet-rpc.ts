@@ -1,13 +1,24 @@
-import { ZanoBindingError } from '../errors';
+import { NitroModules, type HybridObject } from 'react-native-nitro-modules';
 import type { IWalletRpc } from './wallet-rpc.type';
 
-export const WalletRpc = new Proxy(
-  {},
-  {
-    get(target, name) {
-      if (name in target && target[name as never]) return target[name as never];
-      if (!('ZanoWalletRpc' in globalThis)) throw new ZanoBindingError('Failed to find web based bindings for rn-zano ZanoWalletRpc');
-      return globalThis['ZanoWalletRpc' as never][name];
+let WalletRpc = NitroModules.createHybridObject<IWalletRpc>('WalletRpc');
+if (__DEV__) {
+  const methods = {} as Omit<IWalletRpc, keyof HybridObject>;
+  WalletRpc = new Proxy(WalletRpc, {
+    get(target, prop) {
+      if (prop in methods) return methods[prop as never];
+      const name = prop as keyof typeof methods;
+      // @ts-expect-error
+      methods[name] = (...params: any[]) => {
+        let duration = performance.now();
+        // @ts-expect-error
+        const result = target[name](...params);
+        duration = performance.now() - duration;
+        console.log(`[ZANO][WalletRpc] ${name} call duration:`, duration);
+        return result;
+      };
+      return Reflect.get(methods, name, WalletRpc);
     },
-  }
-) as IWalletRpc;
+  });
+}
+export { WalletRpc };
