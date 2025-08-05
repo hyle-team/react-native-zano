@@ -818,11 +818,11 @@ export interface IWalletRpc extends WalletRpc {
   /** Returns wallet helpful wallet information */
   get_wallet_info: WalletMethod<INVOKE_RPC_GET_WALLET_INFO_REQUEST, INVOKE_RPC_GET_WALLET_INFO_RESPONSE>;
   /** Returns wallet history of transactions */
-  get_recent_txs_and_info: WalletMethod<INVOKE_RPC_GET_RECENT_TXS_AND_INFO_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO_RESPONSE>;
+  get_recent_txs_and_info: WalletAsyncMethod<INVOKE_RPC_GET_RECENT_TXS_AND_INFO_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO_RESPONSE>;
   /** Returns wallet history of transactions V2 (post-zarcanum version) */
-  get_recent_txs_and_info2: WalletMethod<INVOKE_RPC_GET_RECENT_TXS_AND_INFO2_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO2_RESPONSE>;
+  get_recent_txs_and_info2: WalletAsyncMethod<INVOKE_RPC_GET_RECENT_TXS_AND_INFO2_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO2_RESPONSE>;
   /** Make new payment transaction from the wallet */
-  transfer: WalletMethod<
+  transfer: WalletAsyncMethod<
     INVOKE_RPC_TRANSFER_REQUEST,
     INVOKE_RPC_TRANSFER_RESPONSE,
     | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `Given fee is too low: ${number}, minimum is: ${number}`>
@@ -835,13 +835,13 @@ export interface IWalletRpc extends WalletRpc {
   /** Store wallet's data to file */
   store: WalletAsyncMethod<INVOKE_RPC_STORE_REQUEST, INVOKE_RPC_STORE_RESPONSE>;
   /** Gets list of incoming transfers by a given payment ID */
-  get_payments: WalletMethod<
+  get_payments: WalletAsyncMethod<
     INVOKE_RPC_GET_PAYMENTS_REQUEST,
     INVOKE_RPC_GET_PAYMENTS_RESPONSE,
     ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
   >;
   /** Gets list of incoming transfers by a given multiple payment_ids */
-  get_bulk_payments: WalletMethod<
+  get_bulk_payments: WalletAsyncMethod<
     INVOKE_RPC_GET_BULK_PAYMENTS_REQUEST,
     INVOKE_RPC_GET_BULK_PAYMENTS_RESPONSE,
     ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
@@ -898,9 +898,9 @@ export interface IWalletRpc extends WalletRpc {
     ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `tx_unsigned_hex is invalid`>
   >;
   /** Search for transactions in the wallet by few parameters (legacy version) */
-  search_for_transactions: WalletMethod<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_RESPONSE>;
+  search_for_transactions: WalletAsyncMethod<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_RESPONSE>;
   /** Search for transactions in the wallet by few parameters */
-  search_for_transactions2: WalletMethod<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_RESPONSE>;
+  search_for_transactions2: WalletAsyncMethod<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_RESPONSE>;
   /** Return wallet seed, which could be password-protected or open */
   get_restore_info: WalletMethod<INVOKE_RPC_GET_WALLET_RESTORE_INFO_REQUEST, INVOKE_RPC_GET_WALLET_RESTORE_INFO_RESPONSE>;
   /** This call is used to validate seed phrase and to fetch additional information about it */
@@ -908,14 +908,14 @@ export interface IWalletRpc extends WalletRpc {
   /** Returns wallet statistic on mining */
   get_mining_history: WalletMethod<INVOKE_RPC_GET_MINING_HISTORY_REQUEST, INVOKE_RPC_GET_MINING_HISTORY_RESPONSE>;
   /** Register an alias for the address */
-  register_alias: WalletMethod<
+  register_alias: WalletAsyncMethod<
     INVOKE_RPC_REGISTER_ALIAS_REQUEST,
     INVOKE_RPC_REGISTER_ALIAS_RESPONSE,
     | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
     | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - Wrong alias name'>
   >;
   /** Update an alias details/transfer alias ownership */
-  update_alias: WalletMethod<
+  update_alias: WalletAsyncMethod<
     INVOKE_RPC_UPDATE_ALIAS_REQUEST,
     INVOKE_RPC_UPDATE_ALIAS_RESPONSE,
     | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>

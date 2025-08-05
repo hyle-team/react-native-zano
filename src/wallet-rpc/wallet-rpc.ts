@@ -14,7 +14,9 @@ if (__DEV__) {
         // @ts-expect-error
         const result = target[name](...params);
         duration = performance.now() - duration;
-        console.log(`[ZANO][WalletRpc] ${name} call duration:`, duration);
+        // @ts-expect-error
+        const maxDuration = globalThis.__MAX_DURATION__ ?? 100;
+        if (duration > maxDuration) console.info(`[ZANO][WalletRpc] ${name} call duration:`, duration.toFixed(2));
         return result;
       };
       return Reflect.get(methods, name, WalletRpc);
