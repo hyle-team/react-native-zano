@@ -1,0 +1,8 @@
+---
+IndentWidth: 2
+---
+Language: Cpp
+BreakBeforeBraces: Attach
+BreakAfterReturnType: Automatic
+AllowShortFunctionsOnASingleLine: None
+ColumnLimit: 150
