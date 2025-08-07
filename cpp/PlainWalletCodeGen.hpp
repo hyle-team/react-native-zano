@@ -7,47 +7,11 @@
 #define FE_GET_MACRO(_0, _1, _2, _3, _4, _5, NAME, ...) NAME
 #define FOR_EACH(action, ...) FE_GET_MACRO(__VA_ARGS__, FE_5, FE_4, FE_3, FE_2, FE_1, NO_MACRO)(action, __VA_ARGS__)
 
-#define StringReturn std::string
-#define StringReturnCast(expression) expression
-#define StringParam const std::string &
-#define StringParamCast(expression) expression
-
-#define BoolReturn bool
-#define BoolReturnCast(expression) expression
-
-#define IntReturn double
-#define IntReturnCast(expression) expression
-
-#define DoubleParam double
-#define DoubleParamCast(expression) expression
-
-#define SizeParam double
-#define SizeParamCast(expression) expression
-
-#define HWalletParam double
-#define HWalletParamCast(expression) static_cast<plain_wallet::hwallet>(expression)
-
-#define ZanoLogLevelParam ZanoLogLevel
-#define ZanoLogLevelParamCast(expression) static_cast<int>(expression)
-
-#define ZanoPriorityParam ZanoPriority
-#define ZanoPriorityParamCast(expression) static_cast<int>(expression)
-
 #define PRINT_CAST_IMPL(type, name) type##ParamCast(name)
 #define PRINT_CAST(param) PRINT_CAST_IMPL param
 
 #define PRINT_PARAM_IMPL(type, name) type##Param name
 #define PRINT_PARAM(param) PRINT_PARAM_IMPL param
-
-#ifndef PROXY_ASYNC_METHOD
-#define PROXY_ASYNC_METHOD(return_type, name, ...)
-#endif
-#ifndef PROXY_METHOD
-#define PROXY_METHOD(return_type, name, ...)
-#endif
-#ifndef SYNC_CALL_METHOD
-#define SYNC_CALL_METHOD(return_type, name, ...)
-#endif
 
 PROXY_ASYNC_METHOD(String, init, (String, host), (String, port), (String, working_dir), (ZanoLogLevel, log_level), )
 PROXY_METHOD(String, reset, )

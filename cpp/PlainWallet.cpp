@@ -15,6 +15,8 @@ namespace margelo::nitro::zano {
       return return_type##ReturnCast(plain_wallet::sync_call(#name, 0, FOR_EACH(PRINT_CAST, __VA_ARGS__)));                                            \
     }
 
+  #include "PlainWalletCodeTypes.hpp"
+
   #include "PlainWalletCodeGen.hpp"
 
 } // namespace margelo::nitro::zano
