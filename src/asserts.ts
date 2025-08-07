@@ -7,6 +7,7 @@ import {
   ZanoInvalidFileError,
   ZanoNotFoundError,
   ZanoUninitializedError,
+  ZanoWalletBusyError,
   ZanoWalletRpcDaemonIsBusyError,
   ZanoWalletRpcGenericTransferError,
   ZanoWalletRpcNotEnoughMoneyError,
@@ -110,7 +111,10 @@ export function assertWalletRpcError<R extends object>(response: R): asserts res
   const { code } = error;
   if (typeof code !== 'number') return;
   const message = 'message' in error ? String(error.message) || undefined : undefined;
-  if (code === WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR) throw new ZanoWalletRpcUnknownError(message);
+  if (code === WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR) {
+    if (message === API_RETURN_CODE.BUSY) throw new ZanoWalletBusyError();
+    throw new ZanoWalletRpcUnknownError(message);
+  }
   if (code === WALLET_RPC_ERROR_CODE.WRONG_ADDRESS) throw new ZanoWalletRpcWrongAddressError(message);
   if (code === WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY) throw new ZanoWalletRpcDaemonIsBusyError(message);
   if (code === WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR) throw new ZanoWalletRpcGenericTransferError(message);
