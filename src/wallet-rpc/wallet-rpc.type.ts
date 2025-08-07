@@ -904,7 +904,7 @@ export interface IWalletRpc extends WalletRpc {
   /** Return wallet seed, which could be password-protected or open */
   get_restore_info: WalletMethod<INVOKE_RPC_GET_WALLET_RESTORE_INFO_REQUEST, INVOKE_RPC_GET_WALLET_RESTORE_INFO_RESPONSE>;
   /** This call is used to validate seed phrase and to fetch additional information about it */
-  get_seed_phrase_info: WalletMethod<INVOKE_RPC_GET_SEED_PHRASE_INFO_REQUEST, INVOKE_RPC_GET_SEED_PHRASE_INFO_RESPONSE>;
+  // get_seed_phrase_info: WalletMethod<INVOKE_RPC_GET_SEED_PHRASE_INFO_REQUEST, INVOKE_RPC_GET_SEED_PHRASE_INFO_RESPONSE>;
   /** Returns wallet statistic on mining */
   get_mining_history: WalletMethod<INVOKE_RPC_GET_MINING_HISTORY_REQUEST, INVOKE_RPC_GET_MINING_HISTORY_RESPONSE>;
   /** Register an alias for the address */

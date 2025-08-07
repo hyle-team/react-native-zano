@@ -37,7 +37,7 @@ public:
   DECLARE_ASYNC_METHOD(search_for_transactions);
   DECLARE_ASYNC_METHOD(search_for_transactions2);
   DECLARE_METHOD(get_restore_info);
-  DECLARE_METHOD(get_seed_phrase_info);
+  // DECLARE_METHOD(get_seed_phrase_info);
   DECLARE_METHOD(get_mining_history);
   DECLARE_ASYNC_METHOD(register_alias);
   DECLARE_ASYNC_METHOD(update_alias);

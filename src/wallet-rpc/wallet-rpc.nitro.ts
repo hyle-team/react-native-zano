@@ -20,7 +20,7 @@ export interface WalletRpc extends HybridObject<{ ios: 'c++'; android: 'c++' }> 
   search_for_transactions(instance_id: number, params: string): Promise<string>;
   search_for_transactions2(instance_id: number, params: string): Promise<string>;
   get_restore_info(instance_id: number, params: string): string;
-  get_seed_phrase_info(instance_id: number, params: string): string;
+  // get_seed_phrase_info(instance_id: number, params: string): string;
   get_mining_history(instance_id: number, params: string): string;
   register_alias(instance_id: number, params: string): Promise<string>;
   update_alias(instance_id: number, params: string): Promise<string>;

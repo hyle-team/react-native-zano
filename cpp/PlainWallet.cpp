@@ -1,7 +1,6 @@
 #include "PlainWallet.hpp"
 #include "plain_wallet_api.h"
 
-// ...existing code...
 #define NO_MACRO(WHAT, X)
 #define FE_1(WHAT, X, ...) WHAT(X)
 #define FE_2(WHAT, X, ...) WHAT(X),FE_1(WHAT, __VA_ARGS__)
@@ -12,59 +11,83 @@
 #define FOR_EACH(action, ...) \
   FE_GET_MACRO(__VA_ARGS__,FE_5,FE_4,FE_3,FE_2,FE_1, NO_MACRO)(action,__VA_ARGS__)
 
-#define PRINT_CAST_IMPL(type, name, cast) cast
+#define PRINT_CAST_IMPL(type, name) type##ParamCast(name)
 #define PRINT_CAST(param) PRINT_CAST_IMPL param
 
-#define PRINT_PARAM_IMPL(type, name, ...) type name
+#define PRINT_PARAM_IMPL(type, name) type##Param name
 #define PRINT_PARAM(param) PRINT_PARAM_IMPL param
 
-#define DEFINE_PROXY_METHOD(result, name, ...) result PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) { \
-  return plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__)); \
-}
-#define DEFINE_PROXY_ASYNC_METHOD(result, name, ...) std::shared_ptr<Promise<result>> PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) { \
-  return Promise<result>::async([=]() { \
-    return plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__)); \
-  }); \
-}
+#define DEFINE_PROXY_METHOD(return_type, name, ...)                                                                                                  \
+  return_type##Return PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) {                                                                        \
+    return return_type##ReturnCast(plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__)));                                                           \
+  }
+#define DEFINE_PROXY_ASYNC_METHOD(return_type, name, ...)                                                                                            \
+  std::shared_ptr<Promise<return_type##Return>> PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) {                                              \
+    return Promise<return_type##Return>::async([=]() { return return_type##ReturnCast(plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__))); });    \
+  }
+#define DEFINE_SYNC_CALL_METHOD(return_type, name, ...)                                                                                              \
+  return_type##Return PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) {                                                                    \
+    return return_type##ReturnCast(plain_wallet::sync_call(#name, 0, FOR_EACH(PRINT_CAST, __VA_ARGS__)));                                            \
+  }
+
+#define StringReturn std::string
+#define StringReturnCast(expression) expression
+#define StringParam const std::string &
+#define StringParamCast(expression) expression
+
+#define BoolReturn bool
+#define BoolReturnCast(expression) expression
+
+#define IntReturn double
+#define IntReturnCast(expression) expression
+
+#define DoubleParam double
+#define DoubleParamCast(expression) expression
+
+#define SizeParam double
+#define SizeParamCast(expression) expression
+
+#define HWalletParam double
+#define HWalletParamCast(expression) static_cast<plain_wallet::hwallet>(expression)
+
+#define ZanoLogLevelParam ZanoLogLevel
+#define ZanoLogLevelParamCast(expression) static_cast<int>(expression)
+
+#define ZanoPriorityParam ZanoPriority
+#define ZanoPriorityParamCast(expression) static_cast<int>(expression)
 
 namespace margelo::nitro::zano {
+  DEFINE_PROXY_ASYNC_METHOD(String, init, (String, host), (String, port), (String, working_dir), (ZanoLogLevel, log_level), )
+  DEFINE_PROXY_METHOD(String, reset, )
+  DEFINE_PROXY_METHOD(String, set_log_level, (ZanoLogLevel, log_level), )
+  DEFINE_PROXY_METHOD(String, get_version, )
+  DEFINE_PROXY_ASYNC_METHOD(String, get_wallet_files, )
+  DEFINE_PROXY_ASYNC_METHOD(String, get_export_private_info, (String, target_dir), )
+  DEFINE_PROXY_METHOD(String, delete_wallet, (String, file_name), )
+  DEFINE_PROXY_METHOD(String, get_address_info, (String, addr), )
 
-  DEFINE_PROXY_ASYNC_METHOD(std::string, init, (const std::string &, host, host), (const std::string &, port, port), (const std::string &, working_dir, working_dir), (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
-  DEFINE_PROXY_METHOD(std::string, reset,)
-  DEFINE_PROXY_METHOD(std::string, set_log_level, (ZanoLogLevel, log_level, static_cast<int>(log_level)),)
-  DEFINE_PROXY_METHOD(std::string, get_version,)
-  DEFINE_PROXY_ASYNC_METHOD(std::string, get_wallet_files,)
-  DEFINE_PROXY_ASYNC_METHOD(std::string, get_export_private_info, (const std::string &, target_dir, target_dir),)
-  DEFINE_PROXY_METHOD(std::string, delete_wallet, (const std::string &, file_name, file_name),)
-  DEFINE_PROXY_METHOD(std::string, get_address_info, (const std::string &, addr, addr),)
+  DEFINE_PROXY_METHOD(String, get_appconfig, (String, encryption_key), )
+  DEFINE_PROXY_METHOD(String, set_appconfig, (String, conf_str), (String, encryption_key), )
+  DEFINE_PROXY_METHOD(String, generate_random_key, (Size, length), )
+  DEFINE_PROXY_ASYNC_METHOD(String, get_logs_buffer, )
+  DEFINE_PROXY_ASYNC_METHOD(String, truncate_log, )
+  DEFINE_PROXY_METHOD(String, get_connectivity_status, )
 
-  DEFINE_PROXY_METHOD(std::string, get_appconfig, (const std::string &, encryption_key, encryption_key),)
-  DEFINE_PROXY_METHOD(std::string, set_appconfig, (const std::string &, conf_str, conf_str), (const std::string &, encryption_key, encryption_key),)
-  DEFINE_PROXY_METHOD(std::string, generate_random_key, (double, length, length),)
-  DEFINE_PROXY_ASYNC_METHOD(std::string, get_logs_buffer,)
-  DEFINE_PROXY_ASYNC_METHOD(std::string, truncate_log,)
-  DEFINE_PROXY_METHOD(std::string, get_connectivity_status,)
+  DEFINE_PROXY_ASYNC_METHOD(String, open, (String, path), (String, password), )
+  DEFINE_PROXY_ASYNC_METHOD(String, restore, (String, seed), (String, path), (String, password), (String, seed_password), )
+  DEFINE_PROXY_ASYNC_METHOD(String, generate, (String, path), (String, password), )
+  DEFINE_PROXY_ASYNC_METHOD(String, get_opened_wallets, )
 
-  DEFINE_PROXY_ASYNC_METHOD(std::string, open, (const std::string &, path, path), (const std::string &, password, password),)
-  DEFINE_PROXY_ASYNC_METHOD(std::string, restore, (const std::string &, seed, seed), (const std::string &, path, path), (const std::string &, password, password), (const std::string &, seed_password, seed_password),)
-  DEFINE_PROXY_ASYNC_METHOD(std::string, generate, (const std::string &, path, path), (const std::string &, password, password),)
-  DEFINE_PROXY_ASYNC_METHOD(std::string, get_opened_wallets,)
-
-  DEFINE_PROXY_METHOD(std::string, get_wallet_status, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)),)
-  DEFINE_PROXY_ASYNC_METHOD(std::string, close_wallet, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)),)
+  DEFINE_PROXY_METHOD(String, get_wallet_status, (HWallet, instance_id), )
+  DEFINE_PROXY_ASYNC_METHOD(String, close_wallet, (HWallet, instance_id), )
 
   // cake wallet api extension
-  DEFINE_PROXY_METHOD(bool, is_wallet_exist, (const std::string &, path, path),)
-  DEFINE_PROXY_METHOD(std::string, get_wallet_info, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)),)
-  DEFINE_PROXY_METHOD(std::string, reset_wallet_password, (double, instance_id, static_cast<plain_wallet::hwallet>(instance_id)), (const std::string &, password, password),)
-  DEFINE_PROXY_METHOD(double, get_current_tx_fee, (ZanoPriority, priority, static_cast<uint64_t>(priority)),)
+  DEFINE_PROXY_METHOD(Bool, is_wallet_exist, (String, path), )
+  DEFINE_PROXY_METHOD(String, get_wallet_info, (HWallet, instance_id), )
+  DEFINE_PROXY_METHOD(String, reset_wallet_password, (HWallet, instance_id), (String, password), )
+  DEFINE_PROXY_METHOD(Int, get_current_tx_fee, (ZanoPriority, priority), )
 
-  std::string PlainWallet::get_seed_phrase_info(const std::string &params) {
-    return plain_wallet::sync_call("get_seed_phrase_info", 0, params);
-  }
-
-  std::string PlainWallet::reset_connection_url(const std::string &address) {
-    return plain_wallet::sync_call("reset_connection_url", 0, address);
-  }
+  DEFINE_SYNC_CALL_METHOD(String, get_seed_phrase_info, (String, params), )
+  DEFINE_SYNC_CALL_METHOD(String, reset_connection_url, (String, address), )
 
 } // namespace margelo::nitro::zano

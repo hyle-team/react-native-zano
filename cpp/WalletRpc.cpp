@@ -43,7 +43,7 @@ namespace margelo::nitro::zano {
   DEFINE_ASYNC_METHOD(search_for_transactions)
   DEFINE_ASYNC_METHOD(search_for_transactions2)
   DEFINE_METHOD(get_restore_info)
-  DEFINE_METHOD(get_seed_phrase_info)
+  // DEFINE_METHOD(get_seed_phrase_info)
   DEFINE_METHOD(get_mining_history)
   DEFINE_ASYNC_METHOD(register_alias)
   DEFINE_ASYNC_METHOD(update_alias)
