@@ -29,6 +29,5 @@ export class ZanoWalletRpcWrongPaymentIdError extends createErrorClass('ZanoWall
 export class ZanoWalletRpcWrongArgumentError extends createErrorClass('ZanoWalletRpcWrongArgumentError') {}
 export class ZanoWalletRpcNotEnoughMoneyError extends createErrorClass('ZanoWalletRpcNotEnoughMoneyError') {}
 export class ZanoWalletRpcWrongMixinsForAuditableWalletError extends createErrorClass('ZanoWalletRpcWrongMixinsForAuditableWalletError') {}
-export class ZanoWalletRpcInvalidStatusError extends createErrorClass('ZanoWalletRpcInvalidStatusError') {}
 
 export class ZanoCoreBadArgumentError extends createErrorClass('ZanoCoreBadArgumentError', API_RETURN_CODE.BAD_ARG_INVALID_JSON) {}

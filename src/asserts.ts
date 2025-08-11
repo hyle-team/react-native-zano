@@ -3,6 +3,7 @@ import {
   ZanoAlreadyExistsError,
   ZanoCoreBadArgumentError,
   ZanoFailedError,
+  ZanoGeneralError,
   ZanoInternalError,
   ZanoInvalidFileError,
   ZanoNotFoundError,
@@ -10,7 +11,6 @@ import {
   ZanoWalletBusyError,
   ZanoWalletRpcDaemonIsBusyError,
   ZanoWalletRpcGenericTransferError,
-  ZanoWalletRpcInvalidStatusError,
   ZanoWalletRpcNotEnoughMoneyError,
   ZanoWalletRpcUnknownError,
   ZanoWalletRpcWrongAddressError,
@@ -125,18 +125,18 @@ export function assertWalletRpcError<R extends object>(response: R): asserts res
   if (code === WALLET_RPC_ERROR_CODE.WRONG_MIXINS_FOR_AUDITABLE_WALLET) throw new ZanoWalletRpcWrongMixinsForAuditableWalletError(message);
 }
 
-export type WalletRpcStatusErrors = { status: Exclude<API_RETURN_CODE, API_RETURN_CODE.OK> };
+export type StatusFieldErrors = { [S in Exclude<API_RETURN_CODE, API_RETURN_CODE.OK>]: { status: S } }[Exclude<API_RETURN_CODE, API_RETURN_CODE.OK>];
 type InferStatusErrors<R extends object> = R extends { status: infer S extends string } ? Exclude<S, API_RETURN_CODE.OK> : never;
-export function assertWalletRpcStatusErrors<R extends object>(
+export function assertStatusFieldErrors<R extends object>(
   response: R,
-  messages: Record<InferStatusErrors<R>, string | { (): Error }>
-): asserts response is Exclude<R, WalletRpcStatusErrors> {
+  messages: { [N in InferStatusErrors<R>]?: string | { (): Error } }
+): asserts response is Exclude<R, StatusFieldErrors> {
   if (!('status' in response)) return;
   const { status } = response;
   if (typeof status !== 'string') return;
   if (status === API_RETURN_CODE.OK) return;
   const message = messages[status as InferStatusErrors<R>];
-  throw typeof message === 'string' ? new ZanoWalletRpcInvalidStatusError(message) : message();
+  throw message === undefined || typeof message === 'string' ? new ZanoGeneralError(message) : message();
 }
 
 export type CoreCodeErrors = { error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON } | { error_code: API_RETURN_CODE.FAIL };

@@ -3,11 +3,12 @@ import {
   assertCoreRpcError,
   assertErrorCode,
   assertReturnErrors,
+  assertStatusFieldErrors,
   assertWalletRpcError,
-  assertWalletRpcStatusErrors,
   type CoreCodeErrors,
   type ErrorCodeErrors,
   type ReturnCodeErrors,
+  type StatusFieldErrors,
   type WalletCodeErrors,
 } from './asserts';
 import type { ICoreRpc } from './core-rpc';
@@ -191,7 +192,20 @@ export class ZanoController {
         const body = TypedJSON.parse(CoreRpc.base64_decode(response.base64_body));
         assertErrorCode(body);
         if (body.error) throw body.error;
-        return body.result;
+        const result = body.result;
+        if (typeof result === 'object') {
+          assertStatusFieldErrors(result, {
+            NOT_FOUND: () => {
+              switch (name) {
+                case 'get_asset_info':
+                  return new ZanoNotFoundError(`Asset with specified id(${params}) is not found`);
+                default:
+                  return new ZanoGeneralError();
+              }
+            },
+          });
+        }
+        return result;
       }) as never;
       return methods;
     },
@@ -200,11 +214,14 @@ export class ZanoController {
         params: UnwrapTypedJSON<Parameters<ICoreRpc[Name]>[0]>
       ) => Promise<
         Exclude<
-          UnwrapTypedJSON<
-            UnwrapTypedBase64<Exclude<UnwrapTypedJSON<Awaited<ReturnType<ICoreRpc[Name]>>>, ReturnCodeErrors | CoreCodeErrors>['base64_body']>
-          >,
-          { result: null }
-        >['result']
+          Exclude<
+            UnwrapTypedJSON<
+              UnwrapTypedBase64<Exclude<UnwrapTypedJSON<Awaited<ReturnType<ICoreRpc[Name]>>>, ReturnCodeErrors | CoreCodeErrors>['base64_body']>
+            >,
+            { result: null }
+          >['result'],
+          StatusFieldErrors
+        >
       >;
     }
   );
@@ -288,7 +305,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
 
   assets_whitelist_add(params: { asset_id: string }) {
     const response = callZanoWalletRpc('assets_whitelist_add', this.wallet_id, params);
-    assertWalletRpcStatusErrors(response, {
+    assertStatusFieldErrors(response, {
       NOT_FOUND: () => new ZanoNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
     });
     return response;
@@ -296,7 +313,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
 
   assets_whitelist_remove(params: { asset_id: string }) {
     const response = callZanoWalletRpc('assets_whitelist_remove', this.wallet_id, params);
-    assertWalletRpcStatusErrors(response, {
+    assertStatusFieldErrors(response, {
       NOT_FOUND: () => new ZanoNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
     });
     return response;

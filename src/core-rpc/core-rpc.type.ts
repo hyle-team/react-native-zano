@@ -384,28 +384,38 @@ export type DAEMON_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES_BY_AMOUNT_REQUEST = {
   /** The global index of the output amount to be queried. */
   i: number;
 };
-export type DAEMON_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES_BY_AMOUNT_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.OK;
-  /** Transaction ID where the queried output is present, if found. */
-  tx_id: string;
-  /** Local output index within the transaction. */
-  out_no: number;
-};
+export type DAEMON_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES_BY_AMOUNT_RESPONSE =
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+      /** Transaction ID where the queried output is present, if found. */
+      tx_id: string;
+      /** Local output index within the transaction. */
+      out_no: number;
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.NOT_FOUND;
+    };
 
 // on_get_multisig_info
 export type DAEMON_RPC_GET_MULTISIG_INFO_REQUEST = {
   /** The multisig output's unique identifier (hash). */
   ms_id: string;
 };
-export type DAEMON_RPC_GET_MULTISIG_INFO_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.OK;
-  /** Transaction ID where the multisig output is present, if found. */
-  tx_id: string;
-  /** Local output index within the transaction. */
-  out_no: number;
-};
+export type DAEMON_RPC_GET_MULTISIG_INFO_RESPONSE =
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+      /** Transaction ID where the multisig output is present, if found. */
+      tx_id: string;
+      /** Local output index within the transaction. */
+      out_no: number;
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.NOT_FOUND;
+    };
 
 // on_get_all_aliases
 export type DAEMON_RPC_GET_ALL_ALIASES_REQUEST = {};
@@ -491,12 +501,17 @@ export type DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_outs_for_amount = {
   amount: number;
   outs: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_out_entry[];
 };
-export type DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.FAIL | API_RETURN_CODE.OK;
-  /** List of 'outs_for_amount' structures, each containing decoys for a specific amount. */
-  outs: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_outs_for_amount[];
-};
+export type DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_RESPONSE =
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+      /** List of 'outs_for_amount' structures, each containing decoys for a specific amount. */
+      outs: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_outs_for_amount[];
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.FAIL;
+    };
 
 // on_get_random_outs1
 export type DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_REQUEST = {
@@ -556,26 +571,36 @@ export type DAEMON_RPC_GET_VOTES_REQUEST = {
   /** End of the block range to search in (including). */
   h_end: number;
 };
-export type DAEMON_RPC_GET_VOTES_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.INTERNAL_ERROR | API_RETURN_CODE.OK;
-  /** Error code, if any. */
-  error_code: string;
-  /** Found votes in the given range. */
-  votes: vote_results;
-};
+export type DAEMON_RPC_GET_VOTES_RESPONSE =
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+      /** Error code, if any. */
+      error_code: string;
+      /** Found votes in the given range. */
+      votes: vote_results;
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.INTERNAL_ERROR;
+    };
 
 // on_get_asset_info
 export type DAEMON_RPC_GET_ASSET_INFO_REQUEST = {
   /** ID of an asset. */
   asset_id: string;
 };
-export type DAEMON_RPC_GET_ASSET_INFO_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.OK;
-  /** Asset descriptor base. */
-  asset_descriptor: asset_descriptor_base;
-};
+export type DAEMON_RPC_GET_ASSET_INFO_RESPONSE =
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+      /** Asset descriptor base. */
+      asset_descriptor: asset_descriptor_base;
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.NOT_FOUND;
+    };
 
 // on_get_assets_list
 export type DAEMON_RPC_GET_ASSETS_LIST_REQUEST = {
@@ -584,12 +609,17 @@ export type DAEMON_RPC_GET_ASSETS_LIST_REQUEST = {
   /** Number of items to receive */
   count: number;
 };
-export type DAEMON_RPC_GET_ASSETS_LIST_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.OK;
-  /** List of assets registered in Zano blockchain. */
-  assets: asset_descriptor_with_id[];
-};
+export type DAEMON_RPC_GET_ASSETS_LIST_RESPONSE =
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+      /** List of assets registered in Zano blockchain. */
+      assets: asset_descriptor_with_id[];
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.NOT_FOUND;
+    };
 
 // on_decrypt_tx_details
 export type DAEMON_RPC_DECRYPT_TX_DETAILS_REQUEST = {
@@ -701,10 +731,23 @@ export type COMMAND_VALIDATE_SIGNATURE_REQUEST = {
   /** Alias to retrieve the associated public spend key if no explicit public key is provided for verification. */
   alias?: string;
 };
-export type COMMAND_VALIDATE_SIGNATURE_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.DISCONNECTED | API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.FAIL | API_RETURN_CODE.OK;
-};
+export type COMMAND_VALIDATE_SIGNATURE_RESPONSE =
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.DISCONNECTED;
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.NOT_FOUND;
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.FAIL;
+    };
 
 type CoreMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = {
   (
