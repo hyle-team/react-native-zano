@@ -366,18 +366,75 @@ function callZanoWalletRpc<Name extends Exclude<keyof IWalletRpc, keyof HybridOb
   }
   return handleResponse(result) as never;
 }
-Object.keys(Object.getPrototypeOf(WalletRpc))
-  .filter((name) => ['__type', 'store', 'assets_whitelist_add', 'assets_whitelist_remove'].includes(name))
-  .forEach((name) => {
-    const method = function <Name extends Exclude<keyof IWalletRpc, keyof HybridObject>>(
-      this: ZanoWallet,
-      params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
-    ) {
-      return callZanoWalletRpc(name as Name, this.wallet_id, params);
-    };
-    Object.defineProperty(method, 'name', { value: name, writable: false, enumerable: false, configurable: true });
-    ZanoWallet.prototype[name as never] = method as never;
-  });
+(
+  [
+    'getbalance',
+    'getaddress',
+    'get_wallet_info',
+    'get_recent_txs_and_info',
+    'get_recent_txs_and_info2',
+    'transfer',
+    // 'store',
+    'get_payments',
+    'get_bulk_payments',
+    'make_integrated_address',
+    'split_integrated_address',
+    'sweep_below',
+    'get_bare_outs_stats',
+    'sweep_bare_outs',
+    'sign_transfer',
+    'submit_transfer',
+    'search_for_transactions',
+    'search_for_transactions2',
+    'get_restore_info',
+    // 'get_seed_phrase_info',
+    'get_mining_history',
+    'register_alias',
+    'update_alias',
+    // 'contracts_send_proposal',
+    // 'contracts_accept_proposal',
+    // 'contracts_get_all',
+    // 'contracts_release',
+    // 'contracts_request_cancel',
+    // 'contracts_accept_cancel',
+    'marketplace_get_offers_ex',
+    'marketplace_push_offer',
+    'marketplace_push_update_offer',
+    'marketplace_cancel_offer',
+    // 'atomics_create_htlc_proposal',
+    // 'atomics_get_list_of_active_htlc',
+    // 'atomics_redeem_htlc',
+    // 'atomics_check_htlc_redeemed',
+    'ionic_swap_generate_proposal',
+    'ionic_swap_get_proposal_info',
+    'ionic_swap_accept_proposal',
+    'assets_whitelist_get',
+    // 'assets_whitelist_add',
+    // 'assets_whitelist_remove',
+    'deploy_asset',
+    'emit_asset',
+    'update_asset',
+    'burn_asset',
+    'send_ext_signed_asset_tx',
+    'attach_asset_descriptor',
+    'transfer_asset_ownership',
+    'mw_get_wallets',
+    'mw_select_wallet',
+    'sign_message',
+    'encrypt_data',
+    'decrypt_data',
+    // 'proxy_to_daemon',
+  ] as Array<keyof IWalletRpc>
+).forEach((name) => {
+  const method = function <Name extends Exclude<keyof IWalletRpc, keyof HybridObject>>(
+    this: ZanoWallet,
+    params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
+  ) {
+    return callZanoWalletRpc(name as Name, this.wallet_id, params);
+  };
+  Object.defineProperty(method, 'name', { value: name, writable: false, enumerable: false, configurable: true });
+  ZanoWallet.prototype[name as never] = method as never;
+});
 
 export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
   constructor(
