@@ -574,22 +574,32 @@ export type INVOKE_RPC_ASSETS_WHITELIST_ADD_REQUEST = {
   /** Asset id that needed to be added to local whitelist, asset_id must exist in the network */
   asset_id: string;
 };
-export type INVOKE_RPC_ASSETS_WHITELIST_ADD_RESPONSE = {
-  /** Status of the asset */
-  status: API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.OK;
-  /** Details of the asset, received from node */
-  asset_descriptor: asset_descriptor_base;
-};
+export type INVOKE_RPC_ASSETS_WHITELIST_ADD_RESPONSE =
+  | {
+      /** Status of the asset */
+      status: API_RETURN_CODE.NOT_FOUND;
+    }
+  | {
+      /** Status of the asset */
+      status: API_RETURN_CODE.OK;
+      /** Details of the asset, received from node */
+      asset_descriptor: asset_descriptor_base;
+    };
 
 // on_assets_whitelist_remove
 export type INVOKE_RPC_ASSETS_WHITELIST_REMOVE_REQUEST = {
   /** Asset id to be removed from local whitelist */
   asset_id: string;
 };
-export type INVOKE_RPC_ASSETS_WHITELIST_REMOVE_RESPONSE = {
-  /** Command result (OK if success) */
-  status: API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.OK;
-};
+export type INVOKE_RPC_ASSETS_WHITELIST_REMOVE_RESPONSE =
+  | {
+      /** Command result */
+      status: API_RETURN_CODE.OK;
+    }
+  | {
+      /** Command result */
+      status: API_RETURN_CODE.NOT_FOUND;
+    };
 
 // on_asset_deploy
 export type INVOKE_RPC_ASSETS_DEPLOY_REQUEST = {
@@ -682,10 +692,19 @@ export type INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_REQUEST = {
   /** If true - asset descriptor attached to wallet, if false - asset detached. */
   do_attach: boolean;
 };
-export type INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_RESPONSE = {
-  /** Status of the call */
-  status: API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.ACCESS_DENIED | API_RETURN_CODE.OK;
-};
+export type INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_RESPONSE =
+  | {
+      /** Status of the call */
+      status: API_RETURN_CODE.OK;
+    }
+  | {
+      /** Status of the call */
+      status: API_RETURN_CODE.NOT_FOUND;
+    }
+  | {
+      /** Status of the call */
+      status: API_RETURN_CODE.ACCESS_DENIED;
+    };
 
 // on_transfer_asset_ownership
 export type INVOKE_RPC_TRANSFER_ASSET_OWNERSHIP_REQUEST =
