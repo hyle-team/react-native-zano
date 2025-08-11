@@ -199,8 +199,10 @@ export class ZanoController {
               switch (name) {
                 case 'get_asset_info':
                   return new ZanoNotFoundError(`Asset with specified id(${params}) is not found`);
+                case 'get_alias_by_address':
+                  return new ZanoNotFoundError(`No alises found`);
                 default:
-                  return new ZanoGeneralError();
+                  return new ZanoGeneralError(API_RETURN_CODE.NOT_FOUND);
               }
             },
           });

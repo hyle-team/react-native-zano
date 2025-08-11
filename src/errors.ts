@@ -4,6 +4,15 @@ import { createErrorClass } from './utils/errors';
 
 export class ZanoBindingError extends createErrorClass('ZanoBindingError') {}
 
+export class ZanoStatusError extends createErrorClass('ZanoStatusError') {
+  constructor(
+    readonly status: API_RETURN_CODE,
+    message?: string
+  ) {
+    super(message);
+  }
+}
+
 export class ZanoGeneralError extends createErrorClass('ZanoGeneralError') {}
 export class ZanoInitializeError extends createErrorClass('ZanoInitializeError', GENERAL_INTERNAL_ERROR.INIT) {}
 export class ZanoInternalError extends createErrorClass('ZanoInternalError', API_RETURN_CODE.INTERNAL_ERROR) {}

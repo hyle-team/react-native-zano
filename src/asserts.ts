@@ -3,10 +3,10 @@ import {
   ZanoAlreadyExistsError,
   ZanoCoreBadArgumentError,
   ZanoFailedError,
-  ZanoGeneralError,
   ZanoInternalError,
   ZanoInvalidFileError,
   ZanoNotFoundError,
+  ZanoStatusError,
   ZanoUninitializedError,
   ZanoWalletBusyError,
   ZanoWalletRpcDaemonIsBusyError,
@@ -136,7 +136,7 @@ export function assertStatusFieldErrors<R extends object>(
   if (typeof status !== 'string') return;
   if (status === API_RETURN_CODE.OK) return;
   const message = messages[status as InferStatusErrors<R>];
-  throw message === undefined || typeof message === 'string' ? new ZanoGeneralError(message) : message();
+  throw message === undefined || typeof message === 'string' ? new ZanoStatusError(status as API_RETURN_CODE, message) : message();
 }
 
 export type CoreCodeErrors = { error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON } | { error_code: API_RETURN_CODE.FAIL };
