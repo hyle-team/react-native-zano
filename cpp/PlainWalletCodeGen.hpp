@@ -39,7 +39,7 @@ PROXY_ASYNC_METHOD(String, close_wallet, (HWallet, instance_id), )
 
 // cake wallet api extension
 PROXY_METHOD(Bool, is_wallet_exist, (String, path), )
-PROXY_METHOD(String, get_wallet_info, (HWallet, instance_id), )
+PROXY_ASYNC_METHOD(String, get_wallet_info, (HWallet, instance_id), )
 PROXY_METHOD(String, reset_wallet_password, (HWallet, instance_id), (String, password), )
 PROXY_METHOD(Int, get_current_tx_fee, (ZanoPriority, priority), )
 
