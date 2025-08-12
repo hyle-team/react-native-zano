@@ -1,5 +1,5 @@
 
-WALLET_METHOD(getbalance);
+WALLET_ASYNC_METHOD(getbalance);
 WALLET_METHOD(getaddress);
 WALLET_METHOD(get_wallet_info);
 WALLET_ASYNC_METHOD(get_recent_txs_and_info);
@@ -40,8 +40,8 @@ WALLET_METHOD(ionic_swap_generate_proposal);
 WALLET_METHOD(ionic_swap_get_proposal_info);
 WALLET_METHOD(ionic_swap_accept_proposal);
 WALLET_METHOD(assets_whitelist_get);
-WALLET_METHOD(assets_whitelist_add);
-WALLET_METHOD(assets_whitelist_remove);
+WALLET_ASYNC_METHOD(assets_whitelist_add);
+WALLET_ASYNC_METHOD(assets_whitelist_remove);
 WALLET_METHOD(deploy_asset);
 WALLET_METHOD(emit_asset);
 WALLET_METHOD(update_asset);

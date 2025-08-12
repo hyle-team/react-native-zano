@@ -831,7 +831,7 @@ type WalletAsyncMethod<Params extends JSONConstrain<Params>, Result extends JSON
 >;
 export interface IWalletRpc extends WalletRpc {
   /** Return the balances across all whitelisted assets of the wallet */
-  getbalance: WalletMethod<INVOKE_RPC_GET_BALANCE_REQUEST, INVOKE_RPC_GET_BALANCE_RESPONSE>;
+  getbalance: WalletAsyncMethod<INVOKE_RPC_GET_BALANCE_REQUEST, INVOKE_RPC_GET_BALANCE_RESPONSE>;
   /** Obtains wallet's public address */
   getaddress: WalletMethod<INVOKE_RPC_GET_ADDRESS_REQUEST, INVOKE_RPC_GET_ADDRESS_RESPONSE>;
   /** Returns wallet helpful wallet information */
@@ -1005,9 +1005,9 @@ export interface IWalletRpc extends WalletRpc {
   /** Get whitelisted assets for this wallet */
   assets_whitelist_get: WalletMethod<INVOKE_RPC_ASSETS_WHITELIST_GET_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_GET_RESPONSE>;
   /** Add given asset id to local whitelist */
-  assets_whitelist_add: WalletMethod<INVOKE_RPC_ASSETS_WHITELIST_ADD_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_ADD_RESPONSE>;
+  assets_whitelist_add: WalletAsyncMethod<INVOKE_RPC_ASSETS_WHITELIST_ADD_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_ADD_RESPONSE>;
   /** Remove given asset id from local whitelist */
-  assets_whitelist_remove: WalletMethod<INVOKE_RPC_ASSETS_WHITELIST_REMOVE_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_REMOVE_RESPONSE>;
+  assets_whitelist_remove: WalletAsyncMethod<INVOKE_RPC_ASSETS_WHITELIST_REMOVE_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_REMOVE_RESPONSE>;
 
   /** Deploy new asset in the system */
   deploy_asset: WalletMethod<

@@ -1,7 +1,7 @@
 import type { HybridObject } from 'react-native-nitro-modules';
 
 export interface WalletRpc extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
-  getbalance(instance_id: number, params: string): string;
+  getbalance(instance_id: number, params: string): Promise<string>;
   getaddress(instance_id: number, params: string): string;
   get_wallet_info(instance_id: number, params: string): string;
   get_recent_txs_and_info(instance_id: number, params: string): Promise<string>;
@@ -42,8 +42,8 @@ export interface WalletRpc extends HybridObject<{ ios: 'c++'; android: 'c++' }> 
   ionic_swap_get_proposal_info(instance_id: number, params: string): string;
   ionic_swap_accept_proposal(instance_id: number, params: string): string;
   assets_whitelist_get(instance_id: number, params: string): string;
-  assets_whitelist_add(instance_id: number, params: string): string;
-  assets_whitelist_remove(instance_id: number, params: string): string;
+  assets_whitelist_add(instance_id: number, params: string): Promise<string>;
+  assets_whitelist_remove(instance_id: number, params: string): Promise<string>;
   deploy_asset(instance_id: number, params: string): string;
   emit_asset(instance_id: number, params: string): string;
   update_asset(instance_id: number, params: string): string;

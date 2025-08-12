@@ -305,16 +305,16 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     Object.defineProperty(this, 'pass', { value: password, writable: false, enumerable: true, configurable: true });
   }
 
-  assets_whitelist_add(params: { asset_id: string }) {
-    const response = callZanoWalletRpc('assets_whitelist_add', this.wallet_id, params);
+  async assets_whitelist_add(params: { asset_id: string }) {
+    const response = await callZanoWalletRpc('assets_whitelist_add', this.wallet_id, params);
     assertStatusFieldErrors(response, {
       NOT_FOUND: () => new ZanoNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
     });
     return response;
   }
 
-  assets_whitelist_remove(params: { asset_id: string }) {
-    const response = callZanoWalletRpc('assets_whitelist_remove', this.wallet_id, params);
+  async assets_whitelist_remove(params: { asset_id: string }) {
+    const response = await callZanoWalletRpc('assets_whitelist_remove', this.wallet_id, params);
     assertStatusFieldErrors(response, {
       NOT_FOUND: () => new ZanoNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
     });
