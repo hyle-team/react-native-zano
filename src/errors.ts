@@ -1,6 +1,16 @@
-import { API_RETURN_CODE } from './entities';
+import { API_RETURN_CODE, WALLET_RPC_ERROR_CODE } from './entities';
 import { GENERAL_INTERNAL_ERROR } from './plain-wallet/enums';
-import { createErrorClass } from './utils/errors';
+
+function createErrorClass(name: string, defaultMessage?: string) {
+  class SpecificError extends Error {
+    constructor(message?: string) {
+      super(message ?? defaultMessage);
+    }
+  }
+  Object.defineProperty(SpecificError.prototype, Symbol.toStringTag, { value: name, configurable: true });
+  Object.defineProperty(SpecificError.prototype, 'name', { value: name, writable: true, configurable: true, enumerable: true });
+  return SpecificError;
+}
 
 export class ZanoBindingError extends createErrorClass('ZanoBindingError') {}
 
@@ -30,13 +40,41 @@ export class ZanoWrongSeedError extends createErrorClass('ZanoWrongSeedError', A
 export class ZanoWrongWalletIdError extends createErrorClass('ZanoWrongWalletIdError', API_RETURN_CODE.WALLET_WRONG_ID) {}
 
 export class ZanoWalletBusyError extends createErrorClass('ZanoWalletBusyError') {}
-export class ZanoWalletRpcUnknownError extends createErrorClass('ZanoWalletRpcUnknownError') {}
-export class ZanoWalletRpcWrongAddressError extends createErrorClass('ZanoWalletRpcWrongAddressError') {}
-export class ZanoWalletRpcDaemonIsBusyError extends createErrorClass('ZanoWalletRpcDaemonIsBusyError') {}
-export class ZanoWalletRpcGenericTransferError extends createErrorClass('ZanoWalletRpcGenericTransferError') {}
-export class ZanoWalletRpcWrongPaymentIdError extends createErrorClass('ZanoWalletRpcWrongPaymentIdError') {}
-export class ZanoWalletRpcWrongArgumentError extends createErrorClass('ZanoWalletRpcWrongArgumentError') {}
-export class ZanoWalletRpcNotEnoughMoneyError extends createErrorClass('ZanoWalletRpcNotEnoughMoneyError') {}
-export class ZanoWalletRpcWrongMixinsForAuditableWalletError extends createErrorClass('ZanoWalletRpcWrongMixinsForAuditableWalletError') {}
+
+export abstract class ZanoWalletRpcError extends createErrorClass('ZanoWalletRpcUnknownError') {
+  abstract readonly code: WALLET_RPC_ERROR_CODE;
+}
+function createZanoWalletError(code: WALLET_RPC_ERROR_CODE, name: string, defaultMessage?: string) {
+  class SpecificError extends ZanoWalletRpcError {
+    declare code: WALLET_RPC_ERROR_CODE;
+    constructor(message?: string) {
+      super(message ?? defaultMessage);
+    }
+  }
+  Object.defineProperty(SpecificError.prototype, Symbol.toStringTag, { value: name, configurable: true });
+  Object.defineProperty(SpecificError.prototype, 'name', { value: name, writable: true, configurable: true, enumerable: true });
+  Object.defineProperty(SpecificError.prototype, 'code', { value: code, writable: true, configurable: true, enumerable: true });
+  return SpecificError;
+}
+export class ZanoWalletRpcUnknownError extends createZanoWalletError(WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'ZanoWalletRpcUnknownError') {}
+export class ZanoWalletRpcWrongAddressError extends createZanoWalletError(WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'ZanoWalletRpcWrongAddressError') {}
+export class ZanoWalletRpcDaemonIsBusyError extends createZanoWalletError(WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, 'ZanoWalletRpcDaemonIsBusyError') {}
+export class ZanoWalletRpcGenericTransferError extends createZanoWalletError(
+  WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR,
+  'ZanoWalletRpcGenericTransferError'
+) {}
+export class ZanoWalletRpcWrongPaymentIdError extends createZanoWalletError(
+  WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID,
+  'ZanoWalletRpcWrongPaymentIdError'
+) {}
+export class ZanoWalletRpcWrongArgumentError extends createZanoWalletError(WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'ZanoWalletRpcWrongArgumentError') {}
+export class ZanoWalletRpcNotEnoughMoneyError extends createZanoWalletError(
+  WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY,
+  'ZanoWalletRpcNotEnoughMoneyError'
+) {}
+export class ZanoWalletRpcWrongMixinsForAuditableWalletError extends createZanoWalletError(
+  WALLET_RPC_ERROR_CODE.WRONG_MIXINS_FOR_AUDITABLE_WALLET,
+  'ZanoWalletRpcWrongMixinsForAuditableWalletError'
+) {}
 
 export class ZanoCoreBadArgumentError extends createErrorClass('ZanoCoreBadArgumentError', API_RETURN_CODE.BAD_ARG_INVALID_JSON) {}
