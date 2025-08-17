@@ -45,8 +45,10 @@ export abstract class ZanoWalletRpcError extends createErrorClass('ZanoWalletRpc
   abstract readonly code: WALLET_RPC_ERROR_CODE;
 }
 function createZanoWalletError(code: WALLET_RPC_ERROR_CODE, name: string, defaultMessage?: string) {
+  interface SpecificError {
+    code: WALLET_RPC_ERROR_CODE;
+  }
   class SpecificError extends ZanoWalletRpcError {
-    declare code: WALLET_RPC_ERROR_CODE;
     constructor(message?: string) {
       super(message ?? defaultMessage);
     }
