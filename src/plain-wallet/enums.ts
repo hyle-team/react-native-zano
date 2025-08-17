@@ -12,7 +12,7 @@ export enum ZanoPriority {
   unimportant = 1,
   normal = 2,
   elevated = 3,
-  urgent = 3,
+  urgent = 4,
 }
 
 export enum GENERAL_INTERNAL_ERROR {
