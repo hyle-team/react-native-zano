@@ -562,11 +562,11 @@ export type INVOKE_RPC_IONIC_SWAP_ACCEPT_PROPOSAL_RESPONSE = {
 export type INVOKE_RPC_ASSETS_WHITELIST_GET_REQUEST = {};
 export type INVOKE_RPC_ASSETS_WHITELIST_GET_RESPONSE = {
   /** Local whitelist, assets that have been added to this wallet file manually */
-  local_whitelist: asset_descriptor_with_id[];
+  local_whitelist?: asset_descriptor_with_id[];
   /** Global whitelist, well-known assets with adoption, maintained by the team and community */
-  global_whitelist: asset_descriptor_with_id[];
+  global_whitelist?: asset_descriptor_with_id[];
   /** Own assets, the ones that are under control of this wallet */
-  own_assets: asset_descriptor_with_id[];
+  own_assets?: asset_descriptor_with_id[];
 };
 
 // on_assets_whitelist_add

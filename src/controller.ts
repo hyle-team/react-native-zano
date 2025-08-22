@@ -307,6 +307,11 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     Object.defineProperty(this, 'pass', { value: password, writable: false, enumerable: true, configurable: true });
   }
 
+  async sign_message(message: string) {
+    const response = await callZanoWalletRpc('sign_message', this.wallet_id, { buff: CoreRpc.base64_encode(message) });
+    return response;
+  }
+
   async assets_whitelist_add(params: { asset_id: string }) {
     const response = await callZanoWalletRpc('assets_whitelist_add', this.wallet_id, params);
     assertStatusFieldErrors(response, {
@@ -344,7 +349,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
 type _ExtractResponse<T> = Exclude<UnwrapTypedJSON<T>, ReturnCodeErrors | ErrorCodeErrors | WalletCodeErrors>['result'];
 type ExtractResponse<T> = T extends Promise<infer V> ? Promise<_ExtractResponse<V>> : _ExtractResponse<T>;
 type WalletRpcWrappers = {
-  [Name in Exclude<keyof IWalletRpc, keyof HybridObject | 'store' | 'assets_whitelist_add' | 'assets_whitelist_remove'>]: (
+  [Name in Exclude<keyof IWalletRpc, keyof HybridObject | 'store' | 'assets_whitelist_add' | 'assets_whitelist_remove' | 'sign_message'>]: (
     params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
   ) => ExtractResponse<ReturnType<IWalletRpc[Name]>>;
 };
@@ -422,7 +427,7 @@ function callZanoWalletRpc<Name extends Exclude<keyof IWalletRpc, keyof HybridOb
     'transfer_asset_ownership',
     'mw_get_wallets',
     'mw_select_wallet',
-    'sign_message',
+    // 'sign_message',
     'encrypt_data',
     'decrypt_data',
     // 'proxy_to_daemon',
