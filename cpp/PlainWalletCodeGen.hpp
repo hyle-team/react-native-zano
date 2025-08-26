@@ -34,7 +34,7 @@ PROXY_ASYNC_METHOD(String, restore, (String, seed), (String, path), (String, pas
 PROXY_ASYNC_METHOD(String, generate, (String, path), (String, password), )
 PROXY_ASYNC_METHOD(String, get_opened_wallets, )
 
-PROXY_METHOD(String, get_wallet_status, (HWallet, instance_id), )
+PROXY_ASYNC_METHOD(String, get_wallet_status, (HWallet, instance_id), )
 PROXY_ASYNC_METHOD(String, close_wallet, (HWallet, instance_id), )
 
 // cake wallet api extension

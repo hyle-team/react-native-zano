@@ -979,7 +979,7 @@ export interface IWalletRpc extends WalletRpc {
 
   //IONIC_SWAPS API
   /** Generates ionic swap proposal according to details provided in request */
-  ionic_swap_generate_proposal: WalletMethod<
+  ionic_swap_generate_proposal: WalletAsyncMethod<
     INVOKE_RPC_IONIC_SWAP_GENERATE_PROPOSAL_REQUEST,
     INVOKE_RPC_IONIC_SWAP_GENERATE_PROPOSAL_RESPONSE,
     | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
@@ -1003,24 +1003,24 @@ export interface IWalletRpc extends WalletRpc {
 
   // Assets API
   /** Get whitelisted assets for this wallet */
-  assets_whitelist_get: WalletMethod<INVOKE_RPC_ASSETS_WHITELIST_GET_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_GET_RESPONSE>;
+  assets_whitelist_get: WalletAsyncMethod<INVOKE_RPC_ASSETS_WHITELIST_GET_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_GET_RESPONSE>;
   /** Add given asset id to local whitelist */
   assets_whitelist_add: WalletAsyncMethod<INVOKE_RPC_ASSETS_WHITELIST_ADD_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_ADD_RESPONSE>;
   /** Remove given asset id from local whitelist */
   assets_whitelist_remove: WalletAsyncMethod<INVOKE_RPC_ASSETS_WHITELIST_REMOVE_REQUEST, INVOKE_RPC_ASSETS_WHITELIST_REMOVE_RESPONSE>;
 
   /** Deploy new asset in the system */
-  deploy_asset: WalletMethod<
+  deploy_asset: WalletAsyncMethod<
     INVOKE_RPC_ASSETS_DEPLOY_REQUEST,
     INVOKE_RPC_ASSETS_DEPLOY_RESPONSE,
     ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'asset ticker or full_name is invalid'>
   >;
   /** Emit new coins of the asset, that is controlled by this wallet */
-  emit_asset: WalletMethod<INVOKE_RPC_ASSETS_EMIT_REQUEST, INVOKE_RPC_ASSETS_EMIT_RESPONSE>;
+  emit_asset: WalletAsyncMethod<INVOKE_RPC_ASSETS_EMIT_REQUEST, INVOKE_RPC_ASSETS_EMIT_RESPONSE>;
   /** Update asset descriptor */
-  update_asset: WalletMethod<INVOKE_RPC_ASSETS_UPDATE_REQUEST, INVOKE_RPC_ASSETS_UPDATE_RESPONSE>;
+  update_asset: WalletAsyncMethod<INVOKE_RPC_ASSETS_UPDATE_REQUEST, INVOKE_RPC_ASSETS_UPDATE_RESPONSE>;
   /** Burn some owned amount of the coins for the given asset */
-  burn_asset: WalletMethod<INVOKE_RPC_ASSETS_BURN_REQUEST, INVOKE_RPC_ASSETS_BURN_RESPONSE>;
+  burn_asset: WalletAsyncMethod<INVOKE_RPC_ASSETS_BURN_REQUEST, INVOKE_RPC_ASSETS_BURN_RESPONSE>;
   /** Inserts externally made asset ownership signature into the given transaction and broadcasts it */
   send_ext_signed_asset_tx: WalletMethod<
     INVOKE_RPC_ASSET_SEND_EXT_SIGNED_TX_REQUEST,

@@ -36,23 +36,8 @@ import { WalletRpc } from './wallet-rpc';
 
 export class ZanoController {
   constructor(address: string | [host: string, port: string] = 'https://node.zano.org:443', log_level = ZanoLogLevel.DISABLED) {
-    this.#log_level = log_level;
-
-    if (Array.isArray(address)) {
-      this.#remote_node = address;
-    } else if (address.startsWith('http:')) {
-      const [host, port] = address.substring('http:'.length).split(':');
-      if (!host) throw new ZanoGeneralError('invalid address passed');
-      this.#remote_node = [`http:${host}`, port || '80'];
-    } else if (address.startsWith('https:')) {
-      const [host, port] = address.substring('https:'.length).split(':');
-      if (!host) throw new ZanoGeneralError('invalid address passed');
-      this.#remote_node = [`https:${host}`, port || '443'];
-    } else {
-      const [host, port] = address.split(':');
-      if (!host || !port) throw new ZanoGeneralError('invalid address passed');
-      this.#remote_node = [host, port];
-    }
+    this.log_level = log_level;
+    this.remote_node = address;
   }
 
   #init_result: undefined | API_RETURN_CODE.OK | API_RETURN_CODE.ALREADY_EXISTS;
@@ -100,22 +85,37 @@ export class ZanoController {
     return PlatformUtils.get_downloads_directory();
   }
 
-  #log_level: ZanoLogLevel;
+  #log_level!: ZanoLogLevel;
   get log_level() {
     return this.#log_level;
   }
   set log_level(next: ZanoLogLevel) {
-    PlainWallet.set_log_level(next);
+    this.#log_level = next;
+    if (this.#init_result !== undefined) PlainWallet.set_log_level(next);
   }
 
-  #remote_node: [host: string, port: string];
+  #remote_node!: [host: string, port: string];
   get remote_node() {
     return this.#remote_node;
   }
-  // set remote_node(address: string) {
-  //   this.#remote_node = address;
-  //   PlainWallet.reset_connection_url(address);
-  // }
+  set remote_node(address: string | [host: string, port: string]) {
+    if (this.#init_result !== undefined) throw new ZanoAlreadyExistsError();
+    if (Array.isArray(address)) {
+      this.#remote_node = address;
+    } else if (address.startsWith('http:')) {
+      const [host, port] = address.substring('http:'.length).split(':');
+      if (!host) throw new ZanoGeneralError('invalid address passed');
+      this.#remote_node = [`http:${host}`, port || '80'];
+    } else if (address.startsWith('https:')) {
+      const [host, port] = address.substring('https:'.length).split(':');
+      if (!host) throw new ZanoGeneralError('invalid address passed');
+      this.#remote_node = [`https:${host}`, port || '443'];
+    } else {
+      const [host, port] = address.split(':');
+      if (!host || !port) throw new ZanoGeneralError('invalid address passed');
+      this.#remote_node = [host, port];
+    }
+  }
 
   get_address_info(addr: string) {
     return TypedJSON.parse(PlainWallet.get_address_info(addr));
@@ -291,8 +291,8 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     return response.result;
   }
 
-  get_status() {
-    const response = TypedJSON.parse(PlainWallet.get_wallet_status(this.wallet_id));
+  async get_status() {
+    const response = TypedJSON.parse(await PlainWallet.get_wallet_status(this.wallet_id));
     assertReturnErrors(response);
     return response;
   }
@@ -449,22 +449,15 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
     initial: DeepReadonly<AppConfig>,
     encryption_key?: string
   ) {
-    this.#encryption_key = encryption_key ?? PlainWallet.generate_random_key(20);
+    this.encryption_key = encryption_key ?? PlainWallet.generate_random_key(20);
     this.#app_config = initial;
-    try {
-      this.#update_app_config();
-    } catch (error) {
-      if (error instanceof ZanoNotFoundError) {
-      } else {
-        throw error;
-      }
-    }
   }
 
-  #encryption_key: string;
+  encryption_key: string;
+
   #app_config!: DeepReadonly<AppConfig>;
-  #update_app_config() {
-    const response = TypedJSON.parse(PlainWallet.get_appconfig(this.#encryption_key));
+  initialize() {
+    const response = TypedJSON.parse(PlainWallet.get_appconfig(this.encryption_key));
     if (
       typeof response === 'object' &&
       response !== null &&
@@ -482,7 +475,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
     return this.#app_config;
   }
   set(next: DeepReadonly<AppConfig>) {
-    const response = TypedJSON.parse(PlainWallet.set_appconfig(TypedJSON.stringify(next), this.#encryption_key));
+    const response = TypedJSON.parse(PlainWallet.set_appconfig(TypedJSON.stringify(next), this.encryption_key));
     if (response.error) throw new ZanoFailedError(response.error.message);
     this.#app_config = next;
   }
