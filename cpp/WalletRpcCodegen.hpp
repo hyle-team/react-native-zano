@@ -1,60 +1,60 @@
 
-WALLET_ASYNC_METHOD(getbalance);
-WALLET_METHOD(getaddress);
-WALLET_METHOD(get_wallet_info);
-WALLET_ASYNC_METHOD(get_recent_txs_and_info);
-WALLET_ASYNC_METHOD(get_recent_txs_and_info2);
-WALLET_ASYNC_METHOD(transfer);
-WALLET_ASYNC_METHOD(store);
-WALLET_ASYNC_METHOD(get_payments);
-WALLET_ASYNC_METHOD(get_bulk_payments);
-WALLET_METHOD(make_integrated_address);
-WALLET_METHOD(split_integrated_address);
-WALLET_METHOD(sweep_below);
-WALLET_METHOD(get_bare_outs_stats);
-WALLET_METHOD(sweep_bare_outs);
-WALLET_METHOD(sign_transfer);
-WALLET_METHOD(submit_transfer);
-WALLET_ASYNC_METHOD(search_for_transactions);
-WALLET_ASYNC_METHOD(search_for_transactions2);
-WALLET_METHOD(get_restore_info);
-// WALLET_METHOD(get_seed_phrase_info);
-WALLET_METHOD(get_mining_history);
-WALLET_ASYNC_METHOD(register_alias);
-WALLET_ASYNC_METHOD(update_alias);
-// WALLET_METHOD(contracts_send_proposal);
-// WALLET_METHOD(contracts_accept_proposal);
-// WALLET_METHOD(contracts_get_all);
-// WALLET_METHOD(contracts_release);
-// WALLET_METHOD(contracts_request_cancel);
-// WALLET_METHOD(contracts_accept_cancel);
-WALLET_METHOD(marketplace_get_offers_ex);
-WALLET_METHOD(marketplace_push_offer);
-WALLET_METHOD(marketplace_push_update_offer);
-WALLET_METHOD(marketplace_cancel_offer);
-// WALLET_METHOD(atomics_create_htlc_proposal);
-// WALLET_METHOD(atomics_get_list_of_active_htlc);
-// WALLET_METHOD(atomics_redeem_htlc);
-// WALLET_METHOD(atomics_check_htlc_redeemed);
-WALLET_ASYNC_METHOD(ionic_swap_generate_proposal);
-WALLET_METHOD(ionic_swap_get_proposal_info);
-WALLET_METHOD(ionic_swap_accept_proposal);
-WALLET_ASYNC_METHOD(assets_whitelist_get);
-WALLET_ASYNC_METHOD(assets_whitelist_add);
-WALLET_ASYNC_METHOD(assets_whitelist_remove);
-WALLET_ASYNC_METHOD(deploy_asset);
-WALLET_ASYNC_METHOD(emit_asset);
-WALLET_ASYNC_METHOD(update_asset);
-WALLET_ASYNC_METHOD(burn_asset);
-WALLET_METHOD(send_ext_signed_asset_tx);
-WALLET_METHOD(attach_asset_descriptor);
-WALLET_METHOD(transfer_asset_ownership);
-WALLET_METHOD(mw_get_wallets);
-WALLET_METHOD(mw_select_wallet);
-WALLET_METHOD(sign_message);
-WALLET_METHOD(encrypt_data);
-WALLET_METHOD(decrypt_data);
-// WALLET_METHOD(proxy_to_daemon);
+WALLET_ASYNC_METHOD(getbalance)
+WALLET_METHOD(getaddress)
+WALLET_METHOD(get_wallet_info)
+WALLET_ASYNC_METHOD(get_recent_txs_and_info)
+WALLET_ASYNC_METHOD(get_recent_txs_and_info2)
+WALLET_ASYNC_METHOD(transfer)
+WALLET_ASYNC_METHOD(store)
+WALLET_ASYNC_METHOD(get_payments)
+WALLET_ASYNC_METHOD(get_bulk_payments)
+WALLET_METHOD(make_integrated_address)
+WALLET_METHOD(split_integrated_address)
+WALLET_METHOD(sweep_below)
+WALLET_METHOD(get_bare_outs_stats)
+WALLET_METHOD(sweep_bare_outs)
+WALLET_METHOD(sign_transfer)
+WALLET_METHOD(submit_transfer)
+WALLET_ASYNC_METHOD(search_for_transactions)
+WALLET_ASYNC_METHOD(search_for_transactions2)
+WALLET_METHOD(get_restore_info)
+// WALLET_METHOD(get_seed_phrase_info)
+WALLET_METHOD(get_mining_history)
+WALLET_ASYNC_METHOD(register_alias)
+WALLET_ASYNC_METHOD(update_alias)
+// WALLET_METHOD(contracts_send_proposal)
+// WALLET_METHOD(contracts_accept_proposal)
+// WALLET_METHOD(contracts_get_all)
+// WALLET_METHOD(contracts_release)
+// WALLET_METHOD(contracts_request_cancel)
+// WALLET_METHOD(contracts_accept_cancel)
+WALLET_METHOD(marketplace_get_offers_ex)
+WALLET_METHOD(marketplace_push_offer)
+WALLET_METHOD(marketplace_push_update_offer)
+WALLET_METHOD(marketplace_cancel_offer)
+// WALLET_METHOD(atomics_create_htlc_proposal)
+// WALLET_METHOD(atomics_get_list_of_active_htlc)
+// WALLET_METHOD(atomics_redeem_htlc)
+// WALLET_METHOD(atomics_check_htlc_redeemed)
+WALLET_ASYNC_METHOD(ionic_swap_generate_proposal)
+WALLET_METHOD(ionic_swap_get_proposal_info)
+WALLET_METHOD(ionic_swap_accept_proposal)
+WALLET_ASYNC_METHOD(assets_whitelist_get)
+WALLET_ASYNC_METHOD(assets_whitelist_add)
+WALLET_ASYNC_METHOD(assets_whitelist_remove)
+WALLET_ASYNC_METHOD(deploy_asset)
+WALLET_ASYNC_METHOD(emit_asset)
+WALLET_ASYNC_METHOD(update_asset)
+WALLET_ASYNC_METHOD(burn_asset)
+WALLET_METHOD(send_ext_signed_asset_tx)
+WALLET_METHOD(attach_asset_descriptor)
+WALLET_METHOD(transfer_asset_ownership)
+WALLET_METHOD(mw_get_wallets)
+WALLET_METHOD(mw_select_wallet)
+WALLET_METHOD(sign_message)
+WALLET_METHOD(encrypt_data)
+WALLET_METHOD(decrypt_data)
+// WALLET_METHOD(proxy_to_daemon)
 
 #undef WALLET_METHOD
 #undef WALLET_ASYNC_METHOD
