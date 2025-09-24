@@ -26,7 +26,6 @@
   "files": [
     "src",
     "lib",
-    "lib/ios/**/*",
     "android",
     "!android/build",
     "!android/gradle",
@@ -43,7 +42,6 @@
     "libraries/include/**/*",
     "libraries/lib/libzano-android*.a",
     "libraries/lib/libzano*.xcframework/**/*",
-    "!libraries/Zano/**/*",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
