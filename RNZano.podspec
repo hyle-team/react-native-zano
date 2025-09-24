@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
     "cpp/**/*.{hpp,cpp}",
     "ios/**/*.{m,mm,swift}",
   ]
-  s.vendored_frameworks = ['lib/ios/libzano.xcframework']
+  s.vendored_frameworks = ['libraries/lib/libzano-iphoneos-iphonesimulator.xcframework']
 
   s.pod_target_xcconfig = {
     # C++ compiler flags, mainly for folly.
