@@ -57,10 +57,12 @@
     "prepare:codegen": "yarn nitrogen && yarn shared-codegen",
     "nitrogen": "nitro-codegen",
     "shared-codegen": "mkdir nitrogen/codegen/ && cp ./cpp/*Codegen.hpp nitrogen/codegen/",
-    "release": "release-it --only-version"
+    "release": "release-it --only-version",
+    "postpack": "mv package.json package.mobile.json && cp package.desktop.json package.json && yarn pack --out package.desktop.tgz && mv package.mobile.json package.json"
   },
   "keywords": [
     "react-native",
+    "zano",
     "ios",
     "android"
   ],

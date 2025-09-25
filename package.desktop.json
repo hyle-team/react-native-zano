@@ -1,0 +1,21 @@
+{
+  "name": "@hyle-team/react-native-zano-desktop-prebuild",
+  "version": "0.1.0",
+  "description": "Zano Wallet Library prebuilds for desktop environments",
+  "files": ["libraries/include/**/*", "libraries/lib/libzano-macosx*.a", "libraries/lib/libzano-linux*.a", "libraries/lib/libzano-windows*.a"],
+  "keywords": ["react-native", "zano", "macosx", "linux", "windows"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyle-team/react-native-zano.git"
+  },
+  "author": "Mikhailov Anton <anion155@gmail.com> (https://github.com/anion155)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hyle-team/react-native-zano/issues"
+  },
+  "homepage": "https://github.com/hyle-team/react-native-zano#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "packageManager": "yarn@4.9.2"
+}
