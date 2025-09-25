@@ -8,7 +8,9 @@ namespace margelo::nitro::zano {
   }
 #define PROXY_ASYNC_METHOD(return_type, name, ...)                                                                                                   \
   std::shared_ptr<Promise<return_type##Return>> PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) {                                              \
-    return Promise<return_type##Return>::async([=]() { return return_type##ReturnCast(plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__))); });    \
+    return Promise<return_type##Return>::async([FOR_EACH(PRINT_NAMES, __VA_ARGS__)]() {                                                              \
+      return return_type##ReturnCast(plain_wallet::name(FOR_EACH(PRINT_CAST, __VA_ARGS__)));                                                         \
+    });                                                                                                                                              \
   }
 #define SYNC_CALL_METHOD(return_type, name, ...)                                                                                                     \
   return_type##Return PlainWallet::name(FOR_EACH(PRINT_PARAM, __VA_ARGS__)) {                                                                        \

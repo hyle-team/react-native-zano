@@ -14,6 +14,9 @@
 #define PRINT_PARAM_IMPL(type, name) type##Param name
 #define PRINT_PARAM(param) PRINT_PARAM_IMPL param
 
+#define PRINT_NAMES_IMPL(type, name) name
+#define PRINT_NAMES(param) PRINT_NAMES_IMPL param
+
 PROXY_ASYNC_METHOD(String, init, (String, host), (String, port), (String, working_dir), (ZanoLogLevel, log_level), )
 PROXY_METHOD(String, reset, )
 PROXY_METHOD(String, set_log_level, (ZanoLogLevel, log_level), )

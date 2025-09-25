@@ -19,7 +19,7 @@ uint64_t WalletRpc::next_id() {
   }
 #define WALLET_ASYNC_METHOD(name)                                                                                                                    \
   std::shared_ptr<Promise<std::string>> WalletRpc::name(double instance_id, const std::string &params) {                                             \
-    return Promise<std::string>::async([=]() {                                                                                                       \
+    return Promise<std::string>::async([instance_id, params]() {                                                                                     \
       std::stringstream json;                                                                                                                        \
       json << "{ \"jsonrpc\": \"2.0\", \"id\": " << next_id() << ", \"method\": \"" << #name << "\", \"params\": " << params << " }";                \
       return plain_wallet::invoke(static_cast<plain_wallet::hwallet>(instance_id), json.str());                                                      \

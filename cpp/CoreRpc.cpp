@@ -26,7 +26,7 @@ std::string CoreRpc::base64_decode(std::string const &data) {
 
 #define CORE_METHOD(name)                                                                                                                            \
   std::shared_ptr<Promise<std::string>> CoreRpc::name(const std::string &params) {                                                                   \
-    return Promise<std::string>::async([=]() {                                                                                                       \
+    return Promise<std::string>::async([this, params]() {                                                                                            \
       std::stringstream request, json;                                                                                                               \
       request << "{ \"jsonrpc\": \"2.0\", \"id\": " << next_id() << ", \"method\": \"" << #name << "\", \"params\": " << params << " }";             \
       json << "{ \"uri\": \"/json_rpc\", \"base64_body\": \"" << this->base64_encode(request.str()) << "\" }";                                       \
