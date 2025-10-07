@@ -32,5 +32,26 @@ target_link_libraries(
   ${PACKAGE_NAME}
   ${LOG_LIB}
   android
-  ${CMAKE_SOURCE_DIR}/../libraries/lib/libzano-android-${ANDROID_ABI}.a
+  # ${CMAKE_SOURCE_DIR}/../libraries/lib/libzano-android-${ANDROID_ABI}.a
+
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_atomic.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_chrono.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_date_time.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_filesystem.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_regex.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_serialization.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_system.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_thread.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_timer.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_program_options.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/boost/${ANDROID_ABI}/lib/libboost_wserialization.a
+
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/openssl/${ANDROID_ABI}/lib/libssl.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_libs_android/openssl/${ANDROID_ABI}/lib/libcrypto.a
+
+  ${CMAKE_SOURCE_DIR}/../libraries/_install_android/${ANDROID_ABI}/lib/libcurrency_core.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_install_android/${ANDROID_ABI}/lib/libcommon.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_install_android/${ANDROID_ABI}/lib/libcrypto.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_install_android/${ANDROID_ABI}/lib/libwallet.a
+  ${CMAKE_SOURCE_DIR}/../libraries/_install_android/${ANDROID_ABI}/lib/libz.a
 )
