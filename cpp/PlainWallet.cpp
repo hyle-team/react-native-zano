@@ -19,6 +19,6 @@ namespace margelo::nitro::zano {
 
 #include "PlainWalletTypes.hpp"
 
-#include "PlainWalletCodegen.hpp"
+#include "PlainWalletCodeGen.hpp"
 
 } // namespace margelo::nitro::zano

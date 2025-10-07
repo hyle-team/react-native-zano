@@ -33,6 +33,6 @@ std::string CoreRpc::base64_decode(std::string const &data) {
       return plain_wallet::sync_call("proxy_to_daemon", 0, json.str());                                                                              \
     });                                                                                                                                              \
   }
-#include "CoreRpcCodegen.hpp"
+#include "CoreRpcCodeGen.hpp"
 
 } // namespace margelo::nitro::zano

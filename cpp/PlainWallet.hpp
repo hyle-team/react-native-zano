@@ -17,7 +17,7 @@ public:
 
 #include "PlainWalletTypes.hpp"
 
-#include "PlainWalletCodegen.hpp"
+#include "PlainWalletCodeGen.hpp"
 };
 
 } // namespace margelo::nitro::zano

@@ -25,6 +25,6 @@ uint64_t WalletRpc::next_id() {
       return plain_wallet::invoke(static_cast<plain_wallet::hwallet>(instance_id), json.str());                                                      \
     });                                                                                                                                              \
   }
-#include "WalletRpcCodegen.hpp"
+#include "WalletRpcCodeGen.hpp"
 
 } // namespace margelo::nitro::zano

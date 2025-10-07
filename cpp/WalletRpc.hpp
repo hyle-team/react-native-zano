@@ -17,7 +17,7 @@ private:
 public:
 #define WALLET_METHOD(name) std::string name(double instance_id, const std::string &params) override;
 #define WALLET_ASYNC_METHOD(name) std::shared_ptr<Promise<std::string>> name(double instance_id, const std::string &params) override;
-#include "WalletRpcCodegen.hpp"
+#include "WalletRpcCodeGen.hpp"
 };
 
 } // namespace margelo::nitro::zano

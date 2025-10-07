@@ -19,7 +19,7 @@ public:
   std::string base64_decode(const std::string &data) override;
 
 #define CORE_METHOD(name) std::shared_ptr<Promise<std::string>> name(const std::string &params) override;
-#include "CoreRpcCodegen.hpp"
+#include "CoreRpcCodeGen.hpp"
 };
 
 #undef DECLARE_METHOD
