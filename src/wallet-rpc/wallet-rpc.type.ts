@@ -638,7 +638,7 @@ export type INVOKE_RPC_ASSETS_UPDATE_REQUEST = {
   /** Id of the asset to update */
   asset_id: string;
   /** Descriptor that holds all information about asset that need to be updated (only owner could be updated) */
-  asset_descriptor: asset_descriptor_base;
+  asset_descriptor: Partial<asset_descriptor_base>;
 };
 export type INVOKE_RPC_ASSETS_UPDATE_RESPONSE = {
   /** Id of transaction that carries asset registration command, asset would be registered as soon as transaction got confirmed */
