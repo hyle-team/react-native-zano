@@ -835,7 +835,7 @@ export interface IWalletRpc extends WalletRpc {
   /** Obtains wallet's public address */
   getaddress: WalletMethod<INVOKE_RPC_GET_ADDRESS_REQUEST, INVOKE_RPC_GET_ADDRESS_RESPONSE>;
   /** Returns wallet helpful wallet information */
-  get_wallet_info: WalletMethod<INVOKE_RPC_GET_WALLET_INFO_REQUEST, INVOKE_RPC_GET_WALLET_INFO_RESPONSE>;
+  get_wallet_info: WalletAsyncMethod<INVOKE_RPC_GET_WALLET_INFO_REQUEST, INVOKE_RPC_GET_WALLET_INFO_RESPONSE>;
   /** Returns wallet history of transactions */
   get_recent_txs_and_info: WalletAsyncMethod<INVOKE_RPC_GET_RECENT_TXS_AND_INFO_REQUEST, INVOKE_RPC_GET_RECENT_TXS_AND_INFO_RESPONSE>;
   /** Returns wallet history of transactions V2 (post-zarcanum version) */

@@ -1,7 +1,7 @@
 
 WALLET_ASYNC_METHOD(getbalance)
 WALLET_METHOD(getaddress)
-WALLET_METHOD(get_wallet_info)
+WALLET_ASYNC_METHOD(get_wallet_info)
 WALLET_ASYNC_METHOD(get_recent_txs_and_info)
 WALLET_ASYNC_METHOD(get_recent_txs_and_info2)
 WALLET_ASYNC_METHOD(transfer)

@@ -3,7 +3,7 @@ import type { HybridObject } from 'react-native-nitro-modules';
 export interface WalletRpc extends HybridObject<{ ios: 'c++'; android: 'c++' }> {
   getbalance(instance_id: number, params: string): Promise<string>;
   getaddress(instance_id: number, params: string): string;
-  get_wallet_info(instance_id: number, params: string): string;
+  get_wallet_info(instance_id: number, params: string): Promise<string>;
   get_recent_txs_and_info(instance_id: number, params: string): Promise<string>;
   get_recent_txs_and_info2(instance_id: number, params: string): Promise<string>;
   transfer(instance_id: number, params: string): Promise<string>;
