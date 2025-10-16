@@ -167,7 +167,7 @@ export class ZanoController {
     const response = TypedJSON.parse(await PlainWallet.restore(seed, name, wallet_password, seed_password));
     assertErrorCode(response);
     assertReturnErrors(response);
-    const file = new ZanoWalletFile(this, name, response.result);
+    const file = new ZanoWalletFile(this, name, { ...response.result, name, pass: wallet_password });
     this.#wallet_files.set(name, file);
     return file.wallet!;
   }
@@ -176,7 +176,7 @@ export class ZanoController {
     const response = TypedJSON.parse(await PlainWallet.generate(name, password));
     assertErrorCode(response);
     assertReturnErrors(response);
-    const file = new ZanoWalletFile(this, name, response.result);
+    const file = new ZanoWalletFile(this, name, { ...response.result, name, pass: password });
     this.#wallet_files.set(name, file);
     return file.wallet!;
   }
@@ -256,6 +256,8 @@ export class ZanoWalletFile {
 }
 
 export class ZanoWallet implements DeepReadonly<open_wallet_response> {
+  readonly name: DeepReadonly<open_wallet_response>['name'];
+  readonly pass: DeepReadonly<open_wallet_response>['pass'];
   readonly wallet_id: DeepReadonly<open_wallet_response>['wallet_id'];
   readonly recent_history: DeepReadonly<open_wallet_response>['recent_history'];
   readonly wi: DeepReadonly<open_wallet_response>['wi'];
@@ -264,13 +266,13 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   readonly recovered: DeepReadonly<open_wallet_response>['recovered'];
   readonly wallet_local_bc_size: DeepReadonly<open_wallet_response>['wallet_local_bc_size'];
   readonly wallet_file_size: DeepReadonly<open_wallet_response>['wallet_file_size'];
-  readonly name: DeepReadonly<open_wallet_response>['name'];
-  readonly pass: DeepReadonly<open_wallet_response>['pass'];
 
   constructor(
     readonly file: ZanoWalletFile,
     response: open_wallet_response
   ) {
+    this.name = file.name;
+    this.pass = response.pass;
     this.wallet_id = response.wallet_id;
     this.recent_history = response.recent_history;
     this.wi = response.wi;
@@ -278,8 +280,6 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     this.recovered = response.recovered;
     this.wallet_local_bc_size = response.wallet_local_bc_size;
     this.wallet_file_size = response.wallet_file_size;
-    this.name = response.name;
-    this.pass = response.pass;
   }
 
   async update_wallet_info() {
