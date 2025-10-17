@@ -11,4 +11,11 @@ export type UnwrapTypedJSON<JSON> = JSON extends TypedJSON<any> ? JSON[typeof js
 export const TypedJSON: {
   parse<Text>(text: Text): UnwrapTypedJSON<Text>;
   stringify<Value extends JSONConstrain<Value>>(value: NoInfer<Value>): TypedJSON<Value>;
-} = JSON as never;
+} = {
+  parse(text) {
+    return JSON.parse(text as never);
+  },
+  stringify(value) {
+    return JSON.stringify(value) as never;
+  },
+};

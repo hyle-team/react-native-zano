@@ -1,4 +1,3 @@
-
 WALLET_ASYNC_METHOD(getbalance)
 WALLET_METHOD(getaddress)
 WALLET_ASYNC_METHOD(get_wallet_info)
