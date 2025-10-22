@@ -23,6 +23,13 @@ import {
 } from './errors';
 import type { JSONRpcFailedResponse, JSONRpcSuccessfulResponse } from './utils/json-rpc';
 
+const responses = new WeakMap<Error, object>();
+export const errorWithResponse = (error: Error, response: object) => {
+  responses.set(error, response);
+  return error;
+};
+export const getErrorResponse = (error: Error) => responses.get(error);
+
 export type ReturnCodeErrors =
   | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.UNINITIALIZED>>
   | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.INTERNAL_ERROR>>
@@ -34,13 +41,13 @@ export function assertReturnErrors<R extends object>(response: R): asserts respo
   if (typeof result !== 'object' || result === null || !('return_code' in result)) return;
   const { return_code } = result;
   if (typeof return_code !== 'string') return;
-  if (return_code === API_RETURN_CODE.UNINITIALIZED) throw new ZanoUninitializedError();
-  if (return_code === API_RETURN_CODE.INTERNAL_ERROR) throw new ZanoInternalError();
+  if (return_code === API_RETURN_CODE.UNINITIALIZED) throw errorWithResponse(new ZanoUninitializedError(), response);
+  if (return_code === API_RETURN_CODE.INTERNAL_ERROR) throw errorWithResponse(new ZanoInternalError(), response);
   if (return_code.startsWith(API_RETURN_CODE.INTERNAL_ERROR)) {
     const message = return_code.substring(`${API_RETURN_CODE.INTERNAL_ERROR} `.length);
-    throw new ZanoInternalError(message);
+    throw errorWithResponse(new ZanoInternalError(message), response);
   }
-  if (return_code === API_RETURN_CODE.FAIL) throw new ZanoFailedError();
+  if (return_code === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoFailedError(), response);
 }
 
 export type ErrorCodeErrors =
@@ -63,14 +70,14 @@ export function assertErrorCode<R extends object>(response: R): asserts response
   const { code } = error;
   if (typeof code !== 'string') return;
   const message = 'message' in error ? String(error.message) || undefined : undefined;
-  if (code === API_RETURN_CODE.NOT_FOUND) throw new ZanoNotFoundError(message);
-  if (code === API_RETURN_CODE.WRONG_PASSWORD) throw new ZanoWrongPasswordError(message);
-  if (code === API_RETURN_CODE.INVALID_FILE) throw new ZanoInvalidFileError(message);
-  if (code === API_RETURN_CODE.ALREADY_EXISTS) throw new ZanoAlreadyExistsError(message);
-  if (code === API_RETURN_CODE.WALLET_WATCH_ONLY_NOT_SUPPORTED) throw new ZanoWatchOnlyWalletNotSupported(message);
-  if (code === API_RETURN_CODE.FILE_NOT_FOUND) throw new ZanoNotFoundError(message);
-  if (code === API_RETURN_CODE.WRONG_SEED) throw new ZanoWrongSeedError(message);
-  if (code === API_RETURN_CODE.UNINITIALIZED) throw new ZanoUninitializedError(message);
+  if (code === API_RETURN_CODE.NOT_FOUND) throw errorWithResponse(new ZanoNotFoundError(message), response);
+  if (code === API_RETURN_CODE.WRONG_PASSWORD) throw errorWithResponse(new ZanoWrongPasswordError(message), response);
+  if (code === API_RETURN_CODE.INVALID_FILE) throw errorWithResponse(new ZanoInvalidFileError(message), response);
+  if (code === API_RETURN_CODE.ALREADY_EXISTS) throw errorWithResponse(new ZanoAlreadyExistsError(message), response);
+  if (code === API_RETURN_CODE.WALLET_WATCH_ONLY_NOT_SUPPORTED) throw errorWithResponse(new ZanoWatchOnlyWalletNotSupported(message), response);
+  if (code === API_RETURN_CODE.FILE_NOT_FOUND) throw errorWithResponse(new ZanoNotFoundError(message), response);
+  if (code === API_RETURN_CODE.WRONG_SEED) throw errorWithResponse(new ZanoWrongSeedError(message), response);
+  if (code === API_RETURN_CODE.UNINITIALIZED) throw errorWithResponse(new ZanoUninitializedError(message), response);
   if (code.startsWith(API_RETURN_CODE.INTERNAL_ERROR)) {
     let description;
     if (message) {
@@ -78,7 +85,7 @@ export function assertErrorCode<R extends object>(response: R): asserts response
     } else if (code.startsWith(`${API_RETURN_CODE.INTERNAL_ERROR}, DESCRIPTION: `)) {
       description = code.substring(`${API_RETURN_CODE.INTERNAL_ERROR}, DESCRIPTION: `.length);
     }
-    throw new ZanoInternalError(description);
+    throw errorWithResponse(new ZanoInternalError(description), response);
   }
   if (code.startsWith(API_RETURN_CODE.FAIL)) {
     let description;
@@ -87,7 +94,7 @@ export function assertErrorCode<R extends object>(response: R): asserts response
     } else if (code.startsWith(`${API_RETURN_CODE.FAIL}:`)) {
       description = code.substring(`${API_RETURN_CODE.FAIL}:`.length);
     }
-    throw new ZanoInternalError(description);
+    throw errorWithResponse(new ZanoInternalError(description), response);
   }
 }
 
@@ -113,16 +120,18 @@ export function assertWalletRpcError<R extends object>(response: R): asserts res
   if (typeof code !== 'number') return;
   const message = 'message' in error ? String(error.message) || undefined : undefined;
   if (code === WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR) {
-    if (message === API_RETURN_CODE.BUSY) throw new ZanoWalletBusyError();
-    throw new ZanoWalletRpcUnknownError(message);
+    if (message === API_RETURN_CODE.BUSY) throw errorWithResponse(new ZanoWalletBusyError(), response);
+    throw errorWithResponse(new ZanoWalletRpcUnknownError(message), response);
   }
-  if (code === WALLET_RPC_ERROR_CODE.WRONG_ADDRESS) throw new ZanoWalletRpcWrongAddressError(message);
-  if (code === WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY) throw new ZanoWalletRpcDaemonIsBusyError(message);
-  if (code === WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR) throw new ZanoWalletRpcGenericTransferError(message);
-  if (code === WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID) throw new ZanoWalletRpcWrongPaymentIdError(message);
-  if (code === WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT) throw new ZanoWalletRpcWrongArgumentError(message);
-  if (code === WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY) throw new ZanoWalletRpcNotEnoughMoneyError(message);
-  if (code === WALLET_RPC_ERROR_CODE.WRONG_MIXINS_FOR_AUDITABLE_WALLET) throw new ZanoWalletRpcWrongMixinsForAuditableWalletError(message);
+  if (code === WALLET_RPC_ERROR_CODE.WRONG_ADDRESS) throw errorWithResponse(new ZanoWalletRpcWrongAddressError(message), response);
+  if (code === WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY) throw errorWithResponse(new ZanoWalletRpcDaemonIsBusyError(message), response);
+  if (code === WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR) throw errorWithResponse(new ZanoWalletRpcGenericTransferError(message), response);
+  if (code === WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID) throw errorWithResponse(new ZanoWalletRpcWrongPaymentIdError(message), response);
+  if (code === WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT) throw errorWithResponse(new ZanoWalletRpcWrongArgumentError(message), response);
+  if (code === WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY) throw errorWithResponse(new ZanoWalletRpcNotEnoughMoneyError(message), response);
+  if (code === WALLET_RPC_ERROR_CODE.WRONG_MIXINS_FOR_AUDITABLE_WALLET) {
+    throw errorWithResponse(new ZanoWalletRpcWrongMixinsForAuditableWalletError(message), response);
+  }
 }
 
 export type StatusFieldErrors = { [S in Exclude<API_RETURN_CODE, API_RETURN_CODE.OK>]: { status: S } }[Exclude<API_RETURN_CODE, API_RETURN_CODE.OK>];
@@ -136,7 +145,8 @@ export function assertStatusFieldErrors<R extends object>(
   if (typeof status !== 'string') return;
   if (status === API_RETURN_CODE.OK) return;
   const message = messages[status as InferStatusErrors<R>];
-  throw message === undefined || typeof message === 'string' ? new ZanoStatusError(status as API_RETURN_CODE, message) : message();
+  const error = message === undefined || typeof message === 'string' ? new ZanoStatusError(status as API_RETURN_CODE, message) : message();
+  throw errorWithResponse(error, response);
 }
 
 export type CoreCodeErrors = { error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON } | { error_code: API_RETURN_CODE.FAIL };
@@ -144,6 +154,6 @@ export function assertCoreRpcError<R extends object>(response: R): asserts respo
   if (!('error_code' in response)) return;
   const { error_code } = response;
   if (typeof error_code !== 'string') return;
-  if (error_code === API_RETURN_CODE.BAD_ARG_INVALID_JSON) throw new ZanoCoreBadArgumentError();
-  if (error_code === API_RETURN_CODE.FAIL) throw new ZanoFailedError();
+  if (error_code === API_RETURN_CODE.BAD_ARG_INVALID_JSON) throw errorWithResponse(new ZanoCoreBadArgumentError(), response);
+  if (error_code === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoFailedError(), response);
 }

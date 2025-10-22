@@ -5,6 +5,7 @@ import {
   assertReturnErrors,
   assertStatusFieldErrors,
   assertWalletRpcError,
+  errorWithResponse,
   type CoreCodeErrors,
   type ErrorCodeErrors,
   type ReturnCodeErrors,
@@ -46,9 +47,9 @@ export class ZanoController {
     {
       const [host, port] = this.#remote_node;
       const response = await PlainWallet.init(host, port, PlatformUtils.get_working_directory(), this.#log_level);
-      if (response === GENERAL_INTERNAL_ERROR.INIT) throw new ZanoInitializeError();
+      if (response === GENERAL_INTERNAL_ERROR.INIT) throw errorWithResponse(new ZanoInitializeError(), { response });
       const json = TypedJSON.parse(response);
-      if (json.error) throw new ZanoInternalError(json.error.message);
+      if (json.error) throw errorWithResponse(new ZanoInternalError(json.error.message), response);
       this.#init_result = json.result.return_code;
     }
 
@@ -122,7 +123,7 @@ export class ZanoController {
   }
   get_seed_phrase_info(seed_phrase: string, seed_password: string) {
     const response = TypedJSON.parse(PlainWallet.get_seed_phrase_info(TypedJSON.stringify({ seed_phrase, seed_password })));
-    if (response.error_code === 'Wrong parameter') throw new ZanoWalletRpcWrongArgumentError('Wrong parameter');
+    if (response.error_code === 'Wrong parameter') throw errorWithResponse(new ZanoWalletRpcWrongArgumentError('Wrong parameter'), response);
     return response.response_data;
   }
   get_connectivity_status() {
@@ -300,8 +301,8 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   reset_file_password(password: string) {
     const response = PlainWallet.reset_wallet_password(this.wallet_id, password);
     if (response !== API_RETURN_CODE.OK) {
-      if (response === API_RETURN_CODE.FAIL) throw new ZanoFailedError();
-      if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw new ZanoWrongWalletIdError();
+      if (response === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoFailedError(), { response });
+      if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoWrongWalletIdError(), { response });
       assertReturnErrors(TypedJSON.parse(response));
     }
     Object.defineProperty(this, 'pass', { value: password, writable: false, enumerable: true, configurable: true });
@@ -339,9 +340,9 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     assertReturnErrors(response);
     const code = response.response;
     if (code !== API_RETURN_CODE.OK) {
-      if (code === API_RETURN_CODE.WALLET_WRONG_ID) throw new ZanoWrongWalletIdError();
-      if (code === API_RETURN_CODE.INTERNAL_ERROR) throw new ZanoInternalError();
-      if (code.startsWith(`${API_RETURN_CODE.FAIL}:`)) throw new ZanoFailedError(code.substring(`${API_RETURN_CODE.FAIL}:`.length));
+      if (code === API_RETURN_CODE.WALLET_WRONG_ID) throw (new ZanoWrongWalletIdError(), response);
+      if (code === API_RETURN_CODE.INTERNAL_ERROR) throw (new ZanoInternalError(), response);
+      if (code.startsWith(`${API_RETURN_CODE.FAIL}:`)) throw (new ZanoFailedError(code.substring(`${API_RETURN_CODE.FAIL}:`.length)), response);
     }
     wallets.set(this.file, null);
   }
@@ -360,7 +361,7 @@ function callZanoWalletRpc<Name extends Exclude<keyof IWalletRpc, keyof HybridOb
   params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
 ): ExtractResponse<ReturnType<IWalletRpc[Name]>> {
   const handleResponse = (response: Awaited<ReturnType<(typeof WalletRpc)[Exclude<keyof IWalletRpc, keyof HybridObject>]>>) => {
-    if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw new ZanoWrongWalletIdError();
+    if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoWrongWalletIdError(), { response });
     const json = TypedJSON.parse(response);
     assertErrorCode(json);
     assertReturnErrors(json);
@@ -476,7 +477,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
   }
   set(next: DeepReadonly<AppConfig>) {
     const response = TypedJSON.parse(PlainWallet.set_appconfig(TypedJSON.stringify(next), this.encryption_key));
-    if (response.error) throw new ZanoFailedError(response.error.message);
+    if (response.error) throw errorWithResponse(new ZanoFailedError(response.error.message), response);
     this.#app_config = next;
   }
 }
