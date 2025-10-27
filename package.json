@@ -40,7 +40,7 @@
     "*.podspec",
     "react-native.config.js",
     "libraries/include/**/*",
-    "libraries/_prebuilts/*/*.a",
+    "libraries/_prebuilts_android/*/*.a",
     "libraries/lib/libzano-android*.a",
     "libraries/lib/libzano*.xcframework/**/*",
     "!libraries/Zano/**/*",
