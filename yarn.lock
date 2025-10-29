@@ -3385,6 +3385,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@zano-project/react-native-zano-mobile-prebuild@file:./package.desktop.tgz::locator=%40zano-project%2Freact-native-zano%40workspace%3A.":
+  version: 0.1.0
+  resolution: "@zano-project/react-native-zano-mobile-prebuild@file:./package.desktop.tgz#./package.desktop.tgz::hash=442cf4&locator=%40zano-project%2Freact-native-zano%40workspace%3A."
+  checksum: 10/070175001661c4b6c9f9eccb293e4fa7733becd3c12aaa87376f2ecdc0a40288483b96773ddcd8659c4d4efb9fef6ac58ef377e7204534e331c3f65f9c7581d1
+  languageName: node
+  linkType: hard
+
 "@zano-project/react-native-zano@workspace:.":
   version: 0.0.0-use.local
   resolution: "@zano-project/react-native-zano@workspace:."
@@ -3399,6 +3406,7 @@ __metadata:
     "@release-it/conventional-changelog": "npm:^9.0.2"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^19.0.0"
+    "@zano-project/react-native-zano-mobile-prebuild": "file:./package.desktop.tgz"
     commitlint: "npm:^19.6.1"
     del-cli: "npm:^5.1.0"
     eslint: "npm:^9.22.0"
@@ -3418,6 +3426,9 @@ __metadata:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: ^0.29.6
+  dependenciesMeta:
+    "@zano-project/react-native-zano-mobile-prebuild":
+      optional: true
   languageName: unknown
   linkType: soft
 

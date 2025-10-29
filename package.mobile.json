@@ -1,0 +1,26 @@
+{
+  "name": "@zano-project/react-native-zano-mobile-prebuild",
+  "version": "0.1.0",
+  "description": "Zano Wallet Library prebuilds for mobile environments",
+  "files": [
+    "libraries/include/**/*",
+    "libraries/_prebuilts_android/*/*.a",
+    "libraries/lib/libzano-android*.a",
+    "libraries/lib/libzano*.xcframework/**/*"
+  ],
+  "keywords": ["react-native", "zano", "android", "ios"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyle-team/react-native-zano.git"
+  },
+  "author": "Mikhailov Anton <anion155@gmail.com> (https://github.com/anion155)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hyle-team/react-native-zano/issues"
+  },
+  "homepage": "https://github.com/hyle-team/react-native-zano#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "packageManager": "yarn@4.9.2"
+}

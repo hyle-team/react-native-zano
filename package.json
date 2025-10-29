@@ -39,10 +39,6 @@
     "nitro.json",
     "*.podspec",
     "react-native.config.js",
-    "libraries/include/**/*",
-    "libraries/_prebuilts_android/*/*.a",
-    "libraries/lib/libzano-android*.a",
-    "libraries/lib/libzano*.xcframework/**/*",
     "!libraries/Zano/**/*",
     "!**/__tests__",
     "!**/__fixtures__",
@@ -60,7 +56,9 @@
     "nitrogen": "nitro-codegen",
     "shared-codegen": "mkdir nitrogen/codegen/ && cp ./cpp/*CodeGen.hpp nitrogen/codegen/",
     "release": "release-it --only-version",
-    "pack:desktop": "mv package.json package.mobile.json && cp package.desktop.json package.json && yarn pack --out package.desktop.tgz && mv package.mobile.json package.json"
+    "pack:mobile": "mv package.json _package.json && cp package.mobile.json package.json && yarn pack --out package.mobile.tgz && mv _package.json package.json",
+    "pack:desktop": "mv package.json _package.json && cp package.desktop.json package.json && yarn pack --out package.desktop.tgz && mv _package.json package.json",
+    "postinstall": "node ./scripts/check_dependencies.js"
   },
   "keywords": [
     "react-native",
@@ -112,6 +110,10 @@
     "react": "*",
     "react-native": "*",
     "react-native-nitro-modules": "^0.29.6"
+  },
+  "optionalDependencies": {
+    "@zano-project/react-native-zano-mobile-prebuild": "0.1.0",
+    "@zano-project/react-native-zano-desktop-prebuild": "0.1.0"
   },
   "workspaces": [
     "example"
