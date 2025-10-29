@@ -1,20 +1,50 @@
-const fs = require('fs/promises');
+const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const main = async () => {
+let dispose;
+const main = () => {
   const platform = process.argv[2];
-  await fs.unlink(path.join(__dirname, `../package.${platform}.tgz`));
-  const { version } = JSON.parse(await fs.readFile(path.join(__dirname, '../package.json')));
-  await fs.rename(path.join(__dirname, '../package.json'), path.join(__dirname, '../_package.json'));
+  const currentPkgFile = path.join(__dirname, '../package.json');
+  const backupPkgFile = path.join(__dirname, '../_package.json');
+  const platformPkgFile = path.join(__dirname, `../package.${platform}.json`);
+  const platformPkgTgz = path.join(__dirname, `../package.${platform}.tgz`);
+
+  console.log(`Pack prebuilts for ${platform}`);
+  if (fs.existsSync(platformPkgTgz)) {
+    console.log(`Removing old ${platformPkgTgz}...`);
+    fs.unlinkSync(platformPkgTgz);
+  }
+  console.log(`Reading version...`);
+  const { version } = JSON.parse(fs.readFileSync(currentPkgFile));
+  console.log(`  ${version}`);
+  console.log(`Backup package.json`);
+  fs.renameSync(currentPkgFile, backupPkgFile);
+  dispose = () => {
+    console.log(`Restore package.json`);
+    fs.unlinkSync(currentPkgFile);
+    fs.renameSync(backupPkgFile, currentPkgFile);
+  };
   try {
-    const pkg = JSON.parse(await fs.readFile(path.join(__dirname, `../package.${platform}.json`)));
+    console.log(`Switching package.json to package.${platform}.json`);
+    const pkg = JSON.parse(fs.readFileSync(platformPkgFile));
     pkg.version = version;
-    await fs.writeFile(path.join(__dirname, '../package.json'), JSON.stringify(pkg, undefined, 2));
-    execSync(`yarn pack --out package.${platform}.tgz`, { cwd: path.join(__dirname, '..') });
+    console.log(`Saving...`);
+    fs.writeFileSync(currentPkgFile, JSON.stringify(pkg, undefined, 2));
+    console.log(`Pack...`);
+    execSync(`yarn pack --out package.${platform}.tgz`, { cwd: path.join(__dirname, '..'), stdio: 'inherit' });
   } finally {
-    await fs.unlink(path.join(__dirname, '../package.json'));
-    await fs.rename(path.join(__dirname, '../_package.json'), path.join(__dirname, '../package.json'));
+    dispose();
+    dispose = undefined;
   }
 };
+
+const shitdown = () => {
+  console.log(`Gracefull shutdown`);
+  dispose?.();
+  process.exit(0);
+};
+process.on('SIGINT', shitdown);
+process.on('SIGTERM', shitdown);
+
 main();
