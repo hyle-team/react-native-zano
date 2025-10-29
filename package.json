@@ -1,6 +1,6 @@
 {
   "name": "@zano-project/react-native-zano",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Zano Wallet Library for react-native",
   "source": "./src/index.ts",
   "types": "./lib/typescript/src/index.d.ts",
