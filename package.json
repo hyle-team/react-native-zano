@@ -1,5 +1,5 @@
 {
-  "name": "@hyle-team/react-native-zano",
+  "name": "@zano-project/react-native-zano",
   "version": "0.1.0",
   "description": "Zano Wallet Library for react-native",
   "source": "./src/index.ts",
@@ -50,7 +50,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace @hyle-team/react-native-zano-example",
+    "example": "yarn workspace @zano-project/react-native-zano-example",
     "test": "jest",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",

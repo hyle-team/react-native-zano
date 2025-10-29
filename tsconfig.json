@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "@hyle-team/react-native-zano": ["./src/index"]
+      "@zano-project/react-native-zano": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

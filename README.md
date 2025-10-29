@@ -1,26 +1,24 @@
-# @hyle-team/react-native-zano
+# @zano-project/react-native-zano
 
 Zano Wallet Library for mobile platforms
 
 ## Installation
 
 ```sh
-npm install @hyle-team/react-native-zano react-native-nitro-modules
+npm install @zano-project/react-native-zano react-native-nitro-modules
 
 > `react-native-nitro-modules` is required as this library relies on [Nitro Modules](https://nitro.margelo.com/).
 ```
 
 ## Usage
 
-
 ```js
-import { multiply } from '@hyle-team/react-native-zano';
+import { multiply } from '@zano-project/react-native-zano';
 
 // ...
 
 const result = multiply(3, 7);
 ```
-
 
 ## Contributing
 

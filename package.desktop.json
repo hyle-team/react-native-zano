@@ -1,5 +1,5 @@
 {
-  "name": "@hyle-team/react-native-zano-desktop-prebuild",
+  "name": "@zano-project/react-native-zano-desktop-prebuild",
   "version": "0.1.0",
   "description": "Zano Wallet Library prebuilds for desktop environments",
   "files": ["libraries/include/**/*", "libraries/lib/libzano-macosx*.a", "libraries/lib/libzano-linux*.a", "libraries/lib/libzano-windows*.a"],
