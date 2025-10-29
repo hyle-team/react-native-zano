@@ -1,6 +1,6 @@
 {
   "name": "@zano-project/react-native-zano",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Zano Wallet Library for react-native",
   "source": "./src/index.ts",
   "types": "./lib/typescript/src/index.d.ts",
@@ -58,7 +58,7 @@
     "release": "release-it --only-version",
     "pack:prebuild": "node ./scripts/pack_prebuilds.js",
     "publish:ios": "yarn pack:prebuild ios && npm publish ./package.ios.tgz",
-    "publish:andoid": "yarn pack:prebuild android && npm publish ./package.android.tgz",
+    "publish:android": "yarn pack:prebuild android && npm publish ./package.android.tgz",
     "publish:self": "yarn pack && npm publish ./package.tgz",
     "publish:all": "yarn publish:ios && yarn publish:android && yarn publish:self"
   },
