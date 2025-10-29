@@ -1,6 +1,6 @@
 {
   "name": "@zano-project/react-native-zano",
-  "version": "0.1.4",
+  "version": "0.1.12",
   "description": "Zano Wallet Library for react-native",
   "source": "./src/index.ts",
   "types": "./lib/typescript/src/index.d.ts",
@@ -43,7 +43,9 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*"
+    "!**/.*",
+    "!prebuilt.js",
+    "scripts/copy_libraries.js"
   ],
   "scripts": {
     "example": "yarn workspace @zano-project/react-native-zano-example",
@@ -56,11 +58,13 @@
     "nitrogen": "nitro-codegen",
     "shared-codegen": "mkdir nitrogen/codegen/ && cp ./cpp/*CodeGen.hpp nitrogen/codegen/",
     "release": "release-it --only-version",
+    "cplib": "node ./scripts/copy_libraries.js",
     "pack:prebuild": "node ./scripts/pack_prebuilds.js",
     "publish:ios": "yarn pack:prebuild ios && npm publish ./package.ios.tgz",
     "publish:android": "yarn pack:prebuild android && npm publish ./package.android.tgz",
-    "publish:self": "node ./scripts/update_prebuilds.js && yarn install && yarn pack && npm publish ./package.tgz",
-    "publish:all": "yarn publish:ios && yarn publish:android && yarn publish:self"
+    "publish:self": "node ./scripts/prepare_self.js && npm publish ./package.tgz",
+    "publish:all": "yarn publish:ios && yarn publish:android && sleep 5 && yarn publish:self",
+    "_postinstall": "yarn cplib ios && yarn cplib android"
   },
   "keywords": [
     "react-native",
@@ -115,8 +119,8 @@
     "react-native-nitro-modules": "^0.29.6"
   },
   "optionalDependencies": {
-    "@zano-project/react-native-zano-android-prebuild": "0.1.4",
-    "@zano-project/react-native-zano-ios-prebuild": "0.1.4"
+    "@zano-project/react-native-zano-android-prebuild": "0.1.12",
+    "@zano-project/react-native-zano-ios-prebuild": "0.1.12"
   },
   "workspaces": [
     "example"

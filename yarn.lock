@@ -3363,10 +3363,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zano-project/react-native-zano-android-prebuild@npm:0.1.4":
-  version: 0.1.4
-  resolution: "@zano-project/react-native-zano-android-prebuild@npm:0.1.4"
-  checksum: 10/d29d6f97a0ca612888ce13be9c34188dbc273dbcc420980e349672ada45acf63b3c0a73dca75657f1d03866de98b2f8b6cc389fcf597f3536020b6db628457d2
+"@zano-project/react-native-zano-android-prebuild@npm:0.1.12":
+  version: 0.1.12
+  resolution: "@zano-project/react-native-zano-android-prebuild@npm:0.1.12"
+  checksum: 10/b1b3e9ccd4ed7845c38cd0518c7bd7b2b9d53ec2c8652bb2d31b188c61643bce09a53b581d75179fda77e1f813cf10c2dba585aa1eb3bc66f716c017b3429075
   languageName: node
   linkType: hard
 
@@ -3392,10 +3392,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@zano-project/react-native-zano-ios-prebuild@npm:0.1.4":
-  version: 0.1.4
-  resolution: "@zano-project/react-native-zano-ios-prebuild@npm:0.1.4"
-  checksum: 10/742ff19c80ac988811084a3e167546e62526d4e8a309338f6ca42b38647bb1d70f0bdce2aa2f9cabaa1bd0ab084a3fc21cf83ef03eda066debbe3044a4b405a9
+"@zano-project/react-native-zano-ios-prebuild@npm:0.1.12":
+  version: 0.1.12
+  resolution: "@zano-project/react-native-zano-ios-prebuild@npm:0.1.12"
+  checksum: 10/123c20a1b08c9f637dde2e8e96388a67dba01075699d30a5ee0844336a2582b54716056ef771651846a28a33cea0d1a0957296025ecec6284166fb748c4f0bfe
   languageName: node
   linkType: hard
 
@@ -3413,8 +3413,8 @@ __metadata:
     "@release-it/conventional-changelog": "npm:^9.0.2"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^19.0.0"
-    "@zano-project/react-native-zano-android-prebuild": "npm:0.1.4"
-    "@zano-project/react-native-zano-ios-prebuild": "npm:0.1.4"
+    "@zano-project/react-native-zano-android-prebuild": "npm:0.1.12"
+    "@zano-project/react-native-zano-ios-prebuild": "npm:0.1.12"
     commitlint: "npm:^19.6.1"
     del-cli: "npm:^5.1.0"
     eslint: "npm:^9.22.0"

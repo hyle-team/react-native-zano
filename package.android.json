@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Zano Wallet Library prebuilds for android",
   "files": ["libraries/include/**/*", "libraries/_prebuilts_android/*/*.a", "libraries/lib/libzano-android*.a"],
+  "main": "prebuilt.js",
   "keywords": ["react-native", "zano", "android"],
   "repository": {
     "type": "git",

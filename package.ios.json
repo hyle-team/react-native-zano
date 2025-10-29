@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Zano Wallet Library prebuilds for ios",
   "files": ["libraries/include/**/*", "libraries/lib/libzano*.xcframework/**/*"],
+  "main": "prebuilt.js",
   "keywords": ["react-native", "zano", "ios"],
   "repository": {
     "type": "git",

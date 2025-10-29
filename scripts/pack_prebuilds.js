@@ -30,7 +30,7 @@ const main = () => {
     const pkg = JSON.parse(fs.readFileSync(platformPkgFile));
     pkg.version = version;
     console.log(`Saving...`);
-    fs.writeFileSync(currentPkgFile, JSON.stringify(pkg, undefined, 2));
+    fs.writeFileSync(currentPkgFile, JSON.stringify(pkg, undefined, 2) + '\n');
     console.log(`Pack...`);
     execSync(`yarn pack --out package.${platform}.tgz`, { cwd: path.join(__dirname, '..'), stdio: 'inherit' });
   } finally {
