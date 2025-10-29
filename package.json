@@ -1,6 +1,6 @@
 {
   "name": "@zano-project/react-native-zano",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Zano Wallet Library for react-native",
   "source": "./src/index.ts",
   "types": "./lib/typescript/src/index.d.ts",
@@ -112,8 +112,8 @@
     "react-native-nitro-modules": "^0.29.6"
   },
   "optionalDependencies": {
-    "@zano-project/react-native-zano-mobile-prebuild": "0.1.0",
-    "@zano-project/react-native-zano-desktop-prebuild": "0.1.0"
+    "@zano-project/react-native-zano-android-prebuild": "0.1.0",
+    "@zano-project/react-native-zano-ios-prebuild": "0.1.0"
   },
   "workspaces": [
     "example"

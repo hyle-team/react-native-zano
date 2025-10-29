@@ -1,14 +1,9 @@
 {
-  "name": "@zano-project/react-native-zano-mobile-prebuild",
+  "name": "@zano-project/react-native-zano-ios-prebuild",
   "version": "0.1.0",
-  "description": "Zano Wallet Library prebuilds for mobile environments",
-  "files": [
-    "libraries/include/**/*",
-    "libraries/_prebuilts_android/*/*.a",
-    "libraries/lib/libzano-android*.a",
-    "libraries/lib/libzano*.xcframework/**/*"
-  ],
-  "keywords": ["react-native", "zano", "android", "ios"],
+  "description": "Zano Wallet Library prebuilds for ios",
+  "files": ["libraries/include/**/*", "libraries/lib/libzano*.xcframework/**/*"],
+  "keywords": ["react-native", "zano", "ios"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hyle-team/react-native-zano.git"

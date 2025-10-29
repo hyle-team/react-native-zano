@@ -5,7 +5,7 @@ Zano Wallet Library for mobile platforms
 ## Installation
 
 ```sh
-npm install @zano-project/react-native-zano @zano-project/react-native-zano-mobile-prebuild react-native-nitro-modules
+npm install @zano-project/react-native-zano @zano-project/react-native-zano-ios-prebuild @zano-project/react-native-zano-android-prebuild react-native-nitro-modules
 
 > `react-native-nitro-modules` is required as this library relies on [Nitro Modules](https://nitro.margelo.com/).
 ```

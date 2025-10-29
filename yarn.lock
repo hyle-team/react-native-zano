@@ -3363,6 +3363,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zano-project/react-native-zano-android-prebuild@npm:0.1.0":
+  version: 0.1.0
+  resolution: "@zano-project/react-native-zano-android-prebuild@npm:0.1.0"
+  checksum: 10/828212ca394f813bd075ad1474aceb1e74e303634346a5d7ec18374294f2fc91b5ba2fdde521b68fc34f92916740b29d120d545ea084591d863dac1d89e99ba6
+  languageName: node
+  linkType: hard
+
 "@zano-project/react-native-zano-example@workspace:example":
   version: 0.0.0-use.local
   resolution: "@zano-project/react-native-zano-example@workspace:example"
@@ -3385,10 +3392,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@zano-project/react-native-zano-mobile-prebuild@file:./package.desktop.tgz::locator=%40zano-project%2Freact-native-zano%40workspace%3A.":
+"@zano-project/react-native-zano-ios-prebuild@npm:0.1.0":
   version: 0.1.0
-  resolution: "@zano-project/react-native-zano-mobile-prebuild@file:./package.desktop.tgz#./package.desktop.tgz::hash=442cf4&locator=%40zano-project%2Freact-native-zano%40workspace%3A."
-  checksum: 10/070175001661c4b6c9f9eccb293e4fa7733becd3c12aaa87376f2ecdc0a40288483b96773ddcd8659c4d4efb9fef6ac58ef377e7204534e331c3f65f9c7581d1
+  resolution: "@zano-project/react-native-zano-ios-prebuild@npm:0.1.0"
+  checksum: 10/ec7093f65d3d1f03129592167a30fdd24028ea97f81301dc01c832c43cd5ed7de94713121c44a37527fce4cfeefb9902f40fd2fd71f16f8395019f2a235c7c68
   languageName: node
   linkType: hard
 
@@ -3406,7 +3413,8 @@ __metadata:
     "@release-it/conventional-changelog": "npm:^9.0.2"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^19.0.0"
-    "@zano-project/react-native-zano-mobile-prebuild": "file:./package.desktop.tgz"
+    "@zano-project/react-native-zano-android-prebuild": "npm:0.1.0"
+    "@zano-project/react-native-zano-ios-prebuild": "npm:0.1.0"
     commitlint: "npm:^19.6.1"
     del-cli: "npm:^5.1.0"
     eslint: "npm:^9.22.0"
@@ -3427,7 +3435,9 @@ __metadata:
     react-native: "*"
     react-native-nitro-modules: ^0.29.6
   dependenciesMeta:
-    "@zano-project/react-native-zano-mobile-prebuild":
+    "@zano-project/react-native-zano-android-prebuild":
+      optional: true
+    "@zano-project/react-native-zano-ios-prebuild":
       optional: true
   languageName: unknown
   linkType: soft
