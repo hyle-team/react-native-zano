@@ -59,7 +59,7 @@
     "pack:prebuild": "node ./scripts/pack_prebuilds.js",
     "publish:ios": "yarn pack:prebuild ios && npm publish ./package.ios.tgz",
     "publish:android": "yarn pack:prebuild android && npm publish ./package.android.tgz",
-    "publish:self": "yarn pack && npm publish ./package.tgz",
+    "publish:self": "node ./scripts/update_prebuilds.js && yarn install && yarn pack && npm publish ./package.tgz",
     "publish:all": "yarn publish:ios && yarn publish:android && yarn publish:self"
   },
   "keywords": [
