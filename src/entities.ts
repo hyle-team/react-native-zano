@@ -459,11 +459,6 @@ export interface wallet_sync_status_info {
   current_wallet_height: number;
 }
 
-export interface asset_rich_descriptor extends asset_descriptor_with_id {
-  logo?: string;
-  price_url?: string;
-}
-
 export enum CORE_RPC_ERROR_CODE {
   WRONG_PARAM = -1,
   TOO_BIG_HEIGHT = -2,

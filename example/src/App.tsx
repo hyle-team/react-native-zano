@@ -1,4 +1,4 @@
-import { ZanoController } from '@zano-project/react-native-zano';
+import { ZanoController } from '@hyle-team/react-native-zano';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 
