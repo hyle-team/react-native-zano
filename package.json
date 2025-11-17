@@ -1,5 +1,5 @@
 {
-  "name": "@zano-project/react-native-zano",
+  "name": "@hyle-team/react-native-zano",
   "version": "0.1.12",
   "description": "Zano Wallet Library for react-native",
   "source": "./src/index.ts",
@@ -39,6 +39,10 @@
     "nitro.json",
     "*.podspec",
     "react-native.config.js",
+    "libraries/include/**/*",
+    "libraries/_prebuilts_android/*/*.a",
+    "libraries/lib/libzano-android*.a",
+    "libraries/lib/libzano*.xcframework/**/*",
     "!libraries/Zano/**/*",
     "!**/__tests__",
     "!**/__fixtures__",
@@ -48,7 +52,7 @@
     "scripts/copy_libraries.js"
   ],
   "scripts": {
-    "example": "yarn workspace @zano-project/react-native-zano-example",
+    "example": "yarn workspace @hyle-team/react-native-zano-example",
     "test": "jest",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -63,8 +67,7 @@
     "publish:ios": "yarn pack:prebuild ios && npm publish ./package.ios.tgz",
     "publish:android": "yarn pack:prebuild android && npm publish ./package.android.tgz",
     "publish:self": "node ./scripts/prepare_self.js && npm publish ./package.tgz",
-    "publish:all": "yarn publish:ios && yarn publish:android && sleep 5 && yarn publish:self",
-    "_postinstall": "yarn cplib ios && yarn cplib android"
+    "publish:all": "yarn publish:ios && yarn publish:android && sleep 5 && yarn publish:self"
   },
   "keywords": [
     "react-native",
@@ -117,10 +120,6 @@
     "react": "*",
     "react-native": "*",
     "react-native-nitro-modules": "^0.29.6"
-  },
-  "optionalDependencies": {
-    "@zano-project/react-native-zano-android-prebuild": "0.1.12",
-    "@zano-project/react-native-zano-ios-prebuild": "0.1.12"
   },
   "workspaces": [
     "example"
