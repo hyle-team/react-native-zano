@@ -64,7 +64,6 @@
     "nitrogen": "nitro-codegen",
     "shared-codegen": "mkdir nitrogen/codegen/ && cp ./cpp/*CodeGen.hpp nitrogen/codegen/",
     "release": "release-it --only-version",
-    "cplib": "node ./scripts/copy_libraries.js",
     "pack:prebuild": "node ./scripts/pack_prebuilds.js",
     "publish:ios": "yarn pack:prebuild ios && npm publish ./package.ios.tgz",
     "publish:android": "yarn pack:prebuild android && npm publish ./package.android.tgz",

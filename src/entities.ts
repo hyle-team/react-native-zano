@@ -957,7 +957,7 @@ export type wallet_extended_info = {
   wi_extended: wallet_info_extra;
 };
 
-export type ReturnCode<Code extends string = API_RETURN_CODE> = Code extends string ? { return_code: Code } : never;
+export type ReturnCode<Code extends string = API_RETURN_CODE> = { return_code: Code };
 export type ErrorCode<Code = API_RETURN_CODE, Message extends string = string> = { code: Code; message: Message };
 export type GeneralReturnErrors =
   | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.UNINITIALIZED>>

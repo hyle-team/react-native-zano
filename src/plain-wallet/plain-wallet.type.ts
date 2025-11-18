@@ -16,7 +16,8 @@ import type { PlainWallet } from './plain-wallet.nitro';
 
 export type zano_lib_init_response =
   | TypedJSON<
-      | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.ALREADY_EXISTS | API_RETURN_CODE.OK>>
+      | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>>
+      | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.ALREADY_EXISTS>>
       | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.INTERNAL_ERROR>>
     >
   | GENERAL_INTERNAL_ERROR.INIT;

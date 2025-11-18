@@ -1,14 +1,14 @@
 import type { HybridObject } from 'react-native-nitro-modules';
 import {
+  assertApiErrorCode,
+  assertApiReturnErrors,
   assertCoreRpcError,
-  assertErrorCode,
-  assertReturnErrors,
   assertStatusFieldErrors,
   assertWalletRpcError,
   errorWithResponse,
+  type ApiErrorCodeErrors,
+  type ApiReturnCodeErrors,
   type CoreCodeErrors,
-  type ErrorCodeErrors,
-  type ReturnCodeErrors,
   type StatusFieldErrors,
   type WalletCodeErrors,
 } from './asserts';
@@ -16,15 +16,15 @@ import type { ICoreRpc } from './core-rpc';
 import { CoreRpc } from './core-rpc';
 import { API_RETURN_CODE, type open_wallet_response, type wallet_info_extra } from './entities';
 import {
-  ZanoAlreadyExistsError,
-  ZanoFailedError,
+  ZanoApiAlreadyExistsError,
+  ZanoApiFailedError,
+  ZanoApiInternalError,
+  ZanoApiNotFoundError,
+  ZanoApiUninitializedError,
+  ZanoApiWalletWrongIdError,
   ZanoGeneralError,
   ZanoInitializeError,
-  ZanoInternalError,
-  ZanoNotFoundError,
-  ZanoUninitializedError,
-  ZanoWalletRpcWrongArgumentError,
-  ZanoWrongWalletIdError,
+  ZanoWalletRpcWrongArgument,
 } from './errors';
 import { PlainWallet } from './plain-wallet';
 import { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './plain-wallet/enums';
@@ -43,13 +43,13 @@ export class ZanoController {
 
   #init_result: undefined | API_RETURN_CODE.OK | API_RETURN_CODE.ALREADY_EXISTS;
   async initialize() {
-    if (this.#init_result) throw new ZanoAlreadyExistsError();
+    if (this.#init_result) throw new ZanoApiAlreadyExistsError();
     {
       const [host, port] = this.#remote_node;
       const response = await PlainWallet.init(host, port, PlatformUtils.get_working_directory(), this.#log_level);
       if (response === GENERAL_INTERNAL_ERROR.INIT) throw errorWithResponse(new ZanoInitializeError(), { response });
       const json = TypedJSON.parse(response);
-      if (json.error) throw errorWithResponse(new ZanoInternalError(json.error.message), response);
+      if (json.error) throw errorWithResponse(new ZanoApiInternalError(json.error.message), response);
       this.#init_result = json.result.return_code;
     }
 
@@ -59,7 +59,7 @@ export class ZanoController {
 
     {
       const response = TypedJSON.parse(await PlainWallet.get_opened_wallets());
-      assertReturnErrors(response);
+      assertApiReturnErrors(response);
       response.result?.forEach((file_response) => {
         let file = this.#wallet_files.get(file_response.name);
         if (file === undefined) {
@@ -71,9 +71,9 @@ export class ZanoController {
     }
   }
   dispose() {
-    if (!this.#init_result) throw new ZanoUninitializedError();
+    if (!this.#init_result) throw new ZanoApiUninitializedError();
     const response = TypedJSON.parse(PlainWallet.reset());
-    assertReturnErrors(response);
+    assertApiReturnErrors(response);
   }
 
   get lib_version() {
@@ -100,7 +100,7 @@ export class ZanoController {
     return this.#remote_node;
   }
   set remote_node(address: string | [host: string, port: string]) {
-    if (this.#init_result !== undefined) throw new ZanoAlreadyExistsError();
+    if (this.#init_result !== undefined) throw new ZanoApiAlreadyExistsError();
     if (Array.isArray(address)) {
       this.#remote_node = address;
     } else if (address.startsWith('http:')) {
@@ -123,12 +123,12 @@ export class ZanoController {
   }
   get_seed_phrase_info(seed_phrase: string, seed_password: string) {
     const response = TypedJSON.parse(PlainWallet.get_seed_phrase_info(TypedJSON.stringify({ seed_phrase, seed_password })));
-    if (response.error_code === 'Wrong parameter') throw errorWithResponse(new ZanoWalletRpcWrongArgumentError('Wrong parameter'), response);
+    if (response.error_code === 'Wrong parameter') throw errorWithResponse(new ZanoWalletRpcWrongArgument('Wrong parameter'), response);
     return response.response_data;
   }
   get_connectivity_status() {
     const response = TypedJSON.parse(PlainWallet.get_connectivity_status());
-    assertReturnErrors(response);
+    assertApiReturnErrors(response);
     return response.result;
   }
   get_current_tx_fee(priority: ZanoPriority) {
@@ -140,11 +140,11 @@ export class ZanoController {
   }
   async truncate_log() {
     const response = TypedJSON.parse(await PlainWallet.truncate_log());
-    assertErrorCode(response);
+    assertApiErrorCode(response);
   }
   async export_private_info(target_dir: string) {
     const response = TypedJSON.parse(await PlainWallet.get_export_private_info(target_dir));
-    assertReturnErrors(response);
+    assertApiReturnErrors(response);
   }
   generate_random_key(length = 20) {
     return PlainWallet.generate_random_key(length);
@@ -159,24 +159,24 @@ export class ZanoController {
     if (!file) return;
     await file.wallet?.close();
     const response = TypedJSON.parse(PlainWallet.delete_wallet(name));
-    assertErrorCode(response);
+    assertApiErrorCode(response);
     this.#wallet_files.delete(name);
   }
 
   async restore_wallet(name: string, wallet_password: string, seed: string, seed_password: string) {
-    if (this.#wallet_files.has(name)) throw new ZanoAlreadyExistsError('wallet file already exists');
+    if (this.#wallet_files.has(name)) throw new ZanoApiAlreadyExistsError('wallet file already exists');
     const response = TypedJSON.parse(await PlainWallet.restore(seed, name, wallet_password, seed_password));
-    assertErrorCode(response);
-    assertReturnErrors(response);
+    assertApiErrorCode(response);
+    assertApiReturnErrors(response);
     const file = new ZanoWalletFile(this, name, { ...response.result, name, pass: wallet_password });
     this.#wallet_files.set(name, file);
     return file.wallet!;
   }
   async generate_wallet(name: string, password: string) {
-    if (this.#wallet_files.has(name)) throw new ZanoAlreadyExistsError('wallet file already exists');
+    if (this.#wallet_files.has(name)) throw new ZanoApiAlreadyExistsError('wallet file already exists');
     const response = TypedJSON.parse(await PlainWallet.generate(name, password));
-    assertErrorCode(response);
-    assertReturnErrors(response);
+    assertApiErrorCode(response);
+    assertApiReturnErrors(response);
     const file = new ZanoWalletFile(this, name, { ...response.result, name, pass: password });
     this.#wallet_files.set(name, file);
     return file.wallet!;
@@ -188,10 +188,10 @@ export class ZanoController {
       if (name === 'base64_encode' || name === 'base64_decode') return methods;
       methods[name] = (async (params: UnwrapTypedJSON<Parameters<ICoreRpc[typeof name]>[0]>) => {
         const response = TypedJSON.parse(await CoreRpc[name](TypedJSON.stringify(params) as never));
-        assertReturnErrors(response);
+        assertApiReturnErrors(response);
         assertCoreRpcError(response);
         const body = TypedJSON.parse(CoreRpc.base64_decode(response.base64_body));
-        assertErrorCode(body);
+        assertApiErrorCode(body);
         if (body.error) throw body.error;
         const result = body.result;
         if (typeof result === 'object') {
@@ -199,11 +199,11 @@ export class ZanoController {
             NOT_FOUND: () => {
               switch (name) {
                 case 'get_asset_info':
-                  return new ZanoNotFoundError(`Asset with specified id(${params}) is not found`);
+                  return new ZanoApiNotFoundError(`Asset with specified id(${params}) is not found`);
                 case 'get_alias_by_address':
-                  return new ZanoNotFoundError(`No alises found`);
+                  return new ZanoApiNotFoundError(`No alises found`);
                 case 'get_alias_details':
-                  return new ZanoNotFoundError(`Alias not found`);
+                  return new ZanoApiNotFoundError(`Alias not found`);
                 default:
                   return new ZanoGeneralError(API_RETURN_CODE.NOT_FOUND);
               }
@@ -221,7 +221,7 @@ export class ZanoController {
         Exclude<
           Exclude<
             UnwrapTypedJSON<
-              UnwrapTypedBase64<Exclude<UnwrapTypedJSON<Awaited<ReturnType<ICoreRpc[Name]>>>, ReturnCodeErrors | CoreCodeErrors>['base64_body']>
+              UnwrapTypedBase64<Exclude<UnwrapTypedJSON<Awaited<ReturnType<ICoreRpc[Name]>>>, ApiReturnCodeErrors | CoreCodeErrors>['base64_body']>
             >,
             { result: null }
           >['result'],
@@ -248,8 +248,8 @@ export class ZanoWalletFile {
   async open(password: string) {
     if (this.wallet) return this.wallet;
     const response = TypedJSON.parse(await PlainWallet.open(this.name, password));
-    assertErrorCode(response);
-    assertReturnErrors(response);
+    assertApiErrorCode(response);
+    assertApiReturnErrors(response);
     const wallet = new ZanoWallet(this, { ...response.result, name: this.name, pass: password });
     wallets.set(this, wallet);
     return wallet;
@@ -285,7 +285,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
 
   async update_wallet_info() {
     const response = TypedJSON.parse(await PlainWallet.get_wallet_info(this.wallet_id));
-    assertReturnErrors(response);
+    assertApiReturnErrors(response);
     const { wi, wi_extended } = response.result;
     Object.defineProperty(this, 'wi', { value: wi, writable: false, enumerable: true, configurable: true });
     Object.defineProperty(this, 'wi_extended', { value: wi_extended, writable: false, enumerable: true, configurable: true });
@@ -294,16 +294,16 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
 
   async get_status() {
     const response = TypedJSON.parse(await PlainWallet.get_wallet_status(this.wallet_id));
-    assertReturnErrors(response);
+    assertApiReturnErrors(response);
     return response;
   }
 
   reset_file_password(password: string) {
     const response = PlainWallet.reset_wallet_password(this.wallet_id, password);
     if (response !== API_RETURN_CODE.OK) {
-      if (response === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoFailedError(), { response });
-      if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoWrongWalletIdError(), { response });
-      assertReturnErrors(TypedJSON.parse(response));
+      if (response === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoApiFailedError(), { response });
+      if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoApiWalletWrongIdError(), { response });
+      assertApiReturnErrors(TypedJSON.parse(response));
     }
     Object.defineProperty(this, 'pass', { value: password, writable: false, enumerable: true, configurable: true });
   }
@@ -316,7 +316,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   async assets_whitelist_add(params: { asset_id: string }) {
     const response = await callZanoWalletRpc('assets_whitelist_add', this.wallet_id, params);
     assertStatusFieldErrors(response, {
-      NOT_FOUND: () => new ZanoNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
+      NOT_FOUND: () => new ZanoApiNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
     });
     return response;
   }
@@ -324,7 +324,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
   async assets_whitelist_remove(params: { asset_id: string }) {
     const response = await callZanoWalletRpc('assets_whitelist_remove', this.wallet_id, params);
     assertStatusFieldErrors(response, {
-      NOT_FOUND: () => new ZanoNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
+      NOT_FOUND: () => new ZanoApiNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
     });
     return response;
   }
@@ -337,17 +337,17 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
 
   async close() {
     const response = TypedJSON.parse(await PlainWallet.close_wallet(this.wallet_id));
-    assertReturnErrors(response);
+    assertApiReturnErrors(response);
     const code = response.response;
     if (code !== API_RETURN_CODE.OK) {
-      if (code === API_RETURN_CODE.WALLET_WRONG_ID) throw (new ZanoWrongWalletIdError(), response);
-      if (code === API_RETURN_CODE.INTERNAL_ERROR) throw (new ZanoInternalError(), response);
-      if (code.startsWith(`${API_RETURN_CODE.FAIL}:`)) throw (new ZanoFailedError(code.substring(`${API_RETURN_CODE.FAIL}:`.length)), response);
+      if (code === API_RETURN_CODE.WALLET_WRONG_ID) throw (new ZanoApiWalletWrongIdError(), response);
+      if (code === API_RETURN_CODE.INTERNAL_ERROR) throw (new ZanoApiInternalError(), response);
+      if (code.startsWith(`${API_RETURN_CODE.FAIL}:`)) throw (new ZanoApiFailedError(code.substring(`${API_RETURN_CODE.FAIL}:`.length)), response);
     }
     wallets.set(this.file, null);
   }
 }
-type _ExtractResponse<T> = Exclude<UnwrapTypedJSON<T>, ReturnCodeErrors | ErrorCodeErrors | WalletCodeErrors>['result'];
+type _ExtractResponse<T> = Exclude<UnwrapTypedJSON<T>, ApiReturnCodeErrors | ApiErrorCodeErrors | WalletCodeErrors>['result'];
 type ExtractResponse<T> = T extends Promise<infer V> ? Promise<_ExtractResponse<V>> : _ExtractResponse<T>;
 type WalletRpcWrappers = {
   [Name in Exclude<keyof IWalletRpc, keyof HybridObject | 'store' | 'assets_whitelist_add' | 'assets_whitelist_remove' | 'sign_message'>]: (
@@ -361,10 +361,10 @@ function callZanoWalletRpc<Name extends Exclude<keyof IWalletRpc, keyof HybridOb
   params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
 ): ExtractResponse<ReturnType<IWalletRpc[Name]>> {
   const handleResponse = (response: Awaited<ReturnType<(typeof WalletRpc)[Exclude<keyof IWalletRpc, keyof HybridObject>]>>) => {
-    if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoWrongWalletIdError(), { response });
+    if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoApiWalletWrongIdError(), { response });
     const json = TypedJSON.parse(response);
-    assertErrorCode(json);
-    assertReturnErrors(json);
+    assertApiErrorCode(json);
+    assertApiReturnErrors(json);
     assertWalletRpcError(json);
     return json.result;
   };
@@ -468,7 +468,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
       response.error !== null &&
       'code' in response.error
     ) {
-      assertErrorCode(response);
+      assertApiErrorCode(response);
     }
     this.#app_config = response as DeepReadonly<AppConfig>;
   }
@@ -477,7 +477,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
   }
   set(next: DeepReadonly<AppConfig>) {
     const response = TypedJSON.parse(PlainWallet.set_appconfig(TypedJSON.stringify(next), this.encryption_key));
-    if (response.error) throw errorWithResponse(new ZanoFailedError(response.error.message), response);
+    if (response.error) throw errorWithResponse(new ZanoApiFailedError(response.error.message), response);
     this.#app_config = next;
   }
 }
