@@ -17,9 +17,9 @@
       "default": "./lib/module/utils/index.js"
     },
     "./controller": {
-      "source": "./src/controller.ts",
-      "types": "./lib/typescript/src/controller.d.ts",
-      "default": "./lib/module/controller.js"
+      "source": "./src/controller/index.ts",
+      "types": "./lib/typescript/src/controller/index.d.ts",
+      "default": "./lib/module/controller/index.js"
     },
     "./package.json": "./package.json"
   },

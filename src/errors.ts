@@ -1,7 +1,6 @@
 import { API_RETURN_CODE, WALLET_RPC_ERROR_CODE } from './entities';
-import { GENERAL_INTERNAL_ERROR } from './plain-wallet/enums';
 
-function createErrorClass(name: string, defaultMessage?: string) {
+export function createErrorClass(name: string, defaultMessage?: string) {
   class SpecificError extends Error {
     constructor(message?: string) {
       super(message ?? defaultMessage);
@@ -22,9 +21,6 @@ export class ZanoStatusError extends createErrorClass('ZanoStatusError') {
     super(message);
   }
 }
-
-export class ZanoGeneralError extends createErrorClass('ZanoGeneralError') {}
-export class ZanoInitializeError extends createErrorClass('ZanoInitializeError', GENERAL_INTERNAL_ERROR.INIT) {}
 
 export abstract class ZanoApiRpcError extends createErrorClass('ZanoApiRpcError') {
   abstract readonly code: API_RETURN_CODE;
@@ -121,8 +117,6 @@ export const ZanoApiReturnCodeErrors = {
   [API_RETURN_CODE.WRAP]: ZanoApiWrapError,
   [API_RETURN_CODE.MISSING_ZC_INPUTS]: ZanoApiMissingZcInputsError,
 };
-
-export class ZanoWalletBusyError extends createErrorClass('ZanoWalletBusyError') {}
 
 export abstract class ZanoWalletRpcError extends createErrorClass('ZanoWalletRpcUnknownError') {
   abstract readonly code: WALLET_RPC_ERROR_CODE;

@@ -1,0 +1,210 @@
+import type { HybridObject } from 'react-native-nitro-modules';
+import {
+  assertApiErrorCode,
+  assertApiReturnErrors,
+  assertStatusFieldErrors,
+  assertWalletRpcError,
+  errorWithResponse,
+  type ApiErrorCodeErrors,
+  type ApiReturnCodeErrors,
+  type WalletCodeErrors,
+} from '../asserts';
+import { CoreRpc } from '../core-rpc';
+import { API_RETURN_CODE, type open_wallet_response, type wallet_info_extra } from '../entities';
+import { ZanoApiFailedError, ZanoApiInternalError, ZanoApiNotFoundError, ZanoApiWalletWrongIdError } from '../errors';
+import { PlainWallet } from '../plain-wallet';
+import { TypedJSON, type UnwrapTypedJSON } from '../utils/typed-json';
+import type { DeepReadonly } from '../utils/types';
+import type { IWalletRpc } from '../wallet-rpc';
+import { WalletRpc } from '../wallet-rpc';
+import { wallets_by_files, type ZanoWalletFile } from './zano-wallet-file';
+
+export class ZanoWallet implements DeepReadonly<open_wallet_response> {
+  readonly name: DeepReadonly<open_wallet_response>['name'];
+  readonly pass: DeepReadonly<open_wallet_response>['pass'];
+  readonly wallet_id: DeepReadonly<open_wallet_response>['wallet_id'];
+  readonly recent_history: DeepReadonly<open_wallet_response>['recent_history'];
+  readonly wi: DeepReadonly<open_wallet_response>['wi'];
+  readonly wi_extended: DeepReadonly<wallet_info_extra> | undefined;
+  readonly seed: DeepReadonly<open_wallet_response>['seed'];
+  readonly recovered: DeepReadonly<open_wallet_response>['recovered'];
+  readonly wallet_local_bc_size: DeepReadonly<open_wallet_response>['wallet_local_bc_size'];
+  readonly wallet_file_size: DeepReadonly<open_wallet_response>['wallet_file_size'];
+
+  constructor(
+    readonly file: ZanoWalletFile,
+    response: open_wallet_response
+  ) {
+    this.name = file.name;
+    this.pass = response.pass;
+    this.wallet_id = response.wallet_id;
+    this.recent_history = response.recent_history;
+    this.wi = response.wi;
+    this.seed = response.seed;
+    this.recovered = response.recovered;
+    this.wallet_local_bc_size = response.wallet_local_bc_size;
+    this.wallet_file_size = response.wallet_file_size;
+  }
+
+  async update_wallet_info() {
+    const response = TypedJSON.parse(await PlainWallet.get_wallet_info(this.wallet_id));
+    assertApiReturnErrors(response);
+    const { wi, wi_extended } = response.result;
+    Object.defineProperty(this, 'wi', { value: wi, writable: false, enumerable: true, configurable: true });
+    Object.defineProperty(this, 'wi_extended', { value: wi_extended, writable: false, enumerable: true, configurable: true });
+    return response.result;
+  }
+
+  async get_status() {
+    const response = TypedJSON.parse(await PlainWallet.get_wallet_status(this.wallet_id));
+    assertApiReturnErrors(response);
+    return response;
+  }
+
+  reset_file_password(password: string) {
+    const response = PlainWallet.reset_wallet_password(this.wallet_id, password);
+    if (response !== API_RETURN_CODE.OK) {
+      if (response === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoApiFailedError(), { response });
+      if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoApiWalletWrongIdError(), { response });
+      assertApiReturnErrors(TypedJSON.parse(response));
+    }
+    Object.defineProperty(this, 'pass', { value: password, writable: false, enumerable: true, configurable: true });
+  }
+
+  async sign_message(message: string) {
+    const response = await callZanoWalletRpc('sign_message', this.wallet_id, { buff: CoreRpc.base64_encode(message) });
+    return response;
+  }
+
+  async assets_whitelist_add(params: { asset_id: string }) {
+    const response = await callZanoWalletRpc('assets_whitelist_add', this.wallet_id, params);
+    assertStatusFieldErrors(response, {
+      NOT_FOUND: () => new ZanoApiNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
+    });
+    return response;
+  }
+
+  async assets_whitelist_remove(params: { asset_id: string }) {
+    const response = await callZanoWalletRpc('assets_whitelist_remove', this.wallet_id, params);
+    assertStatusFieldErrors(response, {
+      NOT_FOUND: () => new ZanoApiNotFoundError(`Asset with specified id(${params.asset_id}) is not found`),
+    });
+    return response;
+  }
+
+  async store() {
+    const response = await callZanoWalletRpc('store', this.wallet_id, {});
+    Object.defineProperty(this, 'wallet_file_size', { value: response.wallet_file_size, writable: false, enumerable: true, configurable: true });
+    return response;
+  }
+
+  async close() {
+    const response = TypedJSON.parse(await PlainWallet.close_wallet(this.wallet_id));
+    assertApiReturnErrors(response);
+    const code = response.response;
+    if (code !== API_RETURN_CODE.OK) {
+      if (code === API_RETURN_CODE.WALLET_WRONG_ID) throw (new ZanoApiWalletWrongIdError(), response);
+      if (code === API_RETURN_CODE.INTERNAL_ERROR) throw (new ZanoApiInternalError(), response);
+      if (code.startsWith(`${API_RETURN_CODE.FAIL}:`)) throw (new ZanoApiFailedError(code.substring(`${API_RETURN_CODE.FAIL}:`.length)), response);
+    }
+    wallets_by_files.set(this.file, null);
+  }
+}
+
+type _ExtractResponse<T> = Exclude<UnwrapTypedJSON<T>, ApiReturnCodeErrors | ApiErrorCodeErrors | WalletCodeErrors>['result'];
+type ExtractResponse<T> = T extends Promise<infer V> ? Promise<_ExtractResponse<V>> : _ExtractResponse<T>;
+type WalletRpcWrappers = {
+  [Name in Exclude<keyof IWalletRpc, keyof HybridObject | 'store' | 'assets_whitelist_add' | 'assets_whitelist_remove' | 'sign_message'>]: (
+    params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
+  ) => ExtractResponse<ReturnType<IWalletRpc[Name]>>;
+};
+export interface ZanoWallet extends WalletRpcWrappers {}
+
+function callZanoWalletRpc<Name extends Exclude<keyof IWalletRpc, keyof HybridObject>>(
+  method: Name,
+  wallet_id: number,
+  params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
+): ExtractResponse<ReturnType<IWalletRpc[Name]>> {
+  const handleResponse = (response: Awaited<ReturnType<(typeof WalletRpc)[Exclude<keyof IWalletRpc, keyof HybridObject>]>>) => {
+    if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoApiWalletWrongIdError(), { response });
+    const json = TypedJSON.parse(response);
+    assertApiErrorCode(json);
+    assertApiReturnErrors(json);
+    assertWalletRpcError(json);
+    return json.result;
+  };
+  const result = WalletRpc[method](wallet_id, TypedJSON.stringify(params as never));
+  if (result instanceof Promise) {
+    return result.then(handleResponse) as never;
+  }
+  return handleResponse(result) as never;
+}
+(
+  [
+    'getbalance',
+    'getaddress',
+    'get_wallet_info',
+    'get_recent_txs_and_info',
+    'get_recent_txs_and_info2',
+    'transfer',
+    // 'store',
+    'get_payments',
+    'get_bulk_payments',
+    'make_integrated_address',
+    'split_integrated_address',
+    'sweep_below',
+    'get_bare_outs_stats',
+    'sweep_bare_outs',
+    'sign_transfer',
+    'submit_transfer',
+    'search_for_transactions',
+    'search_for_transactions2',
+    'get_restore_info',
+    // 'get_seed_phrase_info',
+    'get_mining_history',
+    'register_alias',
+    'update_alias',
+    // 'contracts_send_proposal',
+    // 'contracts_accept_proposal',
+    // 'contracts_get_all',
+    // 'contracts_release',
+    // 'contracts_request_cancel',
+    // 'contracts_accept_cancel',
+    'marketplace_get_offers_ex',
+    'marketplace_push_offer',
+    'marketplace_push_update_offer',
+    'marketplace_cancel_offer',
+    // 'atomics_create_htlc_proposal',
+    // 'atomics_get_list_of_active_htlc',
+    // 'atomics_redeem_htlc',
+    // 'atomics_check_htlc_redeemed',
+    'ionic_swap_generate_proposal',
+    'ionic_swap_get_proposal_info',
+    'ionic_swap_accept_proposal',
+    'assets_whitelist_get',
+    // 'assets_whitelist_add',
+    // 'assets_whitelist_remove',
+    'deploy_asset',
+    'emit_asset',
+    'update_asset',
+    'burn_asset',
+    'send_ext_signed_asset_tx',
+    'attach_asset_descriptor',
+    'transfer_asset_ownership',
+    'mw_get_wallets',
+    'mw_select_wallet',
+    // 'sign_message',
+    'encrypt_data',
+    'decrypt_data',
+    // 'proxy_to_daemon',
+  ] as Array<keyof IWalletRpc>
+).forEach((name) => {
+  const method = function <Name extends Exclude<keyof IWalletRpc, keyof HybridObject>>(
+    this: ZanoWallet,
+    params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>
+  ) {
+    return callZanoWalletRpc(name as Name, this.wallet_id, params);
+  };
+  Object.defineProperty(method, 'name', { value: name, writable: false, enumerable: false, configurable: true });
+  ZanoWallet.prototype[name as never] = method as never;
+});

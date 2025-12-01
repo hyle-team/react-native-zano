@@ -1,11 +1,11 @@
 import { API_RETURN_CODE, WALLET_RPC_ERROR_CODE, type ErrorCode, type ReturnCode } from './entities';
 import {
   ZanoApiBadArgInvalidJsonError,
+  ZanoApiBusyError,
   ZanoApiFailedError,
   ZanoApiInternalError,
   ZanoApiReturnCodeErrors,
   ZanoStatusError,
-  ZanoWalletBusyError,
   ZanoWalletRpcCodeErrors,
   ZanoWalletRpcUnknownError,
 } from './errors';
@@ -181,7 +181,7 @@ export function assertWalletRpcError<R extends object>(response: R): asserts res
   }
   const message = 'message' in error ? String(error.message) || undefined : undefined;
   if (code === WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR) {
-    if (message === API_RETURN_CODE.BUSY) throw errorWithResponse(new ZanoWalletBusyError(), response);
+    if (message === API_RETURN_CODE.BUSY) throw errorWithResponse(new ZanoApiBusyError(), response);
     throw errorWithResponse(new ZanoWalletRpcUnknownError(message), response);
   }
   throw errorWithResponse(returnWalletErrorToCode(code, message), response);
