@@ -179,7 +179,7 @@ export type DAEMON_RPC_GET_ALIASES_BY_ADDRESS_REQUEST = string;
 export type DAEMON_RPC_GET_ALIASES_BY_ADDRESS_RESPONSE =
   | {
       /** List of alias_rpc_details objects, each containing detailed information about each alias registered to the specified address. */
-      alias_info_list: alias_rpc_details[];
+      alias_info_list?: alias_rpc_details[];
       /** Status of the call. */
       status: API_RETURN_CODE.OK;
     }
@@ -248,7 +248,7 @@ export type DAEMON_RPC_GET_BLOCKS_DETAILS_RESPONSE = {
   /** Status of the call. */
   status: API_RETURN_CODE.OK;
   /** List of blocks with detailed information, starting from the specified height. */
-  blocks: block_rpc_extended_info[];
+  blocks?: block_rpc_extended_info[];
 };
 
 // on_get_tx_details
@@ -272,7 +272,7 @@ export type DAEMON_RPC_SERARCH_BY_ID_RESPONSE = {
   /** Status of the call. */
   status: API_RETURN_CODE.OK;
   /** List of entity types where the identifier was found. */
-  types_found: string[];
+  types_found?: string[];
 };
 
 // on_get_info
@@ -312,7 +312,7 @@ export type DAEMON_RPC_GET_INFO_RESPONSE = {
   /** Current maximum allowed cumulative block size in bytes. */
   current_max_allowed_block_size: number;
   /** A list of boolean values indicating whether each corresponding hardfork is active. For example, a list 'true, true, false' indicates that the first hardfork is activated, while the second is not. Hardfork #0 is always active as it is a stub. */
-  is_hardfok_active: boolean[];
+  is_hardfok_active?: boolean[];
   /** Current network state of the daemon, which could be connecting, synchronizing, online, loading core, internal error, unloading core, or downloading database. */
   daemon_network_state: daemon_network_state;
   /** Blockchain height at which the current synchronization process started. Indicates the starting point for catching up to the network's latest state. */
@@ -421,7 +421,7 @@ export type DAEMON_RPC_GET_MULTISIG_INFO_RESPONSE =
 export type DAEMON_RPC_GET_ALL_ALIASES_REQUEST = {};
 export type DAEMON_RPC_GET_ALL_ALIASES_RESPONSE = {
   /** List of alias_rpc_details objects, each containing information about an individual alias. */
-  aliases: alias_rpc_details[];
+  aliases?: alias_rpc_details[];
   /** Status of the call. */
   status: API_RETURN_CODE.OK;
 };
@@ -435,7 +435,7 @@ export type DAEMON_RPC_GET_ALIASES_REQUEST = {
 };
 export type DAEMON_RPC_GET_ALIASES_RESPONSE = {
   /** List of alias_rpc_details objects, each containing information about an individual alias retrieved based on the request parameters. */
-  aliases: alias_rpc_details[];
+  aliases?: alias_rpc_details[];
   /** Status of the call. */
   status: API_RETURN_CODE.OK;
 };
@@ -449,7 +449,7 @@ export type DAEMON_RPC_GET_POOL_TXS_DETAILS_RESPONSE = {
   /** Status of the call. */
   status: API_RETURN_CODE.OK;
   /** List of transactions with detailed information. */
-  txs: tx_rpc_extended_info[];
+  txs?: tx_rpc_extended_info[];
 };
 
 // on_get_pool_txs_brief_details
@@ -461,7 +461,7 @@ export type DAEMON_RPC_GET_POOL_TXS_BRIEF_DETAILS_RESPONSE = {
   /** Status of the call. */
   status: API_RETURN_CODE.OK;
   /** List of transactions with detailed information. */
-  txs: tx_rpc_brief_info[];
+  txs?: tx_rpc_brief_info[];
 };
 
 // on_get_all_pool_tx_list
@@ -470,7 +470,7 @@ export type DAEMON_RPC_GET_ALL_POOL_TX_LIST_RESPONSE = {
   /** Status of the call. */
   status: API_RETURN_CODE.OK;
   /** List of all transaction IDs currently in the transaction pool. */
-  ids: string[];
+  ids?: string[];
 };
 
 // on_get_pool_info
@@ -481,7 +481,7 @@ export type DAEMON_RPC_GET_POOL_INFO_RESPONSE = {
   /** Error code, if there's any error (optional). */
   error_code: string;
   /** List of aliases from txs that are currently in the tx pool. */
-  aliases_que: alias_rpc_details[];
+  aliases_que?: alias_rpc_details[];
 };
 
 // on_get_random_outs
@@ -499,7 +499,7 @@ export type DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_out_entry = {
 };
 export type DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_outs_for_amount = {
   amount: number;
-  outs: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_out_entry[];
+  outs?: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_out_entry[];
 };
 export type DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_LEGACY_RESPONSE =
   | {
@@ -536,13 +536,13 @@ export interface DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount {
   /** The amount for which decoys are returned. */
   amount: number;
   /** List of 'OutEntry' structures, each containing decoys for a specific amount. */
-  outs: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry[];
+  outs?: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry[];
 }
 export type DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_RESPONSE = {
   /** Status of the call. */
   status: API_RETURN_CODE.FAIL | API_RETURN_CODE.OK;
   /** List of 'outs_for_amount' structures, each containing decoys for a specific amount. */
-  outs: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount[];
+  outs?: DAEMON_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount[];
 };
 
 // on_get_random_outs3
@@ -614,7 +614,7 @@ export type DAEMON_RPC_GET_ASSETS_LIST_RESPONSE =
       /** Status of the call. */
       status: API_RETURN_CODE.OK;
       /** List of assets registered in Zano blockchain. */
-      assets: asset_descriptor_with_id[];
+      assets?: asset_descriptor_with_id[];
     }
   | {
       /** Status of the call. */
@@ -646,7 +646,7 @@ export type DAEMON_RPC_DECRYPT_TX_DETAILS_RESPONSE = {
   /** Status code of operation, OK if success. */
   status: API_RETURN_CODE.OK;
   /** List of decoded outputs. */
-  decoded_outputs: DAEMON_RPC_DECRYPT_TX_DETAILS_decoded_output[];
+  decoded_outputs?: DAEMON_RPC_DECRYPT_TX_DETAILS_decoded_output[];
   /** Transaction in JSON format. */
   tx_in_json: string;
   /** Verified transaction ID. */
@@ -715,7 +715,7 @@ export type DAEMON_RPC_GET_OFFERS_EX_RESPONSE = {
   /** Status of the operation. */
   status: API_RETURN_CODE.OK;
   /** List of offers related to the operation. */
-  offers: offer_details_ex[];
+  offers?: offer_details_ex[];
   /** Total number of offers. */
   total_offers: number;
 };

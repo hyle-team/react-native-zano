@@ -35,7 +35,7 @@ export type INVOKE_RPC_GET_BALANCE_RESPONSE = {
   /** Native coins total unlocked amount */
   unlocked_balance: number;
   /** Balances grouped by its asset_id */
-  balances: asset_balance_entry[];
+  balances?: asset_balance_entry[];
 };
 
 // on_getaddress
@@ -61,7 +61,7 @@ export type INVOKE_RPC_GET_WALLET_INFO_RESPONSE = {
   /** Shows if the wallet still has UTXO from pre-zarcanum era */
   has_bare_unspent_outputs: boolean;
   /** UTXO distribution for this particular wallet: disabled right now */
-  utxo_distribution: string[];
+  utxo_distribution?: string[];
   /** Current wallet/daemon height */
   current_height: number;
 };
@@ -72,7 +72,7 @@ export type INVOKE_RPC_GET_RECENT_TXS_AND_INFO_RESPONSE = {
   /** Details on wallet balance etc */
   pi: wallet_provision_info;
   /** Transfers */
-  transfers: wallet_transfer_info[];
+  transfers?: wallet_transfer_info[];
   /** Total transfers */
   total_transfers: number;
   /** Last item index */
@@ -151,7 +151,7 @@ export type INVOKE_RPC_GET_PAYMENTS_REQUEST = {
 };
 export type INVOKE_RPC_GET_PAYMENTS_RESPONSE = {
   /** Array of payments that connected to given payment_id */
-  payments: payment_details[];
+  payments?: payment_details[];
 };
 
 // on_get_bulk_payments
@@ -269,11 +269,11 @@ export type INVOKE_RPC_SUBMIT_TRANSFER_RESPONSE = {
 export type INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_REQUEST = INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_REQUEST;
 export type INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_RESPONSE = {
   /** List of incoming transactions */
-  in: wallet_transfer_info_old[];
+  in?: wallet_transfer_info_old[];
   /** List of outgoing transactions */
-  out: wallet_transfer_info_old[];
+  out?: wallet_transfer_info_old[];
   /** List of pool transactions */
-  pool: wallet_transfer_info_old[];
+  pool?: wallet_transfer_info_old[];
 };
 
 // on_search_for_transactions2
@@ -295,11 +295,11 @@ export type INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_REQUEST = {
 };
 export type INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_RESPONSE = {
   /** List of incoming transactions */
-  in: wallet_transfer_info[];
+  in?: wallet_transfer_info[];
   /** List of outgoing transactions */
-  out: wallet_transfer_info[];
+  out?: wallet_transfer_info[];
   /** List of pool transactions */
-  pool: wallet_transfer_info[];
+  pool?: wallet_transfer_info[];
 };
 
 // on_getwallet_restore_info
@@ -497,7 +497,7 @@ export type INVOKE_RPC_GET_LIST_OF_ACTIVE_HTLC_REQUEST = {
 };
 export type INVOKE_RPC_GET_LIST_OF_ACTIVE_HTLC_RESPONSE = {
   /** List of HTLC entries */
-  htlcs: htlc_entry_info[];
+  htlcs?: htlc_entry_info[];
 };
 
 // on_redeem_htlc
@@ -741,7 +741,7 @@ export type INVOKE_RPC_TRANSFER_ASSET_OWNERSHIP_RESPONSE = {
 // on_mw_get_wallets
 export type INVOKE_RPC_MW_GET_WALLETS_REQUEST = {};
 export type INVOKE_RPC_MW_GET_WALLETS_RESPONSE = {
-  wallets: wallet_entry_info[];
+  wallets?: wallet_entry_info[];
 };
 
 // on_mw_select_wallet

@@ -93,7 +93,7 @@ export type employed_tx_entry = {
 
 export type employed_tx_entries = {
   /** Mark entries from transaction that were connected to this wallet */
-  receive: employed_tx_entry[];
+  receive?: employed_tx_entry[];
   /** Mark entries from transaction that were connected to this wallet */
   spent?: employed_tx_entry[];
 };
@@ -154,7 +154,7 @@ export type tx_service_attachment = {
   /** Hex-encoded body of the attachment */
   body: string;
   /** Hex-encoded public key of the owner, optional */
-  security: string[];
+  security?: string[];
   /** Flags that help wallet to automatically process some properties of the attachment */
   flags: TX_SERVICE_ATTACHMENT;
 };
@@ -228,9 +228,9 @@ export type wallet_transfer_info = {
   /** If sender is included in tx */
   show_sender: boolean;
   /** Escrow contract if it's part of the transaction */
-  contract: escrow_contract_details[];
+  contract?: escrow_contract_details[];
   /** Additional entries that might be stored in transaction but not part of its consensus */
-  service_entries: tx_service_attachment[];
+  service_entries?: tx_service_attachment[];
   /** Index of this entry in the wallet's array of transaction's history */
   transfer_internal_index: number;
   /** Remote addresses of this transfer (destination if it's outgoing transfer or sender if it's incoming transaction) */
@@ -238,7 +238,7 @@ export type wallet_transfer_info = {
   /** Aliases for remote addresses, if discovered */
   remote_aliases?: string[];
   /** Essential part of transfer entry: amounts that have been transferred in this transaction grouped by asset id */
-  subtransfers: wallet_sub_transfer_info[];
+  subtransfers?: wallet_sub_transfer_info[];
   /** "Asset Descriptor Operation" if it was present in transaction */
   ado?: asset_descriptor_operation;
 };
@@ -271,9 +271,9 @@ export interface asset_funds {
 
 export type ionic_swap_proposal_info = {
   /** Assets sent to the finalizer */
-  to_finalizer: asset_funds[];
+  to_finalizer?: asset_funds[];
   /** Assets sent to the initiator */
-  to_initiator: asset_funds[];
+  to_initiator?: asset_funds[];
   /** Fee paid by party A (initiator) */
   fee_paid_by_a: number;
 };
@@ -361,7 +361,7 @@ export interface app_connectivity_status {
 }
 
 export interface transfers_array {
-  unconfirmed: wallet_transfer_info[];
+  unconfirmed?: wallet_transfer_info[];
   history?: wallet_transfer_info[];
   total_history_items: number;
   last_item_index: number;
@@ -369,7 +369,7 @@ export interface transfers_array {
 
 export type wallet_info = {
   /** Balances held by this wallet */
-  balances: asset_balance_entry[];
+  balances?: asset_balance_entry[];
   /** Total amount mined */
   mined_total: number;
   /** Address */
@@ -555,7 +555,7 @@ export interface block_rpc_extended_info {
   this_block_fee_median: number;
   effective_fee_median: number;
   /** Detailed information about each transaction included in the block. */
-  transactions_details: tx_rpc_extended_info[];
+  transactions_details?: tx_rpc_extended_info[];
   /** Type of the block. */
   type: number;
   /** Indicates whether the block is an orphan. */
@@ -584,13 +584,13 @@ export interface tx_rpc_extended_info {
   /** Public key associated with the transaction. */
   pub_key: string;
   /** Outputs of the transaction. */
-  outs: tx_out_rpc_entry[];
+  outs?: tx_out_rpc_entry[];
   /** Inputs of the transaction. */
-  ins: tx_in_rpc_entry[];
+  ins?: tx_in_rpc_entry[];
   /** Extra data associated with the transaction. */
-  extra: tx_extra_rpc_entry[];
+  extra?: tx_extra_rpc_entry[];
   /** Additional attachments to the transaction. */
-  attachments: tx_extra_rpc_entry[];
+  attachments?: tx_extra_rpc_entry[];
   /** Serialized transaction represented in JSON, encoded in Base64. */
   object_in_json: string;
 }
@@ -599,7 +599,7 @@ export interface tx_out_rpc_entry {
   /** The output's amount, 0 for ZC outputs. */
   amount: number;
   /** List of public keys associated with the output. */
-  pub_keys: string[];
+  pub_keys?: string[];
   /** Minimum number of signatures required to spend the output, for multisig outputs only. */
   minimum_sigs: number;
   /** Indicates whether the output has been spent. */
@@ -616,11 +616,11 @@ export interface tx_in_rpc_entry {
   /** Contains either the key image for the input or the multisig output ID, depending on the input type. */
   kimage_or_ms_id: string;
   /** List of global indexes indicating the outputs referenced by this input, where only one is actually being spent. */
-  global_indexes: Array<number>;
+  global_indexes?: number[];
   /** Number of multisig signatures used, relevant only for multisig outputs. */
   multisig_count: number;
   /** Auxiliary options associated with the input, containing additional configuration or data. */
-  etc_options: Array<string>;
+  etc_options?: string[];
 }
 
 export interface tx_extra_rpc_entry {
@@ -864,15 +864,15 @@ export interface pos_entry {
 }
 
 export interface tx_generation_context {
-  asset_ids: string[];
-  blinded_asset_ids: string[];
-  amount_commitments: string[];
-  asset_id_blinding_masks: string[];
-  amounts: string[];
-  amount_blinding_masks: string[];
-  pseudo_outs_blinded_asset_ids: string[];
-  pseudo_outs_plus_real_out_blinding_masks: string[];
-  real_zc_ins_asset_ids: string[];
+  asset_ids?: string[];
+  blinded_asset_ids?: string[];
+  amount_commitments?: string[];
+  asset_id_blinding_masks?: string[];
+  amounts?: string[];
+  amount_blinding_masks?: string[];
+  pseudo_outs_blinded_asset_ids?: string[];
+  pseudo_outs_plus_real_out_blinding_masks?: string[];
+  real_zc_ins_asset_ids?: string[];
   zc_input_amounts: number;
   pseudo_out_amount_commitments_sum: string;
   pseudo_out_amount_blinding_masks_sum: string;
@@ -939,7 +939,7 @@ export type data_for_external_asset_signing_tx = {
   /** Hex-encoded transaction secret key. */
   tx_secret_key: string;
   /** Target address for each of the transaction output. */
-  outputs_addresses: string[];
+  outputs_addresses?: string[];
   /** Base64-encoded finalized_tx data structure, which should be passed along with submitting the transaction. */
   finalized_tx: string;
 };
