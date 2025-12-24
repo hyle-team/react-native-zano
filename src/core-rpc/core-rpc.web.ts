@@ -1,11 +1,12 @@
 import { ZanoBindingError } from '../errors';
+import type { Promisify } from '../utils';
 import type { ICoreRpc } from './core-rpc.type';
 
 export const CoreRpc = new Proxy(
   {
-    base64_encode: (text) => btoa(text) as never,
-    base64_decode: (text) => atob(text) as never,
-  } as Partial<ICoreRpc>,
+    base64_encode: (text: string) => btoa(text),
+    base64_decode: (text: string) => atob(text),
+  },
   {
     get(target, name) {
       if (name in target && target[name as never]) return target[name as never];
@@ -13,4 +14,4 @@ export const CoreRpc = new Proxy(
       return globalThis['ZanoCoreRpc' as never][name];
     },
   }
-) as ICoreRpc;
+) as Promisify<ICoreRpc, 'base64_decode' | 'base64_encode'>;

@@ -1,4 +1,5 @@
 import { ZanoBindingError } from '../errors';
+import type { Promisify } from '../utils';
 import type { IPlainWallet } from './plain-wallet.type';
 
 export const PlainWallet = new Proxy(
@@ -10,4 +11,4 @@ export const PlainWallet = new Proxy(
       return globalThis['ZanoPlainWallet' as never][name];
     },
   }
-) as IPlainWallet;
+) as Promisify<IPlainWallet>;

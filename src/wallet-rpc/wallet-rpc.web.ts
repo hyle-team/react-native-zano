@@ -1,4 +1,5 @@
 import { ZanoBindingError } from '../errors';
+import type { Promisify } from '../utils';
 import type { IWalletRpc } from './wallet-rpc.type';
 
 export const WalletRpc = new Proxy(
@@ -10,4 +11,4 @@ export const WalletRpc = new Proxy(
       return globalThis['ZanoWalletRpc' as never][name];
     },
   }
-) as IWalletRpc;
+) as Promisify<IWalletRpc>;

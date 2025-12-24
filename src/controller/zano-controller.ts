@@ -33,7 +33,7 @@ export class ZanoController {
     if (this.#init_result) throw new ZanoControllerAlreadyInitiated();
     {
       const [host, port] = this.#remote_node;
-      const response = await PlainWallet.init(host, port, PlatformUtils.get_working_directory(), this.#log_level);
+      const response = await PlainWallet.init(host, port, await this.working_directory, this.#log_level);
       if (response === GENERAL_INTERNAL_ERROR.INIT) throw errorWithResponse(new ZanoControllerFailedToInitialize(), { response });
       const json = TypedJSON.parse(response);
       if (json.error) throw errorWithResponse(new ZanoControllerFailedToInitialize(json.error.message), response);
@@ -57,10 +57,10 @@ export class ZanoController {
       });
     }
   }
-  dispose() {
+  async dispose() {
     if (!this.#init_result) return;
     this.#init_result = undefined;
-    const response = TypedJSON.parse(PlainWallet.reset());
+    const response = TypedJSON.parse(await PlainWallet.reset());
     assertApiReturnErrors(response);
   }
 
@@ -106,16 +106,16 @@ export class ZanoController {
     }
   }
 
-  get_address_info(addr: string) {
-    return TypedJSON.parse(PlainWallet.get_address_info(addr));
+  async get_address_info(addr: string) {
+    return TypedJSON.parse(await PlainWallet.get_address_info(addr));
   }
-  get_seed_phrase_info(seed_phrase: string, seed_password: string) {
-    const response = TypedJSON.parse(PlainWallet.get_seed_phrase_info(TypedJSON.stringify({ seed_phrase, seed_password })));
+  async get_seed_phrase_info(seed_phrase: string, seed_password: string) {
+    const response = TypedJSON.parse(await PlainWallet.get_seed_phrase_info(TypedJSON.stringify({ seed_phrase, seed_password })));
     if (response.error_code === 'Wrong parameter') throw errorWithResponse(new ZanoWalletRpcWrongArgument(response.error_code), response);
     return response.response_data;
   }
-  get_connectivity_status() {
-    const response = TypedJSON.parse(PlainWallet.get_connectivity_status());
+  async get_connectivity_status() {
+    const response = TypedJSON.parse(await PlainWallet.get_connectivity_status());
     assertApiReturnErrors(response);
     return response.result;
   }
@@ -134,8 +134,8 @@ export class ZanoController {
     const response = TypedJSON.parse(await PlainWallet.get_export_private_info(target_dir));
     assertApiReturnErrors(response);
   }
-  generate_random_key(length = 20) {
-    return PlainWallet.generate_random_key(length);
+  async generate_random_key(length = 20) {
+    return await PlainWallet.generate_random_key(length);
   }
 
   #wallet_files = new Map<string, ZanoWalletFile>();
@@ -146,7 +146,7 @@ export class ZanoController {
     const file = this.#wallet_files.get(name);
     if (!file) return;
     await file.wallet?.close();
-    const response = TypedJSON.parse(PlainWallet.delete_wallet(name));
+    const response = TypedJSON.parse(await PlainWallet.delete_wallet(name));
     assertApiErrorCode(response);
     this.#wallet_files.delete(name);
   }
@@ -170,52 +170,57 @@ export class ZanoController {
     return file.wallet!;
   }
 
-  readonly daemon = (Object.keys(Object.getPrototypeOf(CoreRpc)) as Array<Exclude<keyof ICoreRpc, keyof HybridObject> | '__type'>).reduce(
-    (methods, name) => {
-      if (name === '__type') return methods;
-      if (name === 'base64_encode' || name === 'base64_decode') return methods;
-      methods[name] = (async (params: UnwrapTypedJSON<Parameters<ICoreRpc[typeof name]>[0]>) => {
-        const response = TypedJSON.parse(await CoreRpc[name](TypedJSON.stringify(params) as never));
-        assertApiReturnErrors(response);
-        assertCoreRpcError(response);
-        const body = TypedJSON.parse(CoreRpc.base64_decode(response.base64_body));
-        assertApiErrorCode(body);
-        if (body.error) throw body.error;
-        const result = body.result;
-        if (typeof result === 'object') {
-          assertStatusFieldErrors(result, {
-            NOT_FOUND: () => {
-              switch (name) {
-                case 'get_asset_info':
-                  return new ZanoApiNotFoundError(`Asset with specified id(${params}) is not found`);
-                case 'get_alias_by_address':
-                  return new ZanoApiNotFoundError(`No alises found`);
-                case 'get_alias_details':
-                  return new ZanoApiNotFoundError(`Alias not found`);
-                default:
-                  return new ZanoApiNotFoundError();
-              }
-            },
-          });
-        }
-        return result;
-      }) as never;
-      return methods;
-    },
-    {} as {
-      [Name in Exclude<keyof ICoreRpc, keyof HybridObject | 'base64_encode' | 'base64_decode'>]: (
-        params: UnwrapTypedJSON<Parameters<ICoreRpc[Name]>[0]>
-      ) => Promise<
-        Exclude<
-          Exclude<
-            UnwrapTypedJSON<
-              UnwrapTypedBase64<Exclude<UnwrapTypedJSON<Awaited<ReturnType<ICoreRpc[Name]>>>, ApiReturnCodeErrors | CoreCodeErrors>['base64_body']>
-            >,
-            { result: null }
-          >['result'],
-          StatusFieldErrors
-        >
-      >;
+  readonly daemon = new Proxy(
+    {},
+    {
+      get(methods, method) {
+        // @ts-expect-error
+        if (methods[method]) return methods[method];
+        // @ts-expect-error
+        methods[method] = async (params) => {
+          // @ts-expect-error
+          const response = TypedJSON.parse(await CoreRpc[method](TypedJSON.stringify(params)));
+          assertApiReturnErrors(response);
+          assertCoreRpcError(response);
+          const body = TypedJSON.parse(CoreRpc.base64_decode(response.base64_body));
+          assertApiErrorCode(body);
+          if (body.error) throw body.error;
+          const result = body.result;
+          if (typeof result === 'object') {
+            assertStatusFieldErrors(result, {
+              NOT_FOUND: () => {
+                switch (method) {
+                  case 'get_asset_info':
+                    return new ZanoApiNotFoundError(`Asset with specified id(${params}) is not found`);
+                  case 'get_alias_by_address':
+                    return new ZanoApiNotFoundError(`No alises found`);
+                  case 'get_alias_details':
+                    return new ZanoApiNotFoundError(`Alias not found`);
+                  default:
+                    return new ZanoApiNotFoundError();
+                }
+              },
+            });
+          }
+          return result;
+        };
+        // @ts-expect-error
+        return methods[method];
+      },
     }
-  );
+  ) as {
+    [Name in Exclude<keyof ICoreRpc, keyof HybridObject | 'base64_encode' | 'base64_decode'>]: (
+      params: UnwrapTypedJSON<Parameters<ICoreRpc[Name]>[0]>
+    ) => Promise<
+      Exclude<
+        Exclude<
+          UnwrapTypedJSON<
+            UnwrapTypedBase64<Exclude<UnwrapTypedJSON<Awaited<ReturnType<ICoreRpc[Name]>>>, ApiReturnCodeErrors | CoreCodeErrors>['base64_body']>
+          >,
+          { result: null }
+        >['result'],
+        StatusFieldErrors
+      >
+    >;
+  };
 }

@@ -15,11 +15,11 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
     this.#app_config = initial;
   }
 
-  encryption_key: string;
+  encryption_key: string | Promise<string>;
 
   #app_config!: DeepReadonly<AppConfig>;
-  initialize() {
-    const response = TypedJSON.parse(PlainWallet.get_appconfig(this.encryption_key));
+  async initialize() {
+    const response = TypedJSON.parse(await PlainWallet.get_appconfig(await this.encryption_key));
     if (
       typeof response === 'object' &&
       response !== null &&
@@ -36,8 +36,8 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
   get(): DeepReadonly<AppConfig> {
     return this.#app_config;
   }
-  set(next: DeepReadonly<AppConfig>) {
-    const response = TypedJSON.parse(PlainWallet.set_appconfig(TypedJSON.stringify(next), this.encryption_key));
+  async set(next: DeepReadonly<AppConfig>) {
+    const response = TypedJSON.parse(await PlainWallet.set_appconfig(TypedJSON.stringify(next), await this.encryption_key));
     if (response.error) throw errorWithResponse(new ZanoApiFailedError(response.error.message), response);
     this.#app_config = next;
   }

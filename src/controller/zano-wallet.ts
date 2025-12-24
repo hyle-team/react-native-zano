@@ -14,7 +14,7 @@ import { API_RETURN_CODE, type open_wallet_response, type wallet_info_extra } fr
 import { ZanoApiFailedError, ZanoApiInternalError, ZanoApiNotFoundError, ZanoApiWalletWrongIdError } from '../errors';
 import { PlainWallet } from '../plain-wallet';
 import { TypedJSON, type UnwrapTypedJSON } from '../utils/typed-json';
-import type { DeepReadonly } from '../utils/types';
+import type { DeepReadonly, IfWeb } from '../utils/types';
 import type { IWalletRpc } from '../wallet-rpc';
 import { WalletRpc } from '../wallet-rpc';
 import { wallets_by_files, type ZanoWalletFile } from './zano-wallet-file';
@@ -61,8 +61,8 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
     return response;
   }
 
-  reset_file_password(password: string) {
-    const response = PlainWallet.reset_wallet_password(this.wallet_id, password);
+  async reset_file_password(password: string) {
+    const response = await PlainWallet.reset_wallet_password(this.wallet_id, password);
     if (response !== API_RETURN_CODE.OK) {
       if (response === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoApiFailedError(), { response });
       if (response === API_RETURN_CODE.WALLET_WRONG_ID) throw errorWithResponse(new ZanoApiWalletWrongIdError(), { response });
@@ -112,7 +112,7 @@ export class ZanoWallet implements DeepReadonly<open_wallet_response> {
 }
 
 type _ExtractResponse<T> = Exclude<UnwrapTypedJSON<T>, ApiReturnCodeErrors | ApiErrorCodeErrors | WalletCodeErrors>['result'];
-type ExtractResponse<T> = T extends Promise<infer V> ? Promise<_ExtractResponse<V>> : _ExtractResponse<T>;
+type ExtractResponse<T> = T extends Promise<infer V> ? Promise<_ExtractResponse<V>> : IfWeb<_ExtractResponse<T>, Promise<_ExtractResponse<T>>>;
 type WalletRpcWrappers = {
   [Name in Exclude<keyof IWalletRpc, keyof HybridObject | 'store' | 'assets_whitelist_add' | 'assets_whitelist_remove' | 'sign_message'>]: (
     params: UnwrapTypedJSON<Parameters<IWalletRpc[Name]>[1]>

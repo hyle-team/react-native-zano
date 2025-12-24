@@ -7,7 +7,12 @@ export default function App() {
   const [time, setTime] = useState(0);
 
   const api = useMemo(() => new ZanoController('https://node.zano.org:443'), []);
-  useEffect(() => () => api.dispose(), [api]);
+  useEffect(
+    () => () => {
+      void api.dispose();
+    },
+    [api]
+  );
 
   return (
     <SafeAreaView style={styles.container}>

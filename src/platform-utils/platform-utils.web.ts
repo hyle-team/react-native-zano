@@ -1,4 +1,5 @@
 import { ZanoBindingError } from '../errors';
+import type { Promisify } from '../utils';
 import type { PlatformUtils as IPlatformUtils } from './platform-utils.nitro';
 
 export const PlatformUtils = new Proxy(
@@ -10,4 +11,4 @@ export const PlatformUtils = new Proxy(
       return globalThis['ZanoPlatformUtils' as never][name];
     },
   }
-) as IPlatformUtils;
+) as Promisify<IPlatformUtils>;
