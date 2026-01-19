@@ -65,6 +65,18 @@ export type DAEMON_RPC_GETBLOCKCOUNT_RESPONSE = {
 export type DAEMON_RPC_GETBLOCKHASH_REQUEST = number[];
 export type DAEMON_RPC_GETBLOCKHASH_RESPONSE = string;
 
+// on_send_raw_tx
+export type DAEMON_RPC_SEND_RAW_TX_REQUEST = {
+  /** The transaction data as a hexadecimal string, ready for network broadcast. */
+  tx_as_hex: string;
+  /** The transaction data as a base64 string, ready for network broadcast. Used only if tx_as_hex is empty */
+  tx_as_base64?: string;
+};
+export type DAEMON_RPC_SEND_RAW_TX_RESPONSE = {
+  /** Status of the call. */
+  status: 'Failed' | 'Not relayed' | API_RETURN_CODE.BAD_ARG | API_RETURN_CODE.DISCONNECTED | API_RETURN_CODE.BUSY | API_RETURN_CODE.OK;
+};
+
 // on_getblocktemplate
 export type DAEMON_RPC_GETBLOCKTEMPLATE_REQUEST = {
   /** A transaction blob that must be explicitly included in the block. */
@@ -202,6 +214,31 @@ export type DAEMON_RPC_GET_ALIAS_REWARD_RESPONSE = {
   status: API_RETURN_CODE.OK;
 };
 
+// on_alias_lookup
+export type DAEMON_RPC_ALIAS_LOOKUP_REQUEST = {
+  /** Prefix by which the search will be performed. */
+  alias_first_leters: string;
+  /** Maximum number of elements returned (not bigger then 10). */
+  n_of_items_to_return: number;
+};
+export type DAEMON_RPC_ALIAS_LOOKUP_RESPONSE =
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+      /** Error code, if any. */
+      error_code?: string;
+      /** List of alias_rpc_details objects, each containing detailed information about each alias registered to the specified address. */
+      aliases: alias_rpc_details[];
+    }
+  | {
+      /** Status of the call. */
+      status: API_RETURN_CODE.OK;
+      /** Error code, if any. */
+      error_code?: string;
+      /** List of alias_rpc_details objects, each containing detailed information about each alias registered to the specified address. */
+      aliases?: never;
+    };
+
 // on_get_est_height_from_date
 export type DAEMON_RPC_GET_EST_HEIGHT_FROM_DATE_REQUEST = {
   /** Linux timestamp for the required date. */
@@ -223,7 +260,7 @@ export type DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_REQUEST = {
   /** Block count limit. If 0, only the transaction pool will be searched. Maximum and default is 5. */
   blocks_limit?: number;
 };
-export type DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_RESPONSE = {
+export type DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_OUT_ENTRY = {
   /** The amount of the output. */
   amount: number;
   /** Asset ID of the output. */
@@ -234,6 +271,30 @@ export type DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_RESPONSE = {
   tx_block_height: number;
   /** Index of the output in the transaction. */
   output_tx_index: number;
+};
+export type DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_RESPONSE = {
+  /** List of found outputs. */
+  outputs?: DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_OUT_ENTRY[];
+  /** Height of the most recent block in the blockchain. */
+  blockchain_top_block_height: number;
+  /** Used limit for block count. */
+  blocks_limit: number;
+  /** Status of the call. */
+  status: API_RETURN_CODE.OK;
+};
+
+// on_find_outs_in_recent_blocks
+export type DAEMON_RPC_GET_INTEGRATED_ADDRESS_REQUEST = {
+  /** Hex-encoded Payment ID to be associated with the this address. If empty then wallet would generate new payment id using system random library. */
+  payment_id: string;
+  /** Zano wallet address to be used as a base for integrated address. */
+  regular_address: string;
+};
+export type DAEMON_RPC_GET_INTEGRATED_ADDRESS_RESPONSE = {
+  /** Integrated address combining a standard address and payment ID, if applicable. */
+  integrated_address: string;
+  /** Payment ID associated with the this address. */
+  payment_id: string;
 };
 
 // on_rpc_get_blocks_details
@@ -278,7 +339,7 @@ export type DAEMON_RPC_SERARCH_BY_ID_RESPONSE = {
 // on_get_info
 export type DAEMON_RPC_GET_INFO_REQUEST = {
   /** Combination of flags to request specific data elements that are computationally expensive to calculate. */
-  number: DAEMON_RPC_GET_INFO_FLAG;
+  flags: DAEMON_RPC_GET_INFO_FLAG;
 };
 export type DAEMON_RPC_GET_INFO_RESPONSE = {
   /** Status of the call. */
@@ -307,12 +368,14 @@ export type DAEMON_RPC_GET_INFO_RESPONSE = {
   white_peerlist_size: number;
   /** Size of the grey peer list, which includes addresses of nodes with less consistent availability. */
   grey_peerlist_size: number;
+  /** TODO */
+  current_blocks_median: number;
   /** The total number of unique aliases registered on the blockchain. Aliases are alternate, human-readable names associated with addresses. */
   alias_count: number;
   /** Current maximum allowed cumulative block size in bytes. */
   current_max_allowed_block_size: number;
   /** A list of boolean values indicating whether each corresponding hardfork is active. For example, a list 'true, true, false' indicates that the first hardfork is activated, while the second is not. Hardfork #0 is always active as it is a stub. */
-  is_hardfok_active?: boolean[];
+  is_hardfok_active?: [boolean, boolean, boolean, boolean, boolean, boolean];
   /** Current network state of the daemon, which could be connecting, synchronizing, online, loading core, internal error, unloading core, or downloading database. */
   daemon_network_state: daemon_network_state;
   /** Blockchain height at which the current synchronization process started. Indicates the starting point for catching up to the network's latest state. */
@@ -479,7 +542,7 @@ export type DAEMON_RPC_GET_POOL_INFO_RESPONSE = {
   /** Status of the call. */
   status: API_RETURN_CODE.OK;
   /** Error code, if there's any error (optional). */
-  error_code: string;
+  error_code?: string;
   /** List of aliases from txs that are currently in the tx pool. */
   aliases_que?: alias_rpc_details[];
 };
@@ -576,13 +639,17 @@ export type DAEMON_RPC_GET_VOTES_RESPONSE =
       /** Status of the call. */
       status: API_RETURN_CODE.OK;
       /** Error code, if any. */
-      error_code: string;
+      error_code?: never;
       /** Found votes in the given range. */
       votes: vote_results;
     }
   | {
       /** Status of the call. */
       status: API_RETURN_CODE.INTERNAL_ERROR;
+      /** Error code, if any. */
+      error_code: string;
+      /** Found votes in the given range. */
+      votes?: never;
     };
 
 // on_get_asset_info
@@ -680,22 +747,22 @@ export type DAEMON_RPC_GET_ALT_BLOCKS_DETAILS_RESPONSE = {
   blocks: block_rpc_extended_info[];
 };
 
-// on_reset_transaction_pool
-export type DAEMON_RPC_RESET_TX_POOL_REQUEST = {};
-export type DAEMON_RPC_RESET_TX_POOL_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.OK;
-};
+// // on_reset_transaction_pool
+// export type DAEMON_RPC_RESET_TX_POOL_REQUEST = {};
+// export type DAEMON_RPC_RESET_TX_POOL_RESPONSE = {
+//   /** Status of the call. */
+//   status: API_RETURN_CODE.OK;
+// };
 
-// on_remove_tx_from_pool
-export type DAEMON_RPC_REMOVE_TX_FROM_POOL_REQUEST = {
-  /** List of transaction IDs that are to be removed from the transaction pool. */
-  tx_to_remove: string[];
-};
-export type DAEMON_RPC_REMOVE_TX_FROM_POOL_RESPONSE = {
-  /** Status of the call. */
-  status: API_RETURN_CODE.OK;
-};
+// // on_remove_tx_from_pool
+// export type DAEMON_RPC_REMOVE_TX_FROM_POOL_REQUEST = {
+//   /** List of transaction IDs that are to be removed from the transaction pool. */
+//   tx_to_remove: string[];
+// };
+// export type DAEMON_RPC_REMOVE_TX_FROM_POOL_RESPONSE = {
+//   /** Status of the call. */
+//   status: API_RETURN_CODE.OK;
+// };
 
 // on_get_current_core_tx_expiration_median
 export type DAEMON_RPC_GET_CURRENT_CORE_TX_EXPIRATION_MEDIAN_REQUEST = {};
@@ -731,23 +798,10 @@ export type COMMAND_VALIDATE_SIGNATURE_REQUEST = {
   /** Alias to retrieve the associated public spend key if no explicit public key is provided for verification. */
   alias?: string;
 };
-export type COMMAND_VALIDATE_SIGNATURE_RESPONSE =
-  | {
-      /** Status of the call. */
-      status: API_RETURN_CODE.OK;
-    }
-  | {
-      /** Status of the call. */
-      status: API_RETURN_CODE.DISCONNECTED;
-    }
-  | {
-      /** Status of the call. */
-      status: API_RETURN_CODE.NOT_FOUND;
-    }
-  | {
-      /** Status of the call. */
-      status: API_RETURN_CODE.FAIL;
-    };
+export type COMMAND_VALIDATE_SIGNATURE_RESPONSE = {
+  /** Status of the call. */
+  status: API_RETURN_CODE.OK | API_RETURN_CODE.DISCONNECTED | API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.FAIL;
+};
 
 type CoreMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = {
   (
@@ -768,6 +822,8 @@ export interface ICoreRpc extends CoreRpc {
   getblockcount: CoreMethod<DAEMON_RPC_GETBLOCKCOUNT_REQUEST, DAEMON_RPC_GETBLOCKCOUNT_RESPONSE>;
   /** Returns block hash by the given height. */
   on_getblockhash: CoreMethod<DAEMON_RPC_GETBLOCKHASH_REQUEST, DAEMON_RPC_GETBLOCKHASH_RESPONSE>;
+  /** Broadcasts a raw transaction encoded in hexadecimal format to the network. */
+  sendrawtransaction: CoreMethod<DAEMON_RPC_SEND_RAW_TX_REQUEST, DAEMON_RPC_SEND_RAW_TX_RESPONSE>;
   /** Generates a block template for mining, intended for both PoW and PoS types of blocks based on the provided parameters. */
   getblocktemplate: CoreMethod<DAEMON_RPC_GETBLOCKTEMPLATE_REQUEST, DAEMON_RPC_GETBLOCKTEMPLATE_RESPONSE>;
   /** Adds new block to the blockchain. Request should contain one string with hex-encoded block blob. */
@@ -787,9 +843,13 @@ export interface ICoreRpc extends CoreRpc {
   /** Retrieves the cost of registering an alias on the blockchain. */
   get_alias_reward: CoreMethod<DAEMON_RPC_GET_ALIAS_REWARD_REQUEST, DAEMON_RPC_GET_ALIAS_REWARD_RESPONSE>;
   /** Give an estimation of block height by the given date. */
+  alias_lookup: CoreMethod<DAEMON_RPC_ALIAS_LOOKUP_REQUEST, DAEMON_RPC_ALIAS_LOOKUP_RESPONSE>;
+  /** Give an estimation of block height by the given date. */
   get_est_height_from_date: CoreMethod<DAEMON_RPC_GET_EST_HEIGHT_FROM_DATE_REQUEST, DAEMON_RPC_GET_EST_HEIGHT_FROM_DATE_RESPONSE>;
   /** Retrieves information about outputs in recent blocks that are targeted for the given address with the corresponding secret view key. */
   find_outs_in_recent_blocks: CoreMethod<DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_REQUEST, DAEMON_RPC_FIND_OUTS_IN_RECENT_BLOCKS_RESPONSE>;
+  /** Make integrated address from regular address. */
+  get_integrated_address: CoreMethod<DAEMON_RPC_GET_INTEGRATED_ADDRESS_REQUEST, DAEMON_RPC_GET_INTEGRATED_ADDRESS_RESPONSE>;
 
   //block explorer api
   /** Retrieves detailed information about a sequence of blocks starting from a specific height. */
@@ -839,10 +899,10 @@ export interface ICoreRpc extends CoreRpc {
   get_alt_block_details: CoreMethod<DAEMON_RPC_GET_BLOCK_DETAILS_REQUEST, DAEMON_RPC_GET_BLOCK_DETAILS_RESPONSE>;
   /** Retrieves details of alternative blocks in the blockchain, allowing for pagination through large datasets. */
   get_alt_blocks_details: CoreMethod<DAEMON_RPC_GET_ALT_BLOCKS_DETAILS_REQUEST, DAEMON_RPC_GET_ALT_BLOCKS_DETAILS_RESPONSE>;
-  /** Clears transaction pool. */
-  reset_transaction_pool: CoreMethod<DAEMON_RPC_RESET_TX_POOL_REQUEST, DAEMON_RPC_RESET_TX_POOL_RESPONSE>;
-  /** Removes specified transactions from the transaction pool, typically to clear out transactions that are no longer valid or needed. */
-  remove_tx_from_pool: CoreMethod<DAEMON_RPC_REMOVE_TX_FROM_POOL_REQUEST, DAEMON_RPC_REMOVE_TX_FROM_POOL_RESPONSE>;
+  // /** Clears transaction pool. */
+  // reset_transaction_pool: CoreMethod<DAEMON_RPC_RESET_TX_POOL_REQUEST, DAEMON_RPC_RESET_TX_POOL_RESPONSE>;
+  // /** Removes specified transactions from the transaction pool, typically to clear out transactions that are no longer valid or needed. */
+  // remove_tx_from_pool: CoreMethod<DAEMON_RPC_REMOVE_TX_FROM_POOL_REQUEST, DAEMON_RPC_REMOVE_TX_FROM_POOL_RESPONSE>;
   /** Retrieves the current core transaction expiration median. */
   get_current_core_tx_expiration_median: CoreMethod<
     DAEMON_RPC_GET_CURRENT_CORE_TX_EXPIRATION_MEDIAN_REQUEST,

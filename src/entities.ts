@@ -335,6 +335,7 @@ export enum WALLET_RPC_ERROR_CODE {
   NOT_ENOUGH_MONEY = -7,
   WRONG_MIXINS_FOR_AUDITABLE_WALLET = -8,
   INVALID_REQUEST = -32600,
+  METHOD_NOT_FOUND = -32601,
   INVALID_PARAMS = -32602,
   PARSE_ERROR = -32700,
 }
@@ -844,21 +845,15 @@ export interface offer_details_ex extends offer_details {
   stopped: boolean;
 }
 
-/** @deprecated unknown data */
-export interface crypto_key_image {}
-
-/** @deprecated unknown data */
-export interface crypto_hash {}
-
 export interface pos_entry {
   amount: number;
   /** global output index. (could be WALLET_GLOBAL_OUTPUT_INDEX_UNDEFINED) */
   g_index: number;
   stake_unlock_time: number;
   block_timestamp: number;
-  keyimage: crypto_key_image;
+  keyimage: string;
   /** stake output source tx id */
-  tx_id: crypto_hash;
+  tx_id: string;
   /** stake output local index in its tx */
   tx_out_index: number;
 }

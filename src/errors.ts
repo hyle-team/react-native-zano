@@ -144,6 +144,7 @@ function createZanoWalletError(code: WALLET_RPC_ERROR_CODE, name: string, defaul
 /* prettier-ignore */ export class ZanoWalletRpcNotEnoughMoney extends createZanoWalletError(WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, 'ZanoWalletRpcNotEnoughMoney') {}
 /* prettier-ignore */ export class ZanoWalletRpcWrongMixinsForAuditableWallet extends createZanoWalletError(WALLET_RPC_ERROR_CODE.WRONG_MIXINS_FOR_AUDITABLE_WALLET, 'ZanoWalletRpcWrongMixinsForAuditableWallet') {}
 /* prettier-ignore */ export class ZanoWalletRpcInvalidRequest extends createZanoWalletError(WALLET_RPC_ERROR_CODE.INVALID_REQUEST, 'ZanoWalletRpcInvalidRequest') {}
+/* prettier-ignore */ export class ZanoWalletRpcMethodNotFound extends createZanoWalletError(WALLET_RPC_ERROR_CODE.METHOD_NOT_FOUND, 'ZanoWalletRpcMethodNotFound') {}
 /* prettier-ignore */ export class ZanoWalletRpcInvalidParams extends createZanoWalletError(WALLET_RPC_ERROR_CODE.INVALID_PARAMS, 'ZanoWalletRpcInvalidParams') {}
 /* prettier-ignore */ export class ZanoWalletRpcParseError extends createZanoWalletError(WALLET_RPC_ERROR_CODE.PARSE_ERROR, 'ZanoWalletRpcParseError') {}
 export const ZanoWalletRpcCodeErrors = {
@@ -156,6 +157,7 @@ export const ZanoWalletRpcCodeErrors = {
   [WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY]: ZanoWalletRpcNotEnoughMoney,
   [WALLET_RPC_ERROR_CODE.WRONG_MIXINS_FOR_AUDITABLE_WALLET]: ZanoWalletRpcWrongMixinsForAuditableWallet,
   [WALLET_RPC_ERROR_CODE.INVALID_REQUEST]: ZanoWalletRpcInvalidRequest,
+  [WALLET_RPC_ERROR_CODE.METHOD_NOT_FOUND]: ZanoWalletRpcMethodNotFound,
   [WALLET_RPC_ERROR_CODE.INVALID_PARAMS]: ZanoWalletRpcInvalidParams,
   [WALLET_RPC_ERROR_CODE.PARSE_ERROR]: ZanoWalletRpcParseError,
 };
