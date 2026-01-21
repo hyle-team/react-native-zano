@@ -18,6 +18,8 @@ Pod::Spec.new do |s|
     "ios/**/*.{m,mm,swift}",
   ]
   s.vendored_frameworks = [
+    # 'libraries/lib/libzano-iphoneos-iphonsimulator.xcframework'
+
     'libraries/_install_ios/lib/libcommon.a.xcframework',
     'libraries/_install_ios/lib/libcrypto_.a.xcframework',
     'libraries/_install_ios/lib/libcurrency_core.a.xcframework',
