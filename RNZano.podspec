@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
     "ios/**/*.{m,mm,swift}",
   ]
   s.vendored_frameworks = [
-    # 'libraries/lib/libzano-iphoneos-iphonesimulator.xcframework'
-    'libraries/_install_ios/lib/libzano-plain-wallet.xcframework',
+    'libraries/lib/libzano-iphoneos-iphonesimulator.xcframework'
+    # 'libraries/_install_ios/lib/libzano-plain-wallet.xcframework',
   ]
 
   s.pod_target_xcconfig = {
