@@ -87,23 +87,31 @@ export class ZanoController {
   get remote_node() {
     return this.#remote_node;
   }
+  get remote_node_url() {
+    const [host, port] = this.#remote_node;
+    return `${host}:${port}`;
+  }
   set remote_node(address: string | [host: string, port: string]) {
-    if (this.#init_result !== undefined) throw new ZanoControllerAlreadyInitiated();
+    let next: [host: string, port: string];
     if (Array.isArray(address)) {
-      this.#remote_node = address;
+      next = address;
     } else if (address.startsWith('http:')) {
       const [host, port] = address.substring('http:'.length).split(':');
       if (!host) throw new ZanoControllerInvalidDaemonURL('invalid address passed');
-      this.#remote_node = [`http:${host}`, port || '80'];
+      next = [`http:${host}`, port || '80'];
     } else if (address.startsWith('https:')) {
       const [host, port] = address.substring('https:'.length).split(':');
       if (!host) throw new ZanoControllerInvalidDaemonURL('invalid address passed');
-      this.#remote_node = [`https:${host}`, port || '443'];
+      next = [`https:${host}`, port || '443'];
     } else {
       const [host, port] = address.split(':');
       if (!host || !port) throw new ZanoControllerInvalidDaemonURL('invalid address passed');
-      this.#remote_node = [host, port];
+      next = [host, port];
     }
+    const curr = this.#remote_node;
+    if (curr && curr[0] === next[0] && curr[1] === next[1]) return;
+    this.#remote_node = next;
+    if (this.#init_result !== undefined) PlainWallet.reset_connection_url(this.remote_node_url);
   }
 
   async get_address_info(addr: string) {
