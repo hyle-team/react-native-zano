@@ -298,6 +298,7 @@ export enum API_RETURN_CODE {
   BAD_ARG_WRONG_FEE = 'BAD_ARG_WRONG_FEE',
   BAD_ARG_INVALID_ADDRESS = 'BAD_ARG_INVALID_ADDRESS',
   BAD_ARG_WRONG_AMOUNT = 'BAD_ARG_WRONG_AMOUNT',
+  BAD_ARG_UNKNOWN_DECIMAL_POINT = 'BAD_ARG_UNKNOWN_DECIMAL_POINT',
   BAD_ARG_WRONG_PAYMENT_ID = 'BAD_ARG_WRONG_PAYMENT_ID',
   BAD_ARG_INVALID_JSON = 'BAD_ARG_INVALID_JSON',
   WRONG_PASSWORD = 'WRONG_PASSWORD',
@@ -324,6 +325,35 @@ export enum API_RETURN_CODE {
   HTLC_ORIGIN_HASH_MISSMATCHED = 'HTLC_ORIGIN_HASH_MISSMATCHED',
   WRAP = 'WRAP',
   MISSING_ZC_INPUTS = 'MISSING_ZC_INPUTS',
+  ARG_OUT_OF_LIMITS = 'ARG_OUT_OF_LIMITS',
+  TX_HAS_TOO_MANY_OUTPUTS = 'TX_HAS_TOO_MANY_OUTPUTS',
+}
+export enum JSON_RPC_ERROR_CODE {
+  // -32000 to -32099 : Reserved for implementation-defined server-errors.
+  /** [usage](../libraries/Zano/contrib/epee/include/net/http_server_handlers_map2.h#416) */
+  DEFAULT = -32000,
+  /**
+   * [usage]{@link file://./../libraries/Zano/contrib/epee/include/net/http_server_handlers_map2.h#L416}
+   */
+  INVALID_REQUEST = -32600,
+  /**
+   * [definition]{@link file://./../libraries/Zano/src/stratum/stratum_server.cpp#L68}
+   * [usage]{@link file://./../libraries/Zano/contrib/epee/include/net/http_server_handlers_map2.h#L403}
+   */
+  METHOD_NOT_FOUND = -32601,
+  /**
+   * [usage]{@link file://./../libraries/Zano/contrib/epee/include/net/http_server_handlers_map2.h#L435}
+   */
+  INVALID_PARAMS = -32602,
+  /**
+   * [usage]{@link file://./../libraries/Zano/contrib/epee/include/net/http_server_handlers_map2.h#L501}
+   */
+  INTERNAL_ERROR = -32603,
+  /**
+   * [definition]{@link file://./../libraries/Zano/src/stratum/stratum_server.cpp#L69}
+   * [usage]{@link file://./../libraries/Zano/contrib/epee/include/net/http_server_handlers_map2.h#L537}
+   */
+  PARSE_ERROR = -32700,
 }
 export enum WALLET_RPC_ERROR_CODE {
   UNKNOWN_ERROR = -1,
@@ -334,10 +364,8 @@ export enum WALLET_RPC_ERROR_CODE {
   WRONG_ARGUMENT = -6,
   NOT_ENOUGH_MONEY = -7,
   WRONG_MIXINS_FOR_AUDITABLE_WALLET = -8,
-  INVALID_REQUEST = -32600,
-  METHOD_NOT_FOUND = -32601,
-  INVALID_PARAMS = -32602,
-  PARSE_ERROR = -32700,
+  GENERIC_ERROR = -9,
+  KEY_IMAGE_ALREADY_SPENT = -10,
 }
 
 export interface app_config_wallet {

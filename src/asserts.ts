@@ -1,10 +1,11 @@
-import { API_RETURN_CODE, WALLET_RPC_ERROR_CODE, type ErrorCode, type ReturnCode } from './entities';
+import { API_RETURN_CODE, JSON_RPC_ERROR_CODE, WALLET_RPC_ERROR_CODE, type ErrorCode, type ReturnCode } from './entities';
 import {
   ZanoApiBadArgInvalidJsonError,
   ZanoApiBusyError,
-  ZanoApiFailedError,
+  ZanoApiFailError,
   ZanoApiInternalError,
   ZanoApiReturnCodeErrors,
+  ZanoJsonRpcCodeErrors,
   ZanoStatusError,
   ZanoWalletRpcCodeErrors,
   ZanoWalletRpcUnknownError,
@@ -148,6 +149,13 @@ export function assertApiErrorCode<R extends object>(response: R): asserts respo
   throw errorWithResponse(returnApiErrorToCode(code, message), response);
 }
 
+// type JsonReturnErrorCodes = JSON_RPC_ERROR_CODE;
+function returnJsonErrorToCode(code: JSON_RPC_ERROR_CODE | (string & {}), message?: string) {
+  if (!(code in ZanoJsonRpcCodeErrors)) return undefined;
+  const Error = ZanoJsonRpcCodeErrors[code as JSON_RPC_ERROR_CODE];
+  return new Error(message);
+}
+
 // type WalletReturnErrorCodes = WALLET_RPC_ERROR_CODE;
 function returnWalletErrorToCode(code: WALLET_RPC_ERROR_CODE | (string & {}), message?: string) {
   if (!(code in ZanoWalletRpcCodeErrors)) return new ZanoWalletRpcUnknownError(message);
@@ -164,10 +172,12 @@ export type WalletCodeErrors =
   | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT>>
   | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY>>
   | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_MIXINS_FOR_AUDITABLE_WALLET>>
-  | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.INVALID_REQUEST>>
-  | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.METHOD_NOT_FOUND>>
-  | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.INVALID_PARAMS>>
-  | JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.PARSE_ERROR>>
+  | JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_REQUEST>>
+  | JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.METHOD_NOT_FOUND>>
+  | JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_PARAMS>>
+  | JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.PARSE_ERROR>>
+  | JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INTERNAL_ERROR>>
+  | JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.DEFAULT>>
   | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.NOT_FOUND>>
   | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.WRONG_PASSWORD>>;
 export function assertWalletRpcError<R extends object>(response: R): asserts response is Exclude<R, WalletCodeErrors> {
@@ -185,6 +195,8 @@ export function assertWalletRpcError<R extends object>(response: R): asserts res
     if (message === API_RETURN_CODE.BUSY) throw errorWithResponse(new ZanoApiBusyError(), response);
     throw errorWithResponse(new ZanoWalletRpcUnknownError(message), response);
   }
+  const jsonError = returnJsonErrorToCode(code, message);
+  if (jsonError) throw errorWithResponse(jsonError, response);
   throw errorWithResponse(returnWalletErrorToCode(code, message), response);
 }
 
@@ -209,6 +221,6 @@ export function assertCoreRpcError<R extends object>(response: R): asserts respo
   const { error_code } = response;
   if (typeof error_code !== 'string') return;
   if (error_code === API_RETURN_CODE.BAD_ARG_INVALID_JSON) throw errorWithResponse(new ZanoApiBadArgInvalidJsonError(), response);
-  if (error_code === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoApiFailedError(), response);
-  throw errorWithResponse(new ZanoApiFailedError(), response);
+  if (error_code === API_RETURN_CODE.FAIL) throw errorWithResponse(new ZanoApiFailError(), response);
+  throw errorWithResponse(new ZanoApiFailError(), response);
 }

@@ -12,6 +12,7 @@ import type {
   GeneralReturnErrors,
   htlc_entry_info,
   ionic_swap_proposal_info,
+  JSON_RPC_ERROR_CODE,
   mining_history,
   offer_details_ex,
   payment_details,
@@ -803,9 +804,9 @@ export type INVOKE_RPC_PROXY_TO_DAEMON_RESPONSE = {
 type WalletMethodErrors =
   | __UNPROTECTED__TypedJSON<GeneralReturnErrors>
   | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>>>
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>>>
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>>>
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>>>
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>>>
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>>>
+  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>>>
   | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>>>
   | __UNPROTECTED__TypedJSON<
       JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>>
