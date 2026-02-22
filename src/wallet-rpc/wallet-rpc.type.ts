@@ -1,3 +1,4 @@
+import type { ErrorObj, JSONRpcReturnCodeApiReturnCode } from '../asserts';
 import type { DAEMON_RPC_GET_OFFERS_EX_REQUEST, DAEMON_RPC_GET_OFFERS_EX_RESPONSE } from '../core-rpc';
 import type {
   alias_rpc_details,
@@ -8,8 +9,6 @@ import type {
   contract_private_details,
   contracts_array,
   data_for_external_asset_signing_tx,
-  ErrorCode,
-  GeneralReturnErrors,
   htlc_entry_info,
   ionic_swap_proposal_info,
   JSON_RPC_ERROR_CODE,
@@ -802,18 +801,18 @@ export type INVOKE_RPC_PROXY_TO_DAEMON_RESPONSE = {
 };
 
 type WalletMethodErrors =
-  | TypedJSON<GeneralReturnErrors>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>>>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>>>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>>>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>>>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>>>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>>>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR>>>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR, `WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR${string}`>>>
-  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>>>
+  | TypedJSON<JSONRpcReturnCodeApiReturnCode>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<JSON_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<JSON_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<JSON_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR, `WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR${string}`>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorObj<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>>>
   | TypedJSON<
-      JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.UNINITIALIZED, `${API_RETURN_CODE.INTERNAL_ERROR} ${string}` | API_RETURN_CODE.INTERNAL_ERROR>>
+      JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.UNINITIALIZED, `${API_RETURN_CODE.INTERNAL_ERROR} ${string}` | API_RETURN_CODE.INTERNAL_ERROR>>
     >
   | API_RETURN_CODE.WALLET_WRONG_ID;
 type WalletMethod<Params, Result, Errors = never> = (
@@ -839,12 +838,12 @@ export interface IWalletRpc extends WalletRpc {
   transfer: WalletAsyncMethod<
     INVOKE_RPC_TRANSFER_REQUEST,
     INVOKE_RPC_TRANSFER_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `Given fee is too low: ${number}, minimum is: ${number}`>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid encoded payment id: ${string}, hex-encoded string was expected`>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'Second wrap entry not supported in transactions'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, `WALLET_RPC_ERROR_CODE_WRONG_ADDRESS: ${string}`>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `embedded payment id: ${string} conflicts with previously set payment id: ${string}`>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `payment id ${string} is invalid and can't be set`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `Given fee is too low: ${number}, minimum is: ${number}`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid encoded payment id: ${string}, hex-encoded string was expected`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'Second wrap entry not supported in transactions'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, `WALLET_RPC_ERROR_CODE_WRONG_ADDRESS: ${string}`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `embedded payment id: ${string} conflicts with previously set payment id: ${string}`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `payment id ${string} is invalid and can't be set`>
   >;
   /** Store wallet's data to file */
   store: WalletAsyncMethod<INVOKE_RPC_STORE_REQUEST, INVOKE_RPC_STORE_RESPONSE>;
@@ -852,64 +851,64 @@ export interface IWalletRpc extends WalletRpc {
   get_payments: WalletAsyncMethod<
     INVOKE_RPC_GET_PAYMENTS_REQUEST,
     INVOKE_RPC_GET_PAYMENTS_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
   >;
   /** Gets list of incoming transfers by a given multiple payment_ids */
   get_bulk_payments: WalletAsyncMethod<
     INVOKE_RPC_GET_BULK_PAYMENTS_REQUEST,
     INVOKE_RPC_GET_BULK_PAYMENTS_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
   >;
   /** Generate integrated address */
   make_integrated_address: WalletMethod<
     INVOKE_RPC_MAKE_INTEGRATED_ADDRESS_REQUEST,
     INVOKE_RPC_MAKE_INTEGRATED_ADDRESS_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `given payment id is too long: '${string}'`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `invalid payment id given: '${string}', hex-encoded string was expected`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `given payment id is too long: '${string}'`>
   >;
   /** Decode integrated address */
   split_integrated_address: WalletMethod<
     INVOKE_RPC_SPLIT_INTEGRATED_ADDRESS_REQUEST,
     INVOKE_RPC_SPLIT_INTEGRATED_ADDRESS_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, `invalid integrated address given: '${string}'`>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, `invalid integrated address given: '${string}'`>
   >;
   /** Tries to transfer all coins with amount below the given limit to the given address */
   sweep_below: WalletMethod<
     INVOKE_RPC_SWEEP_BELOW_REQUEST,
     INVOKE_RPC_SWEEP_BELOW_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `Invalid payment id: ${string}`>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, `Invalid address: ${string}`>
-    | ErrorCode<
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID, `Invalid payment id: ${string}`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, `Invalid address: ${string}`>
+    | ErrorObj<
         WALLET_RPC_ERROR_CODE.WRONG_PAYMENT_ID,
         `address ${string} has integrated payment id ${string} which is incompatible with payment id ${string} that was already assigned to this transfer`
       >
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `Given fee is too low: ${string}, minimum is: ${string}`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `Given fee is too low: ${string}, minimum is: ${string}`>
   >;
   /** Return information about wallet's pre-zarcanum era outputs */
   get_bare_outs_stats: WalletMethod<
     INVOKE_RPC_GET_BARE_OUTS_STATS_REQUEST,
     INVOKE_RPC_GET_BARE_OUTS_STATS_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'operation cannot be performed in watch-only wallet'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'get_bare_unspent_outputs_stats failed'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'operation cannot be performed in watch-only wallet'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'get_bare_unspent_outputs_stats failed'>
   >;
   /** Execute transactions needed to convert all bare(pre-zarcanum) outputs to post-zarcanum outputs */
   sweep_bare_outs: WalletMethod<
     INVOKE_RPC_SWEEP_BARE_OUTS_REQUEST,
     INVOKE_RPC_SWEEP_BARE_OUTS_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'operation cannot be performed in watch-only wallet'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'get_bare_unspent_outputs_stats failed'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'operation cannot be performed in watch-only wallet'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'get_bare_unspent_outputs_stats failed'>
   >;
   /** Sign transaction with the wallet's keys */
   sign_transfer: WalletMethod<
     INVOKE_RPC_SIGN_TRANSFER_REQUEST,
     INVOKE_RPC_SIGN_TRANSFER_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'tx_unsigned_hex is invalid'>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'tx_unsigned_hex is invalid'>
   >;
   /** Relay signed transaction over the network */
   submit_transfer: WalletMethod<
     INVOKE_RPC_SUBMIT_TRANSFER_REQUEST,
     INVOKE_RPC_SUBMIT_TRANSFER_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'tx_unsigned_hex is invalid'>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'tx_unsigned_hex is invalid'>
   >;
   /** Search for transactions in the wallet by few parameters (legacy version) */
   search_for_transactions: WalletAsyncMethod<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_RESPONSE>;
@@ -925,15 +924,15 @@ export interface IWalletRpc extends WalletRpc {
   register_alias: WalletAsyncMethod<
     INVOKE_RPC_REGISTER_ALIAS_REQUEST,
     INVOKE_RPC_REGISTER_ALIAS_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - Wrong alias name'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - Wrong alias name'>
   >;
   /** Update an alias details/transfer alias ownership */
   update_alias: WalletAsyncMethod<
     INVOKE_RPC_UPDATE_ALIAS_REQUEST,
     INVOKE_RPC_UPDATE_ALIAS_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - Wrong alias name'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - Wrong alias name'>
   >;
 
   //contracts API
@@ -951,19 +950,19 @@ export interface IWalletRpc extends WalletRpc {
   marketplace_push_offer: WalletMethod<
     INVOKE_RPC_MARKETPLACE_PUSH_OFFER_REQUEST,
     INVOKE_RPC_MARKETPLACE_PUSH_OFFER_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
   >;
   /** Updates existing offer that this wallet created, and publish updated version on the blockchain */
   marketplace_push_update_offer: WalletMethod<
     INVOKE_RPC_MARKETPLACE_PUSH_UPDATE_OFFER_REQUEST,
     INVOKE_RPC_MARKETPLACE_PUSH_UPDATE_OFFER_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
   >;
   /** Cancel existing offer that this wallet created */
   marketplace_cancel_offer: WalletMethod<
     INVOKE_RPC_MARKETPLACE_CANCEL_OFFER_REQUEST,
     INVOKE_RPC_MARKETPLACE_CANCEL_OFFER_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'fee is too low'>
   >;
 
   //HTLC API
@@ -977,23 +976,23 @@ export interface IWalletRpc extends WalletRpc {
   ionic_swap_generate_proposal: WalletAsyncMethod<
     INVOKE_RPC_IONIC_SWAP_GENERATE_PROPOSAL_REQUEST,
     INVOKE_RPC_IONIC_SWAP_GENERATE_PROPOSAL_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - integrated address is noit supported yet'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - Error creating proposal'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ADDRESS, 'WALLET_RPC_ERROR_CODE_WRONG_ADDRESS - integrated address is noit supported yet'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - Error creating proposal'>
   >;
   /** Reads hex-encoded ionic swap proposal info, generated by other user and addressed to this wallet */
   ionic_swap_get_proposal_info: WalletMethod<
     INVOKE_RPC_IONIC_SWAP_GET_PROPOSAL_INFO_REQUEST,
     INVOKE_RPC_IONIC_SWAP_GET_PROPOSAL_INFO_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - failed to parse template from hex'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - get_ionic_swap_proposal_info'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - failed to parse template from hex'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - get_ionic_swap_proposal_info'>
   >;
   /** This essential command actually execute proposal that was sent by counter party */
   ionic_swap_accept_proposal: WalletMethod<
     INVOKE_RPC_IONIC_SWAP_ACCEPT_PROPOSAL_REQUEST,
     INVOKE_RPC_IONIC_SWAP_ACCEPT_PROPOSAL_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - failed to parse template from hex'>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - failed to accept_ionic_swap_proposal()'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - failed to parse template from hex'>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'WALLET_RPC_ERROR_CODE_WRONG_ARGUMENT - failed to accept_ionic_swap_proposal()'>
   >;
 
   // Assets API
@@ -1008,7 +1007,7 @@ export interface IWalletRpc extends WalletRpc {
   deploy_asset: WalletAsyncMethod<
     INVOKE_RPC_ASSETS_DEPLOY_REQUEST,
     INVOKE_RPC_ASSETS_DEPLOY_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'asset ticker or full_name is invalid'>
+    ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'asset ticker or full_name is invalid'>
   >;
   /** Emit new coins of the asset, that is controlled by this wallet */
   emit_asset: WalletAsyncMethod<INVOKE_RPC_ASSETS_EMIT_REQUEST, INVOKE_RPC_ASSETS_EMIT_RESPONSE>;
@@ -1020,9 +1019,9 @@ export interface IWalletRpc extends WalletRpc {
   send_ext_signed_asset_tx: WalletMethod<
     INVOKE_RPC_ASSET_SEND_EXT_SIGNED_TX_REQUEST,
     INVOKE_RPC_ASSET_SEND_EXT_SIGNED_TX_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, "finalized_tx couldn't be deserialized">
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, "unsigned_tx doesn't match finalized_tx">
-    | ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `expected_tx_id mismatch, real tx id is ${string}`>
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, "finalized_tx couldn't be deserialized">
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, "unsigned_tx doesn't match finalized_tx">
+    | ErrorObj<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `expected_tx_id mismatch, real tx id is ${string}`>
   >;
   /** Attach asset descripto to this wallet instance, if asset descripto attached then ADO operations to this asset can be performed using API of this wallet. */
   attach_asset_descriptor: WalletMethod<INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_REQUEST, INVOKE_RPC_ATTACH_ASSET_DESCRIPTOR_RESPONSE>;
@@ -1034,13 +1033,13 @@ export interface IWalletRpc extends WalletRpc {
   mw_get_wallets: WalletMethod<
     INVOKE_RPC_MW_GET_WALLETS_REQUEST,
     INVOKE_RPC_MW_GET_WALLETS_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>
+    ErrorObj<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>
   >;
   /** Select current active wallet */
   mw_select_wallet: WalletMethod<
     INVOKE_RPC_MW_SELECT_WALLET_REQUEST,
     INVOKE_RPC_MW_SELECT_WALLET_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>
+    ErrorObj<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>
   >;
 
   //basic crypto operations

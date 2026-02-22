@@ -166,7 +166,7 @@ export const ZanoJsonRpcCodeErrors = {
   [JSON_RPC_ERROR_CODE.PARSE_ERROR]:      ZanoJsonRpcParseError,
 };
 
-export abstract class ZanoWalletRpcError extends createErrorClass('ZanoWalletRpcUnknownError') {
+export abstract class ZanoWalletRpcError extends createErrorClass('ZanoWalletRpcError') {
   abstract readonly code: WALLET_RPC_ERROR_CODE;
 }
 function createZanoWalletError(code: WALLET_RPC_ERROR_CODE, name: string, defaultMessage?: string) {

@@ -1,4 +1,4 @@
-import { assertApiErrorCode, errorWithResponse } from '../asserts';
+import { assertJSONRpcErrorCode, errorWithResponse } from '../asserts';
 import { ZanoApiFailError } from '../errors';
 import { PlainWallet } from '../plain-wallet';
 import { TypedJSON } from '../utils/typed-json';
@@ -29,7 +29,7 @@ export class ZanoAppConfig<AppConfig> {
       response.error !== null &&
       'code' in response.error
     ) {
-      assertApiErrorCode(response);
+      assertJSONRpcErrorCode(response);
     }
     this.#app_config = response as DeepReadonly<AppConfig>;
   }

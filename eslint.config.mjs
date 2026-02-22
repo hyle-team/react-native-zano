@@ -15,7 +15,7 @@ const compat = new FlatCompat({
 
 export default defineConfig([
   {
-    extends: fixupConfigRules(compat.extends('@react-native')),
+    extends: fixupConfigRules(compat.extends('@react-native', 'prettier')),
     rules: {
       'react/react-in-jsx-scope': 'off',
       'curly': 'off',

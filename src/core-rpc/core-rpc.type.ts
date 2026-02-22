@@ -1,3 +1,4 @@
+import type { ErrorCode, JSONRpcReturnCodeApiReturnCode } from '../asserts';
 import type {
   alias_rpc_details,
   alias_rpc_details_base,
@@ -11,7 +12,6 @@ import type {
   core_offers_filter,
   daemon_network_state,
   epee_hexemizer,
-  GeneralReturnErrors,
   maintainers_info_external,
   offer_details_ex,
   outs_index_stat,
@@ -808,9 +808,9 @@ type CoreMethod<Params, Result, Errors = never> = {
     params: TypedJSON<Params>
   ): Promise<
     | TypedJSON<{ response_code: unknown; base64_body: TypedBase64<TypedJSON<JSONRpcResponse<Result, Errors>>> }>
-    | TypedJSON<GeneralReturnErrors>
-    | TypedJSON<{ error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON }>
-    | TypedJSON<{ error_code: API_RETURN_CODE.FAIL }>
+    | TypedJSON<JSONRpcReturnCodeApiReturnCode>
+    | TypedJSON<ErrorCode<API_RETURN_CODE.BAD_ARG_INVALID_JSON>>
+    | TypedJSON<ErrorCode<API_RETURN_CODE.FAIL>>
   >;
 };
 export interface ICoreRpc extends CoreRpc {

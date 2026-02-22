@@ -1,4 +1,4 @@
-import { assertApiErrorCode, assertApiReturnErrors } from '../asserts';
+import { assertJSONRpcErrorCode, assertJSONRpcReturnCode } from '../asserts';
 import { type open_wallet_response } from '../entities';
 import { PlainWallet } from '../plain-wallet';
 import { TypedJSON } from '../utils/typed-json';
@@ -21,8 +21,8 @@ export class ZanoWalletFile {
   async open(password: string) {
     if (this.wallet) return this.wallet;
     const response = TypedJSON.parse(await PlainWallet.open(this.name, password));
-    assertApiErrorCode(response);
-    assertApiReturnErrors(response);
+    assertJSONRpcErrorCode(response);
+    assertJSONRpcReturnCode(response);
     const wallet = new ZanoWallet(this, { ...response.result, name: this.name, pass: password });
     wallets_by_files.set(this, wallet);
     return wallet;

@@ -1,5 +1,4 @@
 import type { ZanoLogLevel } from './plain-wallet/enums';
-import type { JSONRpcSuccessfulResponse } from './utils/json-rpc';
 
 export type asset_descriptor_base = {
   /** Maximum possible supply for a given asset, cannot be changed after deployment. */
@@ -327,7 +326,9 @@ export enum API_RETURN_CODE {
   MISSING_ZC_INPUTS = 'MISSING_ZC_INPUTS',
   ARG_OUT_OF_LIMITS = 'ARG_OUT_OF_LIMITS',
   TX_HAS_TOO_MANY_OUTPUTS = 'TX_HAS_TOO_MANY_OUTPUTS',
+  TX_HAS_TOO_MANY_INPUTS = 'TX_HAS_TOO_MANY_INPUTS',
 }
+export type API_ERROR_CODE = Exclude<API_RETURN_CODE, API_RETURN_CODE.OK>;
 export enum JSON_RPC_ERROR_CODE {
   // -32000 to -32099 : Reserved for implementation-defined server-errors.
   /** [usage](../libraries/Zano/contrib/epee/include/net/http_server_handlers_map2.h#416) */
@@ -979,10 +980,3 @@ export type wallet_extended_info = {
   wi: wallet_info;
   wi_extended: wallet_info_extra;
 };
-
-export type ReturnCode<Code extends string = API_RETURN_CODE> = { return_code: Code };
-export type ErrorCode<Code = API_RETURN_CODE, Message extends string = string> = { code: Code; message: Message };
-export type GeneralReturnErrors =
-  | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.UNINITIALIZED>>
-  | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.INTERNAL_ERROR>>
-  | JSONRpcSuccessfulResponse<ReturnCode<`${API_RETURN_CODE.INTERNAL_ERROR} ${string}`>>;
