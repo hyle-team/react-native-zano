@@ -25,7 +25,7 @@ import type {
   wallet_transfer_info_old,
 } from '../entities';
 import type { JSONRpcFailedResponse, JSONRpcSuccessfulResponse } from '../utils/json-rpc';
-import type { __UNPROTECTED__TypedJSON, JSONConstrain, TypedJSON } from '../utils/typed-json';
+import type { TypedJSON } from '../utils/typed-json';
 import type { WalletRpc } from './wallet-rpc.nitro';
 
 // on_getbalance
@@ -802,34 +802,28 @@ export type INVOKE_RPC_PROXY_TO_DAEMON_RESPONSE = {
 };
 
 type WalletMethodErrors =
-  | __UNPROTECTED__TypedJSON<GeneralReturnErrors>
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>>>
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>>>
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>>>
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>>>
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>>>
-  | __UNPROTECTED__TypedJSON<
-      JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>>
-    >
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR>>>
-  | __UNPROTECTED__TypedJSON<
-      JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR, `WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR${string}`>>
-    >
-  | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR`>>>
-  | __UNPROTECTED__TypedJSON<
+  | TypedJSON<GeneralReturnErrors>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, API_RETURN_CODE.BUSY>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.PARSE_ERROR, 'Parse error'>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_REQUEST, 'Invalid Request'>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<JSON_RPC_ERROR_CODE.INVALID_PARAMS, 'Invalid params'>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.DAEMON_IS_BUSY, `WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY${string}`>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.NOT_ENOUGH_MONEY, `WALLET_RPC_ERROR_CODE_NOT_ENOUGH_MONEY${string}`>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.GENERIC_TRANSFER_ERROR, `WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR${string}`>>>
+  | TypedJSON<JSONRpcFailedResponse<ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR'>>>
+  | TypedJSON<
       JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.UNINITIALIZED, `${API_RETURN_CODE.INTERNAL_ERROR} ${string}` | API_RETURN_CODE.INTERNAL_ERROR>>
     >
   | API_RETURN_CODE.WALLET_WRONG_ID;
-type WalletMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = (
+type WalletMethod<Params, Result, Errors = never> = (
   instance_id: number,
   params: TypedJSON<Params>
-) => __UNPROTECTED__TypedJSON<JSONRpcSuccessfulResponse<Result>> | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<Errors>> | WalletMethodErrors;
-type WalletAsyncMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = (
+) => TypedJSON<JSONRpcSuccessfulResponse<Result>> | TypedJSON<JSONRpcFailedResponse<Errors>> | WalletMethodErrors;
+type WalletAsyncMethod<Params, Result, Errors = never> = (
   instance_id: number,
   params: TypedJSON<Params>
-) => Promise<
-  __UNPROTECTED__TypedJSON<JSONRpcSuccessfulResponse<Result>> | __UNPROTECTED__TypedJSON<JSONRpcFailedResponse<Errors>> | WalletMethodErrors
->;
+) => Promise<TypedJSON<JSONRpcSuccessfulResponse<Result>> | TypedJSON<JSONRpcFailedResponse<Errors>> | WalletMethodErrors>;
 export interface IWalletRpc extends WalletRpc {
   /** Return the balances across all whitelisted assets of the wallet */
   getbalance: WalletAsyncMethod<INVOKE_RPC_GET_BALANCE_REQUEST, INVOKE_RPC_GET_BALANCE_RESPONSE>;
@@ -895,27 +889,27 @@ export interface IWalletRpc extends WalletRpc {
   get_bare_outs_stats: WalletMethod<
     INVOKE_RPC_GET_BARE_OUTS_STATS_REQUEST,
     INVOKE_RPC_GET_BARE_OUTS_STATS_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `operation cannot be performed in watch-only wallet`>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `get_bare_unspent_outputs_stats failed`>
+    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'operation cannot be performed in watch-only wallet'>
+    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'get_bare_unspent_outputs_stats failed'>
   >;
   /** Execute transactions needed to convert all bare(pre-zarcanum) outputs to post-zarcanum outputs */
   sweep_bare_outs: WalletMethod<
     INVOKE_RPC_SWEEP_BARE_OUTS_REQUEST,
     INVOKE_RPC_SWEEP_BARE_OUTS_RESPONSE,
-    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `operation cannot be performed in watch-only wallet`>
-    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, `get_bare_unspent_outputs_stats failed`>
+    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'operation cannot be performed in watch-only wallet'>
+    | ErrorCode<WALLET_RPC_ERROR_CODE.UNKNOWN_ERROR, 'get_bare_unspent_outputs_stats failed'>
   >;
   /** Sign transaction with the wallet's keys */
   sign_transfer: WalletMethod<
     INVOKE_RPC_SIGN_TRANSFER_REQUEST,
     INVOKE_RPC_SIGN_TRANSFER_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `tx_unsigned_hex is invalid`>
+    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'tx_unsigned_hex is invalid'>
   >;
   /** Relay signed transaction over the network */
   submit_transfer: WalletMethod<
     INVOKE_RPC_SUBMIT_TRANSFER_REQUEST,
     INVOKE_RPC_SUBMIT_TRANSFER_RESPONSE,
-    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, `tx_unsigned_hex is invalid`>
+    ErrorCode<WALLET_RPC_ERROR_CODE.WRONG_ARGUMENT, 'tx_unsigned_hex is invalid'>
   >;
   /** Search for transactions in the wallet by few parameters (legacy version) */
   search_for_transactions: WalletAsyncMethod<INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_REQUEST, INVOKE_RPC_SEARCH_FOR_TRANSACTIONS_LEGACY_RESPONSE>;

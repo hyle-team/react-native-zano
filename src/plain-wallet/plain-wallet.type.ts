@@ -10,7 +10,7 @@ import type {
   wallet_sync_status_info,
 } from '../entities';
 import type { JSONRpcFailedResponse, JSONRpcSuccessfulResponse } from '../utils/json-rpc';
-import type { JSONConstrain, JSONValue, TypedJSON } from '../utils/typed-json';
+import type { JSONValue, TypedJSON } from '../utils/typed-json';
 import type { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './enums';
 import type { PlainWallet } from './plain-wallet.nitro';
 
@@ -26,7 +26,7 @@ export type zano_lib_set_log_level_response = TypedJSON<{}>;
 export type zano_lib_reset_connection_url_response = TypedJSON<{ error_code: API_RETURN_CODE.OK } | GeneralReturnErrors>;
 export type zano_lib_get_address_info_response = TypedJSON<{ valid: boolean; auditable: boolean; payment_id: boolean; wrap: boolean }>;
 export type zano_lib_get_connectivity_status_response = TypedJSON<JSONRpcSuccessfulResponse<app_connectivity_status> | GeneralReturnErrors>;
-export type zano_lib_get_appconfig_response<AppConfig extends JSONConstrain<AppConfig>> = TypedJSON<
+export type zano_lib_get_appconfig_response<AppConfig> = TypedJSON<
   | AppConfig
   | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.NOT_FOUND>>
   | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.INVALID_FILE>>
@@ -85,7 +85,7 @@ export type zano_lib_close_wallet_response = TypedJSON<
   | { response: API_RETURN_CODE.OK | API_RETURN_CODE.WALLET_WRONG_ID | `${API_RETURN_CODE.FAIL}:${string}` | API_RETURN_CODE.INTERNAL_ERROR }
 >;
 
-export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONValue> extends PlainWallet {
+export interface IPlainWallet<AppConfig = JSONValue> extends PlainWallet {
   init(host: string, port: string, working_dir: string, log_level: ZanoLogLevel): Promise<zano_lib_init_response>;
   reset(): zano_lib_reset_response;
   set_log_level(log_level: ZanoLogLevel): zano_lib_set_log_level_response;

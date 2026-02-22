@@ -25,7 +25,7 @@ import type {
 } from '../entities';
 import type { JSONRpcResponse } from '../utils/json-rpc';
 import type { TypedBase64, UnwrapTypedBase64 } from '../utils/typed-base64';
-import type { __UNPROTECTED__TypedJSON, JSONConstrain, TypedJSON } from '../utils/typed-json';
+import type { TypedJSON } from '../utils/typed-json';
 import type { CoreRpc } from './core-rpc.nitro';
 
 export enum DAEMON_RPC_GET_INFO_FLAG {
@@ -803,11 +803,11 @@ export type COMMAND_VALIDATE_SIGNATURE_RESPONSE = {
   status: API_RETURN_CODE.OK | API_RETURN_CODE.DISCONNECTED | API_RETURN_CODE.NOT_FOUND | API_RETURN_CODE.FAIL;
 };
 
-type CoreMethod<Params extends JSONConstrain<Params>, Result extends JSONConstrain<Result>, Errors extends JSONConstrain<Errors> = never> = {
+type CoreMethod<Params, Result, Errors = never> = {
   (
-    params: __UNPROTECTED__TypedJSON<Params>
+    params: TypedJSON<Params>
   ): Promise<
-    | __UNPROTECTED__TypedJSON<{ response_code: unknown; base64_body: TypedBase64<__UNPROTECTED__TypedJSON<JSONRpcResponse<Result, Errors>>> }>
+    | TypedJSON<{ response_code: unknown; base64_body: TypedBase64<TypedJSON<JSONRpcResponse<Result, Errors>>> }>
     | TypedJSON<GeneralReturnErrors>
     | TypedJSON<{ error_code: API_RETURN_CODE.BAD_ARG_INVALID_JSON }>
     | TypedJSON<{ error_code: API_RETURN_CODE.FAIL }>
