@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "./src",
     "paths": {
-      "@hyle-team/react-native-zano": ["./src/index"]
+      "@hyle-team/react-native-zano": ["./index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -26,5 +26,5 @@
     "target": "ESNext",
     "verbatimModuleSyntax": true
   },
-  "exclude": ["libraries"]
+  "exclude": ["build", "libraries", "example"]
 }
