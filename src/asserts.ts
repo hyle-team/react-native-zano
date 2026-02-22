@@ -6,7 +6,7 @@ import {
   ZanoApiReturnCodeErrors,
   ZanoJsonRpcCodeErrors,
   ZanoWalletRpcCodeErrors,
-  ZanoWalletRpcUnknownError,
+  ZanoWalletRpcUnknownError
 } from './errors';
 import type { JSONRpcFailedResponse, JSONRpcSuccessfulResponse } from './utils/json-rpc';
 
@@ -78,6 +78,7 @@ export type JSONRpcErrorCode =
   | JSONRpcErrorCodeWalletRpcErrorCode
   | JSONRpcErrorCodeJsonRpcErrorCode
   | JSONRpcErrorCodeUnknown;
+type InferJSONRpcErrorCode<R extends object> = R extends JSONRpcFailedResponse<ErrorObj<infer S extends string | number>> ? S : never;
 export class JSONRpcError extends createErrorClass('JSONRpcError') {
   constructor(
     readonly code: unknown,
@@ -86,7 +87,6 @@ export class JSONRpcError extends createErrorClass('JSONRpcError') {
     super(message);
   }
 }
-type InferJSONRpcErrorCode<R extends object> = R extends JSONRpcFailedResponse<ErrorObj<infer S extends string | number>> ? S : never;
 export function assertJSONRpcErrorCode<R extends object>(
   response: R,
   messages?: { [N in InferJSONRpcErrorCode<R>]?: string | { (): Error } }
