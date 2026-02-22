@@ -1,7 +1,6 @@
 import { fixupConfigRules } from '@eslint/compat';
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
-import prettier from 'eslint-plugin-prettier';
 import { defineConfig } from 'eslint/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,26 +15,35 @@ const compat = new FlatCompat({
 
 export default defineConfig([
   {
-    extends: fixupConfigRules(compat.extends('@react-native', 'prettier')),
-    plugins: { prettier },
+    extends: fixupConfigRules(compat.extends('@react-native')),
     rules: {
       'react/react-in-jsx-scope': 'off',
-      'prettier/prettier': [
+      'curly': 'off',
+      'no-dupe-class-members': 'off',
+      'react/no-unstable-nested-components': 'off',
+      'react-hooks/exhaustive-deps': ['error', { additionalHooks: '^(useWatcher|useDerived|useDerivedState|useCreateAction)$' }],
+      '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          quoteProps: 'consistent',
-          singleQuote: true,
-          tabWidth: 2,
-          trailingComma: 'es5',
-          useTabs: false,
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        {
+          fixStyle: 'separate-type-imports',
+          prefer: 'type-imports',
         },
       ],
     },
   },
   {
-    ignores: [
-      'node_modules/',
-      'lib/'
-    ],
+    ignores: ['node_modules/', 'lib/'],
   },
 ]);
