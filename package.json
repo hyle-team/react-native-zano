@@ -1,6 +1,6 @@
 {
   "name": "@hyle-team/react-native-zano",
-  "version": "0.1.12",
+  "version": "0.2.1",
   "description": "Zano Wallet Library for react-native",
   "source": "./src/index.ts",
   "types": "./lib/typescript/src/index.d.ts",
@@ -45,7 +45,8 @@
     "!**/__mocks__",
     "!**/.*",
     "!prebuilt.js",
-    "scripts/copy_libraries.js"
+    "scripts/copy_libraries.js",
+    "!gh-repo/**/*"
   ],
   "scripts": {
     "example": "yarn workspace @hyle-team/react-native-zano-example",
@@ -58,11 +59,7 @@
     "nitrogen": "nitro-codegen",
     "shared-codegen": "mkdir nitrogen/codegen/ && cp ./cpp/*CodeGen.hpp nitrogen/codegen/",
     "release": "release-it --only-version",
-    "pack:prebuild": "node ./scripts/pack_prebuilds.js",
-    "publish:ios": "yarn pack:prebuild ios && npm publish ./package.ios.tgz",
-    "publish:android": "yarn pack:prebuild android && npm publish ./package.android.tgz",
-    "publish:self": "node ./scripts/prepare_self.js && npm publish ./package.tgz",
-    "publish:all": "yarn publish:ios && yarn publish:android && sleep 5 && yarn publish:self"
+    "publish": "./scripts/publish.sh"
   },
   "keywords": [
     "react-native",
