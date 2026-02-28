@@ -1,11 +1,11 @@
-import { assertApiErrorCode, errorWithResponse } from '../asserts';
-import { ZanoApiFailedError } from '../errors';
+import { assertJSONRpcErrorCode, errorWithResponse } from '../asserts';
+import { ZanoApiFailError } from '../errors';
 import { PlainWallet } from '../plain-wallet';
-import { TypedJSON, type JSONConstrain } from '../utils/typed-json';
+import { TypedJSON } from '../utils/typed-json';
 import type { DeepReadonly } from '../utils/types';
 import type { ZanoController } from './zano-controller';
 
-export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
+export class ZanoAppConfig<AppConfig> {
   constructor(
     readonly api: ZanoController,
     initial: DeepReadonly<AppConfig>,
@@ -29,7 +29,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
       response.error !== null &&
       'code' in response.error
     ) {
-      assertApiErrorCode(response);
+      assertJSONRpcErrorCode(response);
     }
     this.#app_config = response as DeepReadonly<AppConfig>;
   }
@@ -38,7 +38,7 @@ export class ZanoAppConfig<AppConfig extends JSONConstrain<AppConfig>> {
   }
   async set(next: DeepReadonly<AppConfig>) {
     const response = TypedJSON.parse(await PlainWallet.set_appconfig(TypedJSON.stringify(next), await this.encryption_key));
-    if (response.error) throw errorWithResponse(new ZanoApiFailedError(response.error.message), response);
+    if (response.error) throw errorWithResponse(new ZanoApiFailError(response.error.message), response);
     this.#app_config = next;
   }
 }

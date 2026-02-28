@@ -5,11 +5,7 @@
 #define FE_4(WHAT, X, ...) WHAT(X), FE_3(WHAT, __VA_ARGS__)
 #define FE_5(WHAT, X, ...) WHAT(X), FE_4(WHAT, __VA_ARGS__)
 #define FE_6(WHAT, X, ...) WHAT(X), FE_5(WHAT, __VA_ARGS__)
-#ifdef _MSC_VER
-#define FE_GET_MACRO(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
-#else
 #define FE_GET_MACRO(_0, _1, _2, _3, _4, _5, _6, NAME, ...) NAME
-#endif
 #define FOR_EACH(action, ...) FE_GET_MACRO(__VA_ARGS__, FE_6, FE_5, FE_4, FE_3, FE_2, FE_1, NO_MACRO)(action, __VA_ARGS__)
 
 #define PRINT_CAST_IMPL(type, name) type##ParamCast(name)

@@ -1,16 +1,14 @@
+import type { ErrorObj, JSONRpcReturnCodeApiReturnCode, ReturnCode } from '../asserts';
 import type {
   API_RETURN_CODE,
   app_connectivity_status,
-  ErrorCode,
-  GeneralReturnErrors,
   open_wallet_response,
-  ReturnCode,
   seed_phrase_info,
   wallet_extended_info,
   wallet_sync_status_info,
 } from '../entities';
 import type { JSONRpcFailedResponse, JSONRpcSuccessfulResponse } from '../utils/json-rpc';
-import type { JSONConstrain, JSONValue, TypedJSON } from '../utils/typed-json';
+import type { JSONValue, TypedJSON } from '../utils/typed-json';
 import type { GENERAL_INTERNAL_ERROR, ZanoLogLevel, ZanoPriority } from './enums';
 import type { PlainWallet } from './plain-wallet.nitro';
 
@@ -18,57 +16,61 @@ export type zano_lib_init_response =
   | TypedJSON<
       | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>>
       | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.ALREADY_EXISTS>>
-      | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.INTERNAL_ERROR>>
+      | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.INTERNAL_ERROR>>
     >
   | GENERAL_INTERNAL_ERROR.INIT;
-export type zano_lib_reset_response = TypedJSON<JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>> | GeneralReturnErrors>;
+export type zano_lib_reset_response = TypedJSON<JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>> | JSONRpcReturnCodeApiReturnCode>;
 export type zano_lib_set_log_level_response = TypedJSON<{}>;
-export type zano_lib_reset_connection_url_response = TypedJSON<{ error_code: API_RETURN_CODE.OK } | GeneralReturnErrors>;
+export type zano_lib_reset_connection_url_response = TypedJSON<{ error_code: API_RETURN_CODE.OK } | JSONRpcReturnCodeApiReturnCode>;
 export type zano_lib_get_address_info_response = TypedJSON<{ valid: boolean; auditable: boolean; payment_id: boolean; wrap: boolean }>;
-export type zano_lib_get_connectivity_status_response = TypedJSON<JSONRpcSuccessfulResponse<app_connectivity_status> | GeneralReturnErrors>;
-export type zano_lib_get_appconfig_response<AppConfig extends JSONConstrain<AppConfig>> = TypedJSON<
+export type zano_lib_get_connectivity_status_response = TypedJSON<
+  JSONRpcSuccessfulResponse<app_connectivity_status> | JSONRpcReturnCodeApiReturnCode
+>;
+export type zano_lib_get_appconfig_response<AppConfig> = TypedJSON<
   | AppConfig
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.NOT_FOUND>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.INVALID_FILE>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.WRONG_PASSWORD>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.NOT_FOUND>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.INVALID_FILE>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.WRONG_PASSWORD>>
 >;
 export type zano_lib_set_appconfig_response = TypedJSON<
-  JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>> | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.FAIL>>
+  JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>> | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.FAIL>>
 >;
 export type zano_lib_truncate_log_response = TypedJSON<JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>>>;
 export type zano_lib_get_export_private_info_response = TypedJSON<
   JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.FAIL>> | JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>>
 >;
 export type zano_lib_get_wallet_files_response = TypedJSON<{ items?: string[] }>;
-export type zano_lib_get_opened_wallets_response = TypedJSON<JSONRpcSuccessfulResponse<undefined | open_wallet_response[]> | GeneralReturnErrors>;
+export type zano_lib_get_opened_wallets_response = TypedJSON<
+  JSONRpcSuccessfulResponse<undefined | open_wallet_response[]> | JSONRpcReturnCodeApiReturnCode
+>;
 export type zano_lib_delete_wallet_response = TypedJSON<JSONRpcSuccessfulResponse<ReturnCode<API_RETURN_CODE.OK>>>;
 export type zano_lib_open_response = TypedJSON<
-  | GeneralReturnErrors
+  | JSONRpcReturnCodeApiReturnCode
   | JSONRpcSuccessfulResponse<Omit<open_wallet_response, 'name' | 'pass'>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.ALREADY_EXISTS>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.WALLET_WATCH_ONLY_NOT_SUPPORTED>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.FILE_NOT_FOUND>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.INVALID_FILE>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.WRONG_PASSWORD>>
-  | JSONRpcFailedResponse<ErrorCode<`${API_RETURN_CODE.INTERNAL_ERROR}, DESCRIPTION: ${string}`>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.ALREADY_EXISTS>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.WALLET_WATCH_ONLY_NOT_SUPPORTED>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.FILE_NOT_FOUND>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.INVALID_FILE>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.WRONG_PASSWORD>>
+  | JSONRpcFailedResponse<ErrorObj<`${API_RETURN_CODE.INTERNAL_ERROR}, DESCRIPTION: ${string}`>>
 >;
 export type zano_lib_restore_response = TypedJSON<
-  | GeneralReturnErrors
+  | JSONRpcReturnCodeApiReturnCode
   | JSONRpcSuccessfulResponse<open_wallet_response>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.ALREADY_EXISTS>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.WRONG_SEED>>
-  | JSONRpcFailedResponse<ErrorCode<`${API_RETURN_CODE.FAIL}:${string}`>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.ALREADY_EXISTS>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.WRONG_SEED>>
+  | JSONRpcFailedResponse<ErrorObj<`${API_RETURN_CODE.FAIL}:${string}`>>
 >;
 export type zano_lib_generate_response = TypedJSON<
-  | GeneralReturnErrors
+  | JSONRpcReturnCodeApiReturnCode
   | JSONRpcSuccessfulResponse<open_wallet_response>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.ALREADY_EXISTS>>
-  | JSONRpcFailedResponse<ErrorCode<API_RETURN_CODE.WRONG_SEED>>
-  | JSONRpcFailedResponse<ErrorCode<`${API_RETURN_CODE.FAIL}:${string}`>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.ALREADY_EXISTS>>
+  | JSONRpcFailedResponse<ErrorObj<API_RETURN_CODE.WRONG_SEED>>
+  | JSONRpcFailedResponse<ErrorObj<`${API_RETURN_CODE.FAIL}:${string}`>>
 >;
-export type zano_lib_get_wallet_info_response = TypedJSON<JSONRpcSuccessfulResponse<wallet_extended_info> | GeneralReturnErrors>;
+export type zano_lib_get_wallet_info_response = TypedJSON<JSONRpcSuccessfulResponse<wallet_extended_info> | JSONRpcReturnCodeApiReturnCode>;
 export type zano_lib_get_wallet_status_response =
-  | TypedJSON<GeneralReturnErrors>
+  | TypedJSON<JSONRpcReturnCodeApiReturnCode>
   | TypedJSON<wallet_sync_status_info>
   | API_RETURN_CODE.WALLET_WRONG_ID;
 export type zano_lib_get_seed_phrase_info_params = TypedJSON<{ seed_phrase: string; seed_password: string }>;
@@ -78,14 +80,14 @@ export type zano_lib_get_seed_phrase_info_response = TypedJSON<
 export type zano_lib_reset_wallet_password_response =
   | API_RETURN_CODE.OK
   | API_RETURN_CODE.FAIL
-  | TypedJSON<GeneralReturnErrors>
+  | TypedJSON<JSONRpcReturnCodeApiReturnCode>
   | API_RETURN_CODE.WALLET_WRONG_ID;
 export type zano_lib_close_wallet_response = TypedJSON<
-  | GeneralReturnErrors
+  | JSONRpcReturnCodeApiReturnCode
   | { response: API_RETURN_CODE.OK | API_RETURN_CODE.WALLET_WRONG_ID | `${API_RETURN_CODE.FAIL}:${string}` | API_RETURN_CODE.INTERNAL_ERROR }
 >;
 
-export interface IPlainWallet<AppConfig extends JSONConstrain<AppConfig> = JSONValue> extends PlainWallet {
+export interface IPlainWallet<AppConfig = JSONValue> extends PlainWallet {
   init(host: string, port: string, working_dir: string, log_level: ZanoLogLevel): Promise<zano_lib_init_response>;
   reset(): zano_lib_reset_response;
   set_log_level(log_level: ZanoLogLevel): zano_lib_set_log_level_response;

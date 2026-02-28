@@ -75,7 +75,7 @@
     "url": "git+https://github.com/hyle-team/react-native-zano.git"
   },
   "author": "Mikhailov Anton <anion155@gmail.com> (https://github.com/anion155)",
-  "license": "MIT",
+  "license": "LICENSE",
   "bugs": {
     "url": "https://github.com/hyle-team/react-native-zano/issues"
   },
@@ -100,7 +100,6 @@
     "del-cli": "^5.1.0",
     "eslint": "^9.22.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
     "jest": "^29.7.0",
     "nitro-codegen": "^0.25.2",
     "prettier": "^3.8.0",
@@ -179,7 +178,7 @@
       [
         "typescript",
         {
-          "project": "tsconfig.build.json"
+          "project": "tsconfig.json"
         }
       ]
     ]
