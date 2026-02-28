@@ -1,0 +1,51 @@
+import type { HybridObject } from 'react-native-nitro-modules';
+export interface WalletRpc extends HybridObject<{
+    ios: 'c++';
+    android: 'c++';
+}> {
+    getbalance(instance_id: number, params: string): Promise<string>;
+    getaddress(instance_id: number, params: string): string;
+    get_wallet_info(instance_id: number, params: string): Promise<string>;
+    get_recent_txs_and_info(instance_id: number, params: string): Promise<string>;
+    get_recent_txs_and_info2(instance_id: number, params: string): Promise<string>;
+    transfer(instance_id: number, params: string): Promise<string>;
+    store(instance_id: number, params: string): Promise<string>;
+    get_payments(instance_id: number, params: string): Promise<string>;
+    get_bulk_payments(instance_id: number, params: string): Promise<string>;
+    make_integrated_address(instance_id: number, params: string): string;
+    split_integrated_address(instance_id: number, params: string): string;
+    sweep_below(instance_id: number, params: string): string;
+    get_bare_outs_stats(instance_id: number, params: string): string;
+    sweep_bare_outs(instance_id: number, params: string): string;
+    sign_transfer(instance_id: number, params: string): string;
+    submit_transfer(instance_id: number, params: string): string;
+    search_for_transactions(instance_id: number, params: string): Promise<string>;
+    search_for_transactions2(instance_id: number, params: string): Promise<string>;
+    get_restore_info(instance_id: number, params: string): string;
+    get_mining_history(instance_id: number, params: string): string;
+    register_alias(instance_id: number, params: string): Promise<string>;
+    update_alias(instance_id: number, params: string): Promise<string>;
+    marketplace_get_offers_ex(instance_id: number, params: string): string;
+    marketplace_push_offer(instance_id: number, params: string): string;
+    marketplace_push_update_offer(instance_id: number, params: string): string;
+    marketplace_cancel_offer(instance_id: number, params: string): string;
+    ionic_swap_generate_proposal(instance_id: number, params: string): Promise<string>;
+    ionic_swap_get_proposal_info(instance_id: number, params: string): string;
+    ionic_swap_accept_proposal(instance_id: number, params: string): string;
+    assets_whitelist_get(instance_id: number, params: string): Promise<string>;
+    assets_whitelist_add(instance_id: number, params: string): Promise<string>;
+    assets_whitelist_remove(instance_id: number, params: string): Promise<string>;
+    deploy_asset(instance_id: number, params: string): Promise<string>;
+    emit_asset(instance_id: number, params: string): Promise<string>;
+    update_asset(instance_id: number, params: string): Promise<string>;
+    burn_asset(instance_id: number, params: string): Promise<string>;
+    send_ext_signed_asset_tx(instance_id: number, params: string): string;
+    attach_asset_descriptor(instance_id: number, params: string): string;
+    transfer_asset_ownership(instance_id: number, params: string): string;
+    mw_get_wallets(instance_id: number, params: string): string;
+    mw_select_wallet(instance_id: number, params: string): string;
+    sign_message(instance_id: number, params: string): string;
+    encrypt_data(instance_id: number, params: string): string;
+    decrypt_data(instance_id: number, params: string): string;
+}
+//# sourceMappingURL=wallet-rpc.nitro.d.ts.map

@@ -1,0 +1,26 @@
+{
+  "cxxNamespace": ["zano"],
+  "ios": {
+    "iosModuleName": "RNZano"
+  },
+  "android": {
+    "androidNamespace": ["hyleteam", "reactnativezano"],
+    "androidCxxLibName": "RNZano"
+  },
+  "autolinking": {
+    "PlainWallet": {
+      "cpp": "PlainWallet"
+    },
+    "WalletRpc": {
+      "cpp": "WalletRpc"
+    },
+    "CoreRpc": {
+      "cpp": "CoreRpc"
+    },
+    "PlatformUtils": {
+      "swift": "PlatformUtils",
+      "kotlin": "PlatformUtils"
+    }
+  },
+  "ignorePaths": ["node_modules"]
+}

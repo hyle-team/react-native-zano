@@ -1,0 +1,1 @@
+{"version":3,"names":["TypedJSON","parse","text","JSON","stringify","value"],"sourceRoot":"../../../src","sources":["utils/typed-json.ts"],"mappings":";;AAMA,OAAO,MAAMA,SAGZ,GAAG;EACFC,KAAKA,CAACC,IAAI,EAAE;IACV,OAAOC,IAAI,CAACF,KAAK,CAACC,IAAa,CAAC;EAClC,CAAC;EACDE,SAASA,CAACC,KAAK,EAAE;IACf,OAAOF,IAAI,CAACC,SAAS,CAACC,KAAK,CAAC;EAC9B;AACF,CAAC","ignoreList":[]}

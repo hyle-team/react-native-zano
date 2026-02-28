@@ -1,0 +1,1 @@
+{"version":3,"file":"platform-utils.nitro.d.ts","sourceRoot":"","sources":["../../../../src/platform-utils/platform-utils.nitro.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,4BAA4B,CAAC;AAE/D,MAAM,WAAW,aAAc,SAAQ,YAAY,CAAC;IAAE,GAAG,EAAE,OAAO,CAAC;IAAC,OAAO,EAAE,QAAQ,CAAA;CAAE,CAAC;IACtF,qBAAqB,IAAI,MAAM,CAAC;IAChC,uBAAuB,IAAI,MAAM,CAAC;CACnC"}

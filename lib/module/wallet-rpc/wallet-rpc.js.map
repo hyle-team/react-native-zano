@@ -1,0 +1,1 @@
+{"version":3,"names":["NitroModules","WalletRpc","createHybridObject"],"sourceRoot":"../../../src","sources":["wallet-rpc/wallet-rpc.ts"],"mappings":";;AAAA,SAASA,YAAY,QAAQ,4BAA4B;AAKzD,OAAO,MAAMC,SAAS,GAAGD,YAAY,CAACE,kBAAkB,CAA0C,WAAW,CAAC","ignoreList":[]}

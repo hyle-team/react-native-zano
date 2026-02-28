@@ -1,0 +1,1 @@
+{"version":3,"names":["NitroModules","PlainWallet","createHybridObject"],"sourceRoot":"../../../src","sources":["plain-wallet/plain-wallet.ts"],"mappings":";;AAAA,SAASA,YAAY,QAAQ,4BAA4B;AAKzD,OAAO,MAAMC,WAAW,GAAGD,YAAY,CAACE,kBAAkB,CAA8C,aAAa,CAAC","ignoreList":[]}
